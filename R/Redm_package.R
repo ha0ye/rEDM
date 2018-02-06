@@ -173,6 +173,19 @@ NULL
 #' }
 "e120_invnit16"
 
+#' @title Global Temperature and Atmospheric CO2 from the Vostok Ice Core
+#' @author ****
+#' @description Linearly interpolated data from Petit et al. 1999, containing 
+#'   global temperature (anomaly) and atmospheric CO2 in the past 414000 years
+#'   https://www.ncdc.noaa.gov/paleo-search/study/2453
+#' @format A data frame with 412 rows and 3 variables: 
+#' \describe{
+#'   \item{\code{time}}{years before present}
+#'   \item{\code{temp}}{temperature anomaly (from mean recent values, deg C)}
+#'   \item{\code{CO2}}{carbon dioxide concentration (ppmv)}
+#' }
+"vostok"
+
 #' @name compute_stats
 #' 
 #' @title Compute performance metrics for predictions

@@ -65,3 +65,69 @@ test_that("ccm error checking works", {
     expect_error(ccm(df, target_column = 3, silent = TRUE))
     expect_error(ccm(df, lib_sizes = -1, silent = TRUE))
 })
+
+test_that("ccm with multiple targets works", {
+    data("vostok")
+    vostok$temp <- vostok$temp + 30
+    vostok$sqrt_temp <- sqrt(vostok$temp)
+    
+    expect_error(ccm_out <- ccm(vostok,  E = 3, lib_sizes = c(100, 200, 400), 
+                                random_libs = FALSE, lib_column = "CO2", 
+                                target_column = c("temp", "sqrt_temp"), 
+                                silent = TRUE), NA)
+    expect_s3_class(ccm_out, "data.frame")
+    expect_true("E" %in% names(ccm_out))
+    expect_true("tau" %in% names(ccm_out))
+    expect_true("tp" %in% names(ccm_out))
+    expect_true("nn" %in% names(ccm_out))
+    expect_true("lib_column" %in% names(ccm_out))
+    expect_true("target_column" %in% names(ccm_out))
+    expect_true(all(match(c(2, 4), ccm_out$target_column) > 0))
+    expect_true("lib_size" %in% names(ccm_out))
+    expect_true("num_pred" %in% names(ccm_out))
+    expect_true("rho" %in% names(ccm_out))
+    expect_true("mae" %in% names(ccm_out))
+    expect_true("rmse" %in% names(ccm_out))
+    expect_equal(NROW(ccm_out), 2460)
+    expect_equal(digest::digest(round(ccm_out$rho, 4)), 
+                 "dd90cb31a96ff4764c6a8e3252c82ee3")
+    
+    ccm_temp <- ccm_out[ccm_out$target_column == 2, ]
+    
+    expect_error(ccm_results <- ccm_means(ccm_temp), NA)
+    expect_s3_class(ccm_results, "data.frame")
+    expect_true("E" %in% names(ccm_results))
+    expect_true("tau" %in% names(ccm_results))
+    expect_true("tp" %in% names(ccm_results))
+    expect_true("nn" %in% names(ccm_results))
+    expect_true("lib_column" %in% names(ccm_results))
+    expect_true("target_column" %in% names(ccm_results))
+    expect_true("lib_size" %in% names(ccm_results))
+    expect_equal(anyDuplicated(ccm_results$lib_size), 0)
+    expect_true("num_pred" %in% names(ccm_results))
+    expect_true("rho" %in% names(ccm_results))
+    expect_true("mae" %in% names(ccm_results))
+    expect_true("rmse" %in% names(ccm_results))
+    expect_equal(NROW(ccm_results), 3)
+    expect_equal(digest::digest(round(ccm_results$rho, 4)), 
+                 "9e5cf6bcec7934b5936bbab9239d5619")
+
+    ccm_sqrt_temp <- ccm_out[ccm_out$target_column == 4, ]
+    expect_error(ccm_results <- ccm_means(ccm_sqrt_temp), NA)
+    expect_s3_class(ccm_results, "data.frame")
+    expect_true("E" %in% names(ccm_results))
+    expect_true("tau" %in% names(ccm_results))
+    expect_true("tp" %in% names(ccm_results))
+    expect_true("nn" %in% names(ccm_results))
+    expect_true("lib_column" %in% names(ccm_results))
+    expect_true("target_column" %in% names(ccm_results))
+    expect_true("lib_size" %in% names(ccm_results))
+    expect_equal(anyDuplicated(ccm_results$lib_size), 0)
+    expect_true("num_pred" %in% names(ccm_results))
+    expect_true("rho" %in% names(ccm_results))
+    expect_true("mae" %in% names(ccm_results))
+    expect_true("rmse" %in% names(ccm_results))
+    expect_equal(NROW(ccm_results), 3)
+    expect_equal(digest::digest(round(ccm_results$rho, 4)), 
+                 "cd793f47c129d28039b5f0e7c4c71d0c")
+})
