@@ -20,11 +20,13 @@ s_map(time_series, lib = c(1, NROW(time_series)), pred = lib,
 }
 \arguments{
 \item{time_series}{either a vector to be used as the time series, or a 
-data.frame or matrix with at least 2 columns (in which case the first column 
-will be used as the time index, and the second column as the time series)}
+data.frame or matrix with at least 2 columns (in which case the first 
+column will be used as the time index, and the second column as the time 
+series)}
 
-\item{lib}{a 2-column matrix (or 2-element vector) where each row specifes the 
-first and last *rows* of the time series to use for attractor reconstruction}
+\item{lib}{a 2-column matrix (or 2-element vector) where each row specifes 
+the first and last *rows* of the time series to use for attractor 
+reconstruction}
 
 \item{pred}{(same format as lib), but specifying the sections of the time 
 series to forecast.}
@@ -64,74 +66,71 @@ coefficients with the output (and forces the full output as if stats_only
 were set to FALSE)}
 }
 \value{
-For \code{simplex}, if \code{stats_only = TRUE}, then a data.frame 
-with components for the parameters and forecast statistics:
-\tabular{ll}{
-  E \tab embedding dimension\cr
-  tau \tab time lag\cr
-  tp \tab prediction horizon\cr
-  nn \tab number of neighbors\cr
-  num_pred \tab number of predictions\cr
-  rho \tab correlation coefficient between observations and predictions\cr
-  mae \tab mean absolute error\cr
-  rmse \tab root mean square error\cr
-  perc \tab percent correct sign\cr
-  p_val \tab p-value that rho is significantly greater than 0 using Fisher's 
-  z-transformation\cr
-  const_rho \tab same as rho, but for the constant predictor\cr
-  const_mae \tab same as mae, but for the constant predictor\cr
-  const_rmse \tab same as rmse, but for the constant predictor\cr
-  const_perc \tab same as perc, but for the constant predictor\cr
-  const_p_val \tab same as p_val, but for the constant predictor
+For \code{\link{simplex}}, a data.frame with components for the parameters 
+  and forecast statistics:
+\describe{
+  \item{\code{E}}{embedding dimension}
+  \item{\code{tau}}{time lag}
+  \item{\code{tp}}{prediction horizon}
+  \item{\code{nn}}{number of neighbors}
+  \item{\code{num_pred}}{number of predictions}
+  \item{\code{rho}}{correlation coefficient between observations and predictions}
+  \item{\code{mae}}{mean absolute error}
+  \item{\code{rmse}}{root mean square error}
+  \item{\code{perc}}{percent correct sign}
+  \item{\code{p_val}}{p-value that rho is significantly greater than 0 using Fisher's 
+  z-transformation}
+  \item{\code{const_rho}}{same as \code{rho}, but for the constant predictor}
+  \item{\code{const_mae}}{same as \code{mae}, but for the constant predictor}
+  \item{\code{const_rmse}}{same as \code{rmse}, but for the constant predictor}
+  \item{\code{const_perc}}{same as \code{perc}, but for the constant predictor}
+  \item{\code{const_p_val}}{same as \code{p_val}, but for the constant predictor}
 }
-Otherwise, a list where the number of elements is equal to the number of runs 
-  (unique parameter combinations). Each element is a list with the following 
-  components:
-\tabular{ll}{
-  params \tab data.frame of parameters (E, tau, tp, nn)\cr
-  model_output \tab data.frame with columns for the time index, observations, 
-    and predictions\cr
-  stats \tab data.frame of forecast statistics\cr
+  If \code{stats_only == FALSE}, then additionally a list column:
+\describe{
+  \item{\code{model_output}}{data.frame with columns for the time index, 
+    observations, predictions, and estimated prediction variance}
 }
 
-For \code{s_map}, the same as for \code{simplex}, but with an additional 
-column for the value of theta. If \code{stats_only = FALSE} and 
-\code{save_smap_coefficients = TRUE}, then a matrix of S-map coefficients 
-will appear in the full output.
+For \code{\link{s_map}}, the same as for \code{\link{simplex}}, but with an 
+  additional column for the value of theta. If 
+  \code{save_smap_coefficients == TRUE}, then an additional list-column for 
+  the S-map coefficients.
 }
 \description{
-\code{simplex} uses time delay embedding on a single time series to 
-generate an attractor reconstruction, and then applies the simplex 
-projection algorithm to make forecasts.
+\code{\link{simplex}} uses time delay embedding on a single time 
+  series to generate an attractor reconstruction, and then applies the 
+  simplex projection algorithm to make forecasts.
 
-\code{s_map} is similar to \code{simplex}, but uses the S-map algorithm to 
-make forecasts.
+\code{\link{s_map}} is similar to \code{\link{simplex}}, but uses the S-map 
+  algorithm to make forecasts.
 }
 \details{
-\code{simplex} is typically applied, and the embedding dimension 
+\code{\link{simplex}} is typically applied, and the embedding dimension 
 varied, to find an optimal embedding dimension for the data. Thus, the 
-default parameters are set so that passing a time series as the only argument 
-will run over E = 1:10 (embedding dimension), using leave-one-out 
+default parameters are set so that passing a time series as the only 
+argument will run over E = 1:10 (embedding dimension), using leave-one-out 
 cross-validation over the whole time series, and returning just the forecast 
 statistics.
 
-\code{s_map} is typically applied, with fixed embedding dimension, and theta 
+\code{\link{s_map}} is typically applied, with fixed embedding dimension, and theta 
 varied, to test for nonlinear dynamics in the data. Thus, the default 
 parameters are set so that passing a time series as the only  argument will 
 run over a default list of thetas (0, 0.0001, 0.0003, 0.001, 0.003, 0.01, 
 0.03, 0.1, 0.3, 0.5, 0.75, 1.0, 1.5, 2, 3, 4, 6, and 8), using E = 1, 
-leave-one-out cross-validation over the whole time series, and returning just 
-the forecast statistics.
+leave-one-out cross-validation over the whole time series, and returning 
+just the forecast statistics.
 
 norm_type "L2 norm" (default) uses the typical Euclidean distance:
-\deqn{distance(a,b) := \sqrt{\sum_i{(a_i - b_i)^2}}}{distance(a, b) := 
-\sqrt(\sum(a_i - b_i)^2)}
+\deqn{distance(a,b) := \sqrt{\sum_i{(a_i - b_i)^2}}
+}{distance(a, b) := \sqrt(\sum(a_i - b_i)^2)}
 norm_type "L1 norm" uses the Manhattan distance:
-\deqn{distance(a,b) := \sum_i{|a_i - b_i|}}{distance(a, b) := 
-\sum|a_i - b_i|}
-norm type "P norm" uses the LP norm, generalizing the L1 and L2 norm to use $p$ as the exponent:
-\deqn{distance(a,b) := \sum_i{(a_i - b_i)^p}^{1/p}}{distance(a, b) := 
-(\sum(a_i - b_i)^p)^(1/p)}
+\deqn{distance(a,b) := \sum_i{|a_i - b_i|}
+}{distance(a, b) := \sum|a_i - b_i|}
+norm type "P norm" uses the LP norm, generalizing the L1 and L2 norm to use 
+  $P$ as the exponent:
+\deqn{distance(a,b) := \sum_i{(a_i - b_i)^P}^{1/P}
+}{distance(a, b) := (\sum(a_i - b_i)^P)^(1/P)}
 }
 \examples{
 data("two_species_model")
@@ -140,7 +139,8 @@ simplex(ts, lib = c(1, 100), pred = c(101, 200))
 
 data("two_species_model")
 ts <- two_species_model$x[1:200]
-#' simplex(ts, stats_only = FALSE)
+simplex(ts, stats_only = FALSE)
+ 
 data("two_species_model")
 ts <- two_species_model$x[1:200]
 s_map(ts, E = 2)
@@ -148,4 +148,5 @@ s_map(ts, E = 2)
 data("two_species_model")
 ts <- two_species_model$x[1:200]
 s_map(ts, E = 2, theta = 1, save_smap_coefficients = TRUE)
+
 }

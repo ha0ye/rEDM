@@ -156,7 +156,7 @@ std::vector<size_t> ForecastMachine::find_nearest_neighbors(const vec& dist)
     std::vector<size_t> neighbors;
     std::vector<size_t> nearest_neighbors;
     double curr_distance;
-
+    
     if(nn > log(double(which_lib.size())))
     {
         neighbors = sort_indices(dist, which_lib);
@@ -171,7 +171,7 @@ std::vector<size_t> ForecastMachine::find_nearest_neighbors(const vec& dist)
         }
         if(curr_lib == neighbors.end())
             return nearest_neighbors;
-            
+        
         double tie_distance = dist[nearest_neighbors.back()];
         
         // check for ties
@@ -185,12 +185,18 @@ std::vector<size_t> ForecastMachine::find_nearest_neighbors(const vec& dist)
     else
     {
         size_t i;
-        nearest_neighbors.push_back(which_lib[0]);
         for(auto curr_lib: which_lib)
         {
+            // distance to current neighbor under examination
             curr_distance = dist[curr_lib];
-            if(curr_distance <= dist[nearest_neighbors.back()])
+            
+            // We want to include the current neighbor:
+            //   if haven't populated neighbors vector, or
+            //   if current neighbor is nearer than farthest away neighbor
+            if(nearest_neighbors.size() < nn || 
+               curr_distance <= dist[nearest_neighbors.back()])
             {
+                // find the correct place to insert the current neighbor
                 i = nearest_neighbors.size();
                 while((i > 0) && (curr_distance < dist[nearest_neighbors[i-1]]))
                 {
@@ -198,7 +204,9 @@ std::vector<size_t> ForecastMachine::find_nearest_neighbors(const vec& dist)
                 }
                 nearest_neighbors.insert(nearest_neighbors.begin()+i, curr_lib);
                 
-                if((nearest_neighbors.size() > nn) && 
+                // if we've added too many neighbors and there isn't a tie, then
+                // pop off the farthest neighbor
+                if((nearest_neighbors.size() > nn) &&
                    (dist[nearest_neighbors[nn-1]] < dist[nearest_neighbors.back()]))
                 {
                     nearest_neighbors.pop_back();
@@ -405,7 +413,8 @@ void ForecastMachine::smap_forecast()
     */
     if(SAVE_SMAP_COEFFICIENTS)
     {
-        smap_coefficients.assign(num_vectors, vec(data_vectors[0].size()+1, qnan));
+        smap_coefficients.assign(data_vectors[0].size()+1, vec(num_vectors, qnan));
+        
     }
     smap_prediction(0, which_pred.size());
     const_prediction(0, which_pred.size());
@@ -615,18 +624,28 @@ void ForecastMachine::smap_prediction(const size_t start, const size_t end)
             predicted[target_idx][curr_pred] = pred;
             
             // compute variance of prediction
-            VectorXd w_resid = B - A * x;
-            double total_w = 0;
-            for(size_t i = 0; i < effective_nn; ++i)
+            // VectorXd w_resid = B - A * x;
+            // double total_w = 0;
+            // for(size_t i = 0; i < effective_nn; ++i)
+            // {
+            //     total_w += weights(i) * weights(i);
+            // }
+            // predicted_var[target_idx][curr_pred] = w_resid.dot(w_resid) / total_w;
+            
+            predicted_var[target_idx][curr_pred] = 0;
+            double total_weight = 0;
+            for(size_t k = 0; k < effective_nn; ++k)
             {
-                total_w += weights(i) * weights(i);
+                total_weight += weights(k);
+                predicted_var[target_idx][curr_pred] += weights(k) * pow(targets[target_idx][nearest_neighbors[k]] - predicted[target_idx][curr_pred], 2);
             }
-            predicted_var[target_idx][curr_pred] = w_resid.dot(w_resid) / total_w;
+            predicted_var[target_idx][curr_pred] =  predicted_var[target_idx][curr_pred] / total_weight;
+            
             
             if(SAVE_SMAP_COEFFICIENTS)
             {
                 for(size_t j = 0; j <= E; ++j)
-                    smap_coefficients[curr_pred][j] = x(j);
+                    smap_coefficients[j][curr_pred] = x(j);
             }
         }
     }
