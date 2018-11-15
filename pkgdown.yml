@@ -4,5 +4,5 @@ pkgdown_sha: ~
 articles:
   rEDM-coprediction: rEDM-coprediction.html
   rEDM-time-delay-ccm: rEDM-time-delay-ccm.html
-  rEDM-tutorial: rEDM-tutorial.html
+  rEDM: rEDM.html
 
