@@ -33,7 +33,9 @@
 <meta property="og:title" content="Take output from ccm and compute means as a function of library size. — ccm_means" />
 
 <meta property="og:description" content="ccm_means is a utility function to summarize output from the 
-  ccm function" />
+  ccm function. If there is a `model_output` column (e.g. if 
+  `ccm()` was run with `stats_only = FALSE`), then that column is dropped 
+  before summaries are computed." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -124,7 +126,9 @@
     <div class="ref-description">
     
     <p><code>ccm_means</code> is a utility function to summarize output from the 
-  <code><a href='ccm.html'>ccm</a></code> function</p>
+  <code><a href='ccm.html'>ccm</a></code> function. If there is a `model_output` column (e.g. if 
+  `ccm()` was run with `stats_only = FALSE`), then that column is dropped 
+  before summaries are computed.</p>
     
     </div>
 

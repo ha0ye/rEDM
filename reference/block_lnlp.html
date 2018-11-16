@@ -130,7 +130,7 @@
     <p><code>block_lnlp</code> uses multiple time series given as input to generate 
   an attractor reconstruction, and then applies the simplex projection or 
   s-map algorithm to make forecasts. This method generalizes the 
-  <code><a href='simplex.html'>simplex</a></code> and <code>s_map</code> routines, and allows for 
+  <code><a href='simplex.html'>simplex</a></code> and <code><a href='simplex.html'>s_map</a></code> routines, and allows for 
   "mixed" embeddings, where multiple time series can be used as different 
   dimensions of an attractor reconstruction.</p>
     
@@ -138,8 +138,8 @@
 
     <pre class="usage"><span class='fu'>block_lnlp</span>(<span class='no'>block</span>, <span class='kw'>lib</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1</span>, <span class='fu'>NROW</span>(<span class='no'>block</span>)), <span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>lib</span>, <span class='kw'>norm</span> <span class='kw'>=</span> <span class='fl'>2</span>,
   <span class='kw'>method</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"simplex"</span>, <span class='st'>"s-map"</span>), <span class='kw'>tp</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>num_neighbors</span> <span class='kw'>=</span> <span class='fu'>switch</span>(<span class='fu'>match.arg</span>(<span class='no'>method</span>), <span class='kw'>simplex</span> <span class='kw'>=</span> <span class='st'>"e+1"</span>, <span class='kw'>`s-map`</span> <span class='kw'>=</span> <span class='fl'>0</span>),
-  <span class='kw'>columns</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>target_column</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>stats_only</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>num_neighbors</span> <span class='kw'>=</span> <span class='fu'>switch</span>(<span class='fu'>match.arg</span>(<span class='no'>method</span>), <span class='kw'>simplex</span> <span class='kw'>=</span> <span class='st'>"e+1"</span>, <span class='kw'>`s-map`</span> <span class='kw'>=</span>
+  <span class='fl'>0</span>), <span class='kw'>columns</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>target_column</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>stats_only</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>first_column_time</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>exclusion_radius</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>epsilon</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>theta</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>silent</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>save_smap_coefficients</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     

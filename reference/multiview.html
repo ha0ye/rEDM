@@ -134,8 +134,8 @@
 
     <pre class="usage"><span class='fu'>multiview</span>(<span class='no'>block</span>, <span class='kw'>lib</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1</span>, <span class='fu'>floor</span>(<span class='fu'>NROW</span>(<span class='no'>block</span>)/<span class='fl'>2</span>)),
   <span class='kw'>pred</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fu'>floor</span>(<span class='fu'>NROW</span>(<span class='no'>block</span>)/<span class='fl'>2</span>) + <span class='fl'>1</span>, <span class='fu'>NROW</span>(<span class='no'>block</span>)), <span class='kw'>norm</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>E</span> <span class='kw'>=</span> <span class='fl'>3</span>,
-  <span class='kw'>tau</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>tp</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>max_lag</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>num_neighbors</span> <span class='kw'>=</span> <span class='st'>"e+1"</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='st'>"sqrt"</span>,
-  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>target_column</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>stats_only</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>tau</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>tp</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>max_lag</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>num_neighbors</span> <span class='kw'>=</span> <span class='st'>"e+1"</span>,
+  <span class='kw'>k</span> <span class='kw'>=</span> <span class='st'>"sqrt"</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>target_column</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>stats_only</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>save_lagged_block</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>first_column_time</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>exclusion_radius</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>silent</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
@@ -269,7 +269,7 @@ this option off)</p></td>
     <p>uses multiple time series given as input to generate an attractor 
   reconstruction, and then applies the simplex projection or s-map algorithm 
   to make forecasts. This method generalizes the <code><a href='simplex.html'>simplex</a></code> and 
-  <code>s_map</code> routines, and allows for "mixed" embeddings, where multiple 
+  <code><a href='simplex.html'>s_map</a></code> routines, and allows for "mixed" embeddings, where multiple 
   time series can be used as different dimensions of an attractor 
   reconstruction.</p>
 <p>The default parameters are set so that, given a matrix of time series, 

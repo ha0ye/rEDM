@@ -137,11 +137,11 @@ another, causal variable.</p>
     </div>
 
     <pre class="usage"><span class='fu'>ccm</span>(<span class='no'>block</span>, <span class='kw'>lib</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1</span>, <span class='fu'>NROW</span>(<span class='no'>block</span>)), <span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>lib</span>, <span class='kw'>norm</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>E</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>tau</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>tp</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>num_neighbors</span> <span class='kw'>=</span> <span class='st'>"e+1"</span>, <span class='kw'>lib_sizes</span> <span class='kw'>=</span> <span class='fu'>seq</span>(<span class='fl'>10</span>, <span class='fl'>100</span>, <span class='kw'>by</span> <span class='kw'>=</span>
-  <span class='fl'>10</span>), <span class='kw'>random_libs</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>num_samples</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>tau</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>tp</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>num_neighbors</span> <span class='kw'>=</span> <span class='st'>"e+1"</span>, <span class='kw'>lib_sizes</span> <span class='kw'>=</span> <span class='fu'>seq</span>(<span class='fl'>10</span>, <span class='fl'>100</span>,
+  <span class='kw'>by</span> <span class='kw'>=</span> <span class='fl'>10</span>), <span class='kw'>random_libs</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>num_samples</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>lib_column</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>target_column</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>first_column_time</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>RNGseed</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>exclusion_radius</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>epsilon</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>silent</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+  <span class='kw'>stats_only</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>silent</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -231,6 +231,11 @@ this option off)</p></td>
       <td><p>excludes vectors from the search space of nearest neighbors 
 if their *distance* is farther away than epsilon (NULL turns this option 
 off)</p></td>
+    </tr>
+    <tr>
+      <th>stats_only</th>
+      <td><p>specify whether to output just the forecast statistics or 
+the raw predictions for each run</p></td>
     </tr>
     <tr>
       <th>silent</th>
