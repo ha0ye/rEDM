@@ -129,7 +129,7 @@ ccm <- function(block, lib = c(1, NROW(block)), pred = lib,
     model$set_params(params$E, params$tau, params$tp, params$nn, 
                      random_libs, num_samples, replace)
     if (!is.null(RNGseed))
-        model$set_seed(RNGseed)
+        set.seed(RNGseed)
     if (!stats_only)
         model$enable_model_output()
     

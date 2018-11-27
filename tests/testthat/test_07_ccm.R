@@ -111,11 +111,11 @@ test_that("ccm model_output works", {
                  "c966dd8ec76cb29d1fc0dc34b64638ea")
 })
 
-test_that("ccm model_output works with random_libs", {
-    expect_error(ccm_out <- ccm(sardine_anchovy_sst, E = 3, 
-                                lib_sizes = seq(10, 80, by = 10), 
+ test_that("ccm model_output works with random_libs", {
+    expect_error(ccm_out <- ccm(sardine_anchovy_sst, E = 3,
+                                lib_sizes = seq(10, 80, by = 10),
                                 lib_column = "anchovy", target_column = "np_sst",
-                                stats_only = FALSE, silent = TRUE, 
+                                stats_only = FALSE, silent = TRUE,
                                 random_libs = TRUE, RNGseed = 42),
                  NA)
     expect_s3_class(ccm_out, "data.frame")
@@ -127,32 +127,32 @@ test_that("ccm model_output works with random_libs", {
     expect_true("obs" %in% names(model_output))
     expect_true("pred" %in% names(model_output))
     expect_true("pred_var" %in% names(model_output))
-    
+
     # check that number of rows of model output match up with number of predictions
-    expect_equal(vapply(ccm_out$model_output, NROW, 1), 
+    expect_equal(vapply(ccm_out$model_output, NROW, 1),
                  rep.int(78, times = 800))
-    expect_equal(vapply(ccm_out$model_output, NCOL, 1), 
+    expect_equal(vapply(ccm_out$model_output, NCOL, 1),
                  rep.int(4, times = 800))
-    
+
     # check a few digests
     idx <- 1
     model_output <- ccm_out$model_output[[idx]]
     model_stats <- compute_stats(model_output$obs, model_output$pred)
-    expect_equal(model_stats[, c("num_pred", "rho", "mae", "rmse")], 
-                 ccm_out[idx, c("num_pred", "rho", "mae", "rmse")], 
+    expect_equal(model_stats[, c("num_pred", "rho", "mae", "rmse")],
+                 ccm_out[idx, c("num_pred", "rho", "mae", "rmse")],
                  check.attributes = FALSE)
-    expect_equal(digest::digest(round(model_output, 4)), 
-                 "ac46eea94705ec7aad0a61e1337554ed")
-    
+    expect_equal(digest::digest(round(model_output, 4)),
+                 "9d2403f44da8a531c490c6cc4726026c")
+
     idx <- 800
     model_output <- ccm_out$model_output[[idx]]
     model_stats <- compute_stats(model_output$obs, model_output$pred)
-    expect_equal(model_stats[, c("num_pred", "rho", "mae", "rmse")], 
-                 ccm_out[idx, c("num_pred", "rho", "mae", "rmse")], 
+    expect_equal(model_stats[, c("num_pred", "rho", "mae", "rmse")],
+                 ccm_out[idx, c("num_pred", "rho", "mae", "rmse")],
                  check.attributes = FALSE)
-    expect_equal(digest::digest(round(model_output, 4)), 
-                 "19202f22b260660d3491f577ffad9c3b")
-    
+    expect_equal(digest::digest(round(model_output, 4)),
+                 "3a6ebad5cf0687f1124e2fa151070acc")
+
     ### add test for ccm_means on ccm_output with model_output
     expect_error(ccm_results <- ccm_means(ccm_out), NA)
     expect_s3_class(ccm_results, "data.frame")
@@ -169,8 +169,8 @@ test_that("ccm model_output works with random_libs", {
     expect_true("mae" %in% names(ccm_results))
     expect_true("rmse" %in% names(ccm_results))
     expect_equal(NROW(ccm_results), 8)
-    expect_equal(digest::digest(round(ccm_results$rho, 4)), 
-                 "57e3a2d98660eb27b87b806324f1942b")
+    expect_equal(digest::digest(round(ccm_results$rho, 4)),
+                 "0a2408b557643fa9c5a3b891a3bcf9c4")
 })
 
 test_that("ccm model_output works with random_libs", {
@@ -205,7 +205,7 @@ test_that("ccm model_output works with random_libs", {
                  ccm_out[idx, c("num_pred", "rho", "mae", "rmse")], 
                  check.attributes = FALSE)
     expect_equal(digest::digest(round(model_output, 4)), 
-                 "bed3f120d766869636b24e7b839b9561")
+                 "b516b14011099d40ba96f36bffc8be04")
     
     idx <- 701
     model_output <- ccm_out$model_output[[idx]]
@@ -233,7 +233,7 @@ test_that("ccm model_output works with random_libs", {
     expect_true("rmse" %in% names(ccm_results))
     expect_equal(NROW(ccm_results), 8)
     expect_equal(digest::digest(round(ccm_results$rho, 4)), 
-                 "2f065e25fa3770d5169ac8fecce46ccd")
+                 "55f606e94068d52b94b10ffa062b4799")
 })
 
 test_that("ccm works on multivariate time series", {
