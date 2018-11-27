@@ -3,11 +3,10 @@
 /*** Constructors ***/
 Xmap::Xmap():
     block(std::vector<vec>()), lib_sizes(std::vector<size_t>()), tp(0), E(0), 
-    tau(1), lib_col(0), target(0), random_libs(true), num_samples(0), seed(42), 
+    tau(1), lib_col(0), target(0), random_libs(true), num_samples(0), 
     remake_vectors(true), remake_targets(true), remake_ranges(true), save_model_preds(false)
 {
     pred_mode = SIMPLEX;
-    seed = (size_t)(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 }
 
 void Xmap::set_time(const NumericVector new_time)
@@ -127,12 +126,6 @@ void Xmap::set_params(const size_t new_E, const size_t new_tau, const int new_tp
     return;
 }
 
-void Xmap::set_seed(const size_t new_seed)
-{
-    seed = new_seed;
-    return;
-}
-
 void Xmap::enable_model_output()
 {
     save_model_preds = true;
@@ -212,10 +205,6 @@ void Xmap::run()
     predicted_lib_sizes.clear();
     std::vector<size_t> full_lib = which_lib;
     size_t max_lib_size = full_lib.size();
-    std::mt19937 rng(seed); // init mersenne twister with seed
-    // need to update with true random seed
-    std::uniform_int_distribution<uint32_t> lib_sampler(0, max_lib_size-1);
-    std::uniform_real_distribution<double> unif_01(0, 1);
     std::vector<int> idx;
  
     size_t m;
@@ -256,7 +245,7 @@ void Xmap::run()
                 {
                     for(auto& lib: which_lib)
                     {
-                        lib = full_lib[lib_sampler(rng)];
+                        lib = full_lib[R::runif(0, max_lib_size - 1)];
                     }
                 }
                 else
@@ -266,7 +255,7 @@ void Xmap::run()
                     t = 0;
                     while(m < lib_size)
                     {
-                        if(double(max_lib_size - t) * unif_01(rng) >= double(lib_size - m))
+                        if(R::runif(0, max_lib_size - t) >= lib_size - m)
                         {
                             ++t;
                         }
@@ -448,7 +437,6 @@ RCPP_MODULE(xmap_module)
     .method("set_lib_column", &Xmap::set_lib_column)
     .method("set_target_column", &Xmap::set_target_column)
     .method("set_params", &Xmap::set_params)
-    .method("set_seed", &Xmap::set_seed)
     .method("enable_model_output", &Xmap::enable_model_output)
     .method("suppress_warnings", &Xmap::suppress_warnings)
     .method("run", &Xmap::run)
