@@ -17,7 +17,7 @@ bibliography: refs.bib
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE,
-                      tidy = TRUE, 
+                      tidy = TRUE,
                       fig.width = 5, fig.height = 3.5)
 knitr::opts_knit$set(global.par = TRUE, progress = FALSE)
 options(digits = 2)
@@ -25,7 +25,7 @@ par(mar = c(4, 4, 1, 1), oma = c(0, 0, 0, 0), mgp = c(2.5, 1, 0))
 ```
 
 # Abstract
-Empirical dynamic modeling (EDM) is an emerging non-parametric framework for modeling nonlinear dynamic systems. EDM is based on the mathematical theory of recontructing attractor manifolds from time series data [@Takens_1981]. The **rEDM** package collects several EDM methods, including simplex projection [@Sugihara_1990], S-map [@Sugihara_1994], multivariate embeddings [@Dixon_1999], convergent cross mapping [@Sugihara_2012], and multiview embedding [@Ye_2016]. Here, we introduce the basic underlying theory, and describe the functionality of **rEDM**, using examples from both model simulations and real data.
+Empirical dynamic modeling (EDM) is an emerging non-parametric framework for modeling nonlinear dynamic systems. EDM is based on the mathematical theory of reconstructing attractor manifolds from time series data [@Takens_1981]. The **rEDM** package collects several EDM methods, including simplex projection [@Sugihara_1990], S-map [@Sugihara_1994], multivariate embeddings [@Dixon_1999], convergent cross mapping [@Sugihara_2012], and multiview embedding [@Ye_2016]. Here, we introduce the basic underlying theory, and describe the functionality of **rEDM**, using examples from both model simulations and real data.
 
 # Introduction
 Many scientific fields use models as approximations of reality and for various purposes (e.g. testing hypotheses regarding mechanisms or processes, explaining past observations, predicting future outcomes). In most cases these models are based on hypothesized parametric equations; however explicit equations can be impractical when the exact mechanisms are unknown or too complex to be characterized with existing datasets. Empirical models, which infer patterns and associations from the data (instead of using hypothesized equations), represent an alternative and highly flexible approach. Here, we review the theoretical background for empirical dynamic modeling (EDM) and the functionality of the **rEDM** package, which are intended for nonlinear dynamic systems that can prove problematic for traditional modeling approaches.
@@ -60,7 +60,7 @@ Consequently, it is possible to project the system state onto one of the coordin
 *Time Series Projection from the Lorenz Attractor*
 </center>
 
-In simple cases, each time series will represent a different state variable. However, more generally, each time series is an *observation function* of the system state, and may be a function of several different state variables. 
+In simple cases, each time series will represent a different state variable. However, more generally, each time series is an *observation function* of the system state, and may be a function of several different state variables.
 
 ## Attractor Reconstruction / Takens' Theorem
 
@@ -190,7 +190,7 @@ plot(smap_output$theta, smap_output$rho, type = "l",
 
 Here, we can see that forecast skill substantially improves as `theta` increases, indicating the presence of nonlinear dynamics. Typically, we would expect forecast skill to begin to decrease at high values of `theta`, because the local linear map will overfit to the nearest points. However, because the example data are observed without any noise, we continue to get a better approximation to the true function with higher `theta`.
 
-By simulating the addition of a small amount of observational noise, a plot more typical of real data can be achieved:
+By simulating the addition of some observational noise, we produce a plot that is more typical of real data:
 
 ```{r rho vs. theta with noise}
 ts_err <- ts + rnorm(length(ts), sd = sd(ts) * 0.2)
@@ -229,7 +229,7 @@ target <- 1
 
 block_lnlp_output <- block_lnlp(block_3sp, lib = lib, pred = pred,
                                 columns = cols, target_column = target,
-                                stats_only = FALSE, first_column_time = TRUE, 
+                                stats_only = FALSE, first_column_time = TRUE,
                                 silent = TRUE)
 ```
 
@@ -238,7 +238,7 @@ We can also refer to columns by the column names. This ignores the `first_column
 ```{r}
 block_lnlp_output_2 <- block_lnlp(block_3sp, lib = lib, pred = pred,
                                   columns = c("x_t", "x_t-1", "y_t"), target_column = "x_t",
-                                  stats_only = FALSE, first_column_time = TRUE, 
+                                  stats_only = FALSE, first_column_time = TRUE,
                                   silent = TRUE)
 
 # test for equality
@@ -292,9 +292,9 @@ cols <- c("x_t", "y_t", "z_t")
 target <- "x_t"
 
 block_smap_output <- block_lnlp(block_3sp, lib = lib, pred = pred,
-                                columns = cols, target_column = target, 
-                                method = "s-map", theta = 2, 
-                                stats_only = FALSE, first_column_time = TRUE, 
+                                columns = cols, target_column = target,
+                                method = "s-map", theta = 2,
+                                stats_only = FALSE, first_column_time = TRUE,
                                 save_smap_coefficients = TRUE, silent = TRUE)
 ```
 
@@ -335,7 +335,7 @@ An alternative approach to using Simplex Projection or S-maps is to use Gaussian
 
 Note that the arguments are slightly different: the GP formulation includes hyperparameters for fitting to the data (`phi`, `v_e`, and `eta`). These can be set directly, or fit over the points in the `lib` portion of the data. In addition, the GP specifies not only pointwise error estimates for the predicted points, but also the covariance between them. In other words, the uncertainty for nearby points, in the state-space of the reconstructed attractor, is correlated. Setting `save_covariance_matrix = TRUE` will also return the full covariance matrix for the predicted points in the output of these functions. For more details, please see the documentation for `tde_gp()` and `block_gp()`.
 
-We repeat the above example, but using `block_gp()` instead of `block_lnlp()`. 
+We repeat the above example, but using `block_gp()` instead of `block_lnlp()`.
 
 ```{r make block_gp forecasts}
 data(block_3sp)
@@ -346,7 +346,7 @@ target <- 1
 
 block_gp_output <- block_gp(block_3sp, lib = lib, pred = pred,
                               columns = cols, target_column = target,
-                              stats_only = FALSE, first_column_time = TRUE, 
+                              stats_only = FALSE, first_column_time = TRUE,
                               silent = TRUE)
 
 str(block_gp_output)
@@ -386,15 +386,15 @@ block <- block_3sp[, c(2, 5, 8)] # use only the unlagged time series
 lib <- c(1, floor(NROW(block_3sp) / 2))
 pred <- c(floor(NROW(block_3sp) / 2) + 1, NROW(block_3sp))
 
-# multiple values for `k` can be provided, 
+# multiple values for `k` can be provided,
 #   "sqrt" uses floor(sqrt(m)), where m is the number of embeddings
 k_list <- c(1, 3, "sqrt", "all")
 
 multiview_output <- multiview(block, lib = lib, pred = pred,
-                              E = 3, max_lag = 3, 
-                              k = k_list, target_column = 1, 
-                              stats_only = FALSE, 
-                              save_lagged_block = TRUE, 
+                              E = 3, max_lag = 3,
+                              k = k_list, target_column = 1,
+                              stats_only = FALSE,
+                              save_lagged_block = TRUE,
                               silent = TRUE)
 
 str(multiview_output, max.level = 1)
@@ -412,10 +412,10 @@ par(pty = "s", mfrow = c(2, 2))
 for (i in 1:4)
 {
     predictions <- multiview_output$model_output[[i]]
-    
+
     plot_range <- range(c(predictions$obs, predictions$pred), na.rm = TRUE)
     plot(predictions$obs, predictions$pred, xlim = plot_range, ylim = plot_range,
-         xlab = "Observed", ylab = "Predicted", asp = 1, 
+         xlab = "Observed", ylab = "Predicted", asp = 1,
          main = paste0(multiview_output$k[i], " embeddings"))
     abline(a = 0, b = 1, lty = 2, col = "blue")
 }
@@ -605,9 +605,9 @@ We first use the **rEDM** function, `simplex()` to identify the best embedding d
 
 ```{r simplex on e120, warning = FALSE, fig.width = 6}
 vars <- c("AbvBioAnnProd", "noh020tot", "invrichness")
-simplex_out <- lapply(vars, 
+simplex_out <- lapply(vars,
                       function(var) {
-                          simplex(composite_ts[, c("Year", var)], E = 2:4, 
+                          simplex(composite_ts[, c("Year", var)], E = 2:4,
                                   lib = composite_lib, pred = composite_pred)
                       })
 names(simplex_out) <- vars
@@ -615,8 +615,8 @@ names(simplex_out) <- vars
 par(mfrow = c(2, 2))
 for (var in names(simplex_out))
 {
-    plot(simplex_out[[var]]$E, simplex_out[[var]]$rho, type = "l", 
-         xlab = "Embedding Dimension (E)", ylab = "Forecast Skill (rho)", 
+    plot(simplex_out[[var]]$E, simplex_out[[var]]$rho, type = "l",
+         xlab = "Embedding Dimension (E)", ylab = "Forecast Skill (rho)",
          main = var)
 }
 
@@ -629,9 +629,9 @@ Note that for two variables (aboveground biomass and invader richness), the best
 Using these values for the embedding dimension, we can identify nonlinearity using the `s_map()` function:
 
 ```{r smap on e120, warning = FALSE, fig.width = 6, results = "hide"}
-smap_out <- lapply(vars, 
+smap_out <- lapply(vars,
                    function(var) {
-                       s_map(composite_ts[, c("Year", var)], E = best_E[var], 
+                       s_map(composite_ts[, c("Year", var)], E = best_E[var],
                              lib = composite_lib, pred = composite_pred)
                    })
 names(smap_out) <- names(simplex_out)
@@ -639,8 +639,8 @@ names(smap_out) <- names(simplex_out)
 par(mfrow = c(2, 2))
 for (var in names(smap_out))
 {
-    plot(smap_out[[var]]$theta, smap_out[[var]]$rho, type = "l", 
-         xlab = "Nonlinearity (theta)", ylab = "Forecast Skill (rho)", 
+    plot(smap_out[[var]]$theta, smap_out[[var]]$rho, type = "l",
+         xlab = "Nonlinearity (theta)", ylab = "Forecast Skill (rho)",
          main = var)
 }
 ```
@@ -654,7 +654,7 @@ Our next step is to produce forecast models. Recall that biomass was best predic
 We can do this using the `block_lnlp()` function, but first we need to construct lags for each variable. Here, we use the `make_block()` function, which automatically adds lags of the variables. However, we also need to be careful, since the raw data combines observations from multiple plots. By including the `lib` argument, we can indicate which parts of the time series correspond to different segments, so that lags indicate unknown values correctly.
 
 ```{r make block for e120}
-block_data <- make_block(composite_ts[, 2:5], t = composite_ts$Year, 
+block_data <- make_block(composite_ts[, 2:5], t = composite_ts$Year,
                          max_lag = 4, lib = segments)
 str(block_data)
 ```
@@ -663,13 +663,13 @@ Next, we run the models, being sure to set up predictor variables (the `columns`
 
 ```{r block_lnlp for e120, warning = FALSE}
 AB_columns <- c("AbvBioAnnProd", "AbvBioAnnProd_1", "AbvBioAnnProd_2", "AbvBioAnnProd_3")
-AB_output <- block_lnlp(block_data, lib = composite_lib, pred = composite_pred, 
-                        columns = AB_columns, target_column = "AbvBioAnnProd", 
+AB_output <- block_lnlp(block_data, lib = composite_lib, pred = composite_pred,
+                        columns = AB_columns, target_column = "AbvBioAnnProd",
                         stats_only = FALSE)
 
 Precip_columns <- c(AB_columns, "SummerPrecip.mm.")
-Precip_output <- block_lnlp(block_data, lib = composite_lib, pred = composite_pred, 
-                            columns = Precip_columns, target_column = "AbvBioAnnProd", 
+Precip_output <- block_lnlp(block_data, lib = composite_lib, pred = composite_pred,
+                            columns = Precip_columns, target_column = "AbvBioAnnProd",
                             stats_only = FALSE)
 ```
 
@@ -686,7 +686,7 @@ observed_Precip <- Precip_output$model_output[[1]]$obs
 predicted_Precip <- Precip_output$model_output[[1]]$pred
 
 plot_range <- range(c(observed_AB, predicted_AB), na.rm = TRUE)
-plot(observed_AB, predicted_AB, xlim = plot_range, ylim = plot_range, 
+plot(observed_AB, predicted_AB, xlim = plot_range, ylim = plot_range,
      xlab = "Observed", ylab = "Predicted")
 abline(a = 0, b = 1, lty = 2, col = "darkgrey", lwd = 2)
 abline(lm(predicted_AB ~ observed_AB), col = "black", lty = 3, lwd = 2)
@@ -694,8 +694,8 @@ abline(lm(predicted_AB ~ observed_AB), col = "black", lty = 3, lwd = 2)
 points(observed_Precip, predicted_Precip, pch = 2, col = "red")
 abline(lm(predicted_Precip ~ observed_Precip), col = "red", lty = 3, lwd = 2)
 
-legend("bottom", legend = c(paste("(biomass alone) rho =", round(AB_output$rho, 2)), 
-                             paste("(biomass and prec.) rho =", round(Precip_output$rho, 2))), 
+legend("bottom", legend = c(paste("(biomass alone) rho =", round(AB_output$rho, 2)),
+                             paste("(biomass and prec.) rho =", round(Precip_output$rho, 2))),
        lty = 3, lwd = 2, col = c("black", "red"), box.col = NA, xpd = TRUE)
 ```
 
@@ -713,51 +713,51 @@ First, we examine the relationship between invader richness and soil nitrate lev
 ```{r richness and nitrate, warning = FALSE}
 lib_sizes <- c(seq(5, 50, by = 5), seq(55, 230, by = 20))
 
-inv_xmap_no <- ccm(composite_ts, lib = segments, pred = segments, 
-                   lib_column = "invrichness", target_column = "noh020tot", 
-                   E = best_E["invrichness"], lib_sizes = lib_sizes, 
+inv_xmap_no <- ccm(composite_ts, lib = segments, pred = segments,
+                   lib_column = "invrichness", target_column = "noh020tot",
+                   E = best_E["invrichness"], lib_sizes = lib_sizes,
                    silent = TRUE)
-no_xmap_inv <- ccm(composite_ts, lib = segments, pred = segments, 
-                   lib_column = "noh020tot", target_column = "invrichness", 
-                   E = best_E["noh020tot"], lib_sizes = lib_sizes, 
+no_xmap_inv <- ccm(composite_ts, lib = segments, pred = segments,
+                   lib_column = "noh020tot", target_column = "invrichness",
+                   E = best_E["noh020tot"], lib_sizes = lib_sizes,
                    silent = TRUE)
 
 inv_xmap_no_means <- ccm_means(inv_xmap_no)
 no_xmap_inv_means <- ccm_means(no_xmap_inv)
 
-plot(inv_xmap_no_means$lib_size, pmax(0, inv_xmap_no_means$rho), type = "l", 
-     xlab = "Library Size", ylab = "Cross Map Skill (rho)", 
+plot(inv_xmap_no_means$lib_size, pmax(0, inv_xmap_no_means$rho), type = "l",
+     xlab = "Library Size", ylab = "Cross Map Skill (rho)",
      col = "red", ylim = c(0, 0.15), lwd = 2)
-lines(no_xmap_inv_means$lib_size, pmax(0, no_xmap_inv_means$rho), 
+lines(no_xmap_inv_means$lib_size, pmax(0, no_xmap_inv_means$rho),
       col = "blue", lwd = 2)
-legend(x = "topleft", col = c("red", "blue"), lwd = 2, 
-       legend = c("Inv. Richness xmap Nitrate", "Nitrate xmap Inv. Richness"), 
+legend(x = "topleft", col = c("red", "blue"), lwd = 2,
+       legend = c("Inv. Richness xmap Nitrate", "Nitrate xmap Inv. Richness"),
        inset = 0.02, bty = "n", cex = 0.8)
 abline(h = 0, lty = 3)
 ```
 
 And then repeat for the relationship between invader richness and biological productivity:
 ```{r richness and biomass, warning = FALSE}
-inv_xmap_abv <- ccm(composite_ts, lib = segments, pred = segments, 
-                    lib_column = "invrichness", target_column = "AbvBioAnnProd", 
-                    E = best_E["invrichness"], lib_sizes = lib_sizes, 
+inv_xmap_abv <- ccm(composite_ts, lib = segments, pred = segments,
+                    lib_column = "invrichness", target_column = "AbvBioAnnProd",
+                    E = best_E["invrichness"], lib_sizes = lib_sizes,
                     silent = TRUE)
-abv_xmap_inv <- ccm(composite_ts, lib = segments, pred = segments, 
-                    lib_column = "AbvBioAnnProd", target_column = "invrichness", 
-                    E = best_E["AbvBioAnnProd"], lib_sizes = lib_sizes, 
+abv_xmap_inv <- ccm(composite_ts, lib = segments, pred = segments,
+                    lib_column = "AbvBioAnnProd", target_column = "invrichness",
+                    E = best_E["AbvBioAnnProd"], lib_sizes = lib_sizes,
                     silent = TRUE)
 
 inv_xmap_abv_means <- ccm_means(inv_xmap_abv)
 abv_xmap_inv_means <- ccm_means(abv_xmap_inv)
 
-plot(inv_xmap_abv_means$lib_size, pmax(0, inv_xmap_abv_means$rho), type = "l", 
-     xlab = "Library Size", ylab = "Cross Map Skill (rho)", 
+plot(inv_xmap_abv_means$lib_size, pmax(0, inv_xmap_abv_means$rho), type = "l",
+     xlab = "Library Size", ylab = "Cross Map Skill (rho)",
      col = "red", ylim = c(0, 0.4), lwd = 2)
 lines(abv_xmap_inv_means$lib_size, pmax(0, abv_xmap_inv_means$rho),
       col = "blue", lwd = 2)
-legend(x = "topleft", col = c("red", "blue"), lwd = 2, 
-       legend = c("Inv. Richness xmap Total Biomass", 
-                  "Total Biomass xmap Inv. Richness"), 
+legend(x = "topleft", col = c("red", "blue"), lwd = 2,
+       legend = c("Inv. Richness xmap Total Biomass",
+                  "Total Biomass xmap Inv. Richness"),
        inset = 0.02, bty = "n", cex = 0.8)
 
 abline(h = 0, lty = 3)
@@ -888,11 +888,11 @@ With this in mind, we examine convergence in cross-map predictability, i.e. we c
 ```{r ccm on thrips, results = "hide", warning = FALSE}
 thrips_xmap_maxT <- ccm(thrips_block, E = 8, random_libs = TRUE,
                         lib_column = "Thrips_imaginis", target_column = "maxT_degC",
-                        lib_sizes = seq(10, 75, by = 5), num_samples = 300, 
+                        lib_sizes = seq(10, 75, by = 5), num_samples = 300,
                         silent = TRUE)
 maxT_xmap_thrips <- ccm(thrips_block, E = 8, random_libs = TRUE,
                         lib_column = "maxT_degC", target_column = "Thrips_imaginis",
-                        lib_sizes = seq(10, 75, by = 5), num_samples = 300, 
+                        lib_sizes = seq(10, 75, by = 5), num_samples = 300,
                         silent = TRUE)
 
 ccm_out <- list(ccm_means(thrips_xmap_maxT), ccm_means(maxT_xmap_thrips))
@@ -917,11 +917,11 @@ The magnitude of the cross-correlation between Thrips and temperature is shown a
 ```{r ccm on thrips and rainfall, results = "hide", warning = FALSE}
 thrips_xmap_Rain <- ccm(thrips_block, E = 8, random_libs = TRUE,
                         lib_column = "Thrips_imaginis", target_column = "Rain_mm",
-                        lib_sizes = seq(10, 75, by = 5), num_samples = 300, 
+                        lib_sizes = seq(10, 75, by = 5), num_samples = 300,
                         silent = TRUE)
 Rain_xmap_thrips <- ccm(thrips_block, E = 8, random_libs = TRUE,
                         lib_column = "Rain_mm", target_column = "Thrips_imaginis",
-                        lib_sizes = seq(10, 75, by = 5), num_samples = 300, 
+                        lib_sizes = seq(10, 75, by = 5), num_samples = 300,
                         silent = TRUE)
 
 ccm_out <- list(ccm_means(thrips_xmap_Rain), ccm_means(Rain_xmap_thrips))
@@ -941,11 +941,11 @@ And finally for the deterministic seasonal cycle.
 ```{r ccm on thrips and season, results = "hide", warning = FALSE}
 thrips_xmap_Season <- ccm(thrips_block, E = 8, random_libs = TRUE,
                           lib_column = "Thrips_imaginis", target_column = "Season",
-                          lib_sizes = seq(10, 75, by = 5), num_samples = 300, 
+                          lib_sizes = seq(10, 75, by = 5), num_samples = 300,
                           silent = TRUE)
 Season_xmap_thrips <- ccm(thrips_block, E = 8, random_libs = TRUE,
                           lib_column = "Season", target_column = "Thrips_imaginis",
-                          lib_sizes = seq(10, 75, by = 5), num_samples = 300, 
+                          lib_sizes = seq(10, 75, by = 5), num_samples = 300,
                           silent = TRUE)
 
 ccm_out <- list(ccm_means(thrips_xmap_Season), ccm_means(Season_xmap_thrips))
@@ -984,12 +984,12 @@ ccm_rho_surr <- data.frame(maxT = numeric(num_surr), Rain = numeric(num_surr))
 for (i in 1:num_surr) {
     ccm_rho_surr$maxT[i] <- ccm(cbind(thrips_block$Thrips_imaginis, surr_maxT[,i]),
                             E = 8, lib_column = 1, target_column = 2,
-                            lib_sizes = NROW(thrips_block), replace = FALSE, 
+                            lib_sizes = NROW(thrips_block), replace = FALSE,
                             silent = TRUE)$rho
-    
+
     ccm_rho_surr$Rain[i] <- ccm(cbind(thrips_block$Thrips_imaginis, surr_Rain[,i]),
                             E = 8, lib_column = 1, target_column = 2,
-                            lib_sizes = NROW(thrips_block), replace = FALSE, 
+                            lib_sizes = NROW(thrips_block), replace = FALSE,
                             silent = TRUE)$rho
 }
 ```
@@ -1064,7 +1064,7 @@ Many of the functions in **rEDM** are designed around the same prediction engine
   + `TRUE` or `FALSE` (default): specifies whether to include a data.frame of S-map coefficients with the output
   + (note that setting this to `TRUE` forces the full output as if `stats_only = FALSE`)
   + if enabled, adds a `smap_coefficients` list-column, which contains the s-map coefficients; and a `smap_coefficient_covariance` list-column, which contains the covariance matrices for the s-map coefficients.
-  
+
 The Gaussian Process based functions, (`tde_gp()` and `block_gp()`), have a few additional parameters specific to the GP methods:
 
 * `phi`
@@ -1082,7 +1082,7 @@ The Gaussian Process based functions, (`tde_gp()` and `block_gp()`), have a few 
 
 **rEDM** is the latest incarnation of EDM code. Past versions have been developed by George Sugihara, Alan Trombla, Richard Penner, Victor Wong, Martin Casdagli, Jerome Cartagena, Mohsen Azarbayejani, Ava Pierce, Jennifer Trezzo, and Hao Ye.
 
-We thank Jun Cai, Jane Cowles, Yair Daon, Andrew Edwards, Oliver Keyes, James Stagge, Masayuki Ushio, and Ethan White, for their suggestions and contributions to the package and its documentation.
+We thank Jun Cai, Jane Cowles, Yair Daon, Andrew Edwards, Oliver Keyes, Steve Munch, James Stagge, Masayuki Ushio, and Ethan White, for their suggestions and contributions to the package and its documentation.
 
 Package development and its documentation were supported by a Gordon and Betty Moore Foundation Data-Driven Discovery Initiative through Grant GBMF4563 (to Ethan P. White), NSF grant DEB-1655203 (GS), NSF grant DBI-1667584 (GS), U.S. Department of Defense Strategic Environmental Research and Development Program 15 RC-2509 (GS), Lenfest Ocean Program award 00028335 (GS), the Deutsche Bank-Jameson Complexity Studies Fund (GS), the Sugihara Family Trust (GS), the Leslie and John McQuown Gift and the McQuown Chair in Natural Sciences, UCSD (GS).
 
