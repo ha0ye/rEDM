@@ -55,15 +55,13 @@ The basic goal underlying EDM is to reconstruct the behavior of dynamic systems 
 
 ## Time Series as Observations of a Dynamic System
 
-The essential concept is that time series can be viewed as projections of the behavior of a dynamic system. Here, only a few modest assumptions are required. First, the system state can be described as a point in a high-dimensional space. The axes of this space can be thought of as fundamental state variables; in an ecosystem, these variables might correspond to population abundances, resources, or environmental conditions. Second, the system state changes through time following a set of deterministic rules. In other words, the behavior of the system is not completely stochastic.
+The essential concept underlying EDM is that time series can be viewed as projections of the behavior of a dynamic system. Here, we assume that the state of the dynamic system can be represented as a point in a high-dimensional space. Typically, the different axes of this space are the fundamental state variables. In an ecosystem, these variables could be population abundances, resources, or environmental conditions. We also assume that the system changes over time following a set of deterministic rules. In other words, the behavior of the system is not completely stochastic.
 
-Consequently, it is possible to project the system state onto one of the coordinate axes and obtain the value of the corresponding state variable. Sequential projections over time will thus produce a time series for that variable. For example, the states of the canonical Lorenz Attractor [-@Lorenz_1963] are projected to the $x$-axis, creating a time series of variable $x$ (Figure \@ref(fig:time-series-projection)).
+Given this description of a dynamic system, it is possible to construct a time series by projecting the system state onto one of the coordinate axes -- sequential observations of that variable thus produce a time series for that variable. For example, in Figure \@ref(fig:time-series-projection), the states of the canonical Lorenz Attractor [-@Lorenz_1963] are projected to the $x$-axis, creating a time series of variable $x$. In simple cases, each time series corresponds to a different state variable. However, more generally, a time series is an *observation function* of the system state, and may be a function of one or several state variables.
 
 ```{r time-series-projection, out.width = "80%", fig.cap = "Time Series Projection from the Lorenz Attractor", echo = FALSE}
 knitr::include_graphics("figure_1.pdf")
 ```
-
-In simple cases, each time series will represent a different state variable. However, more generally, each time series is an *observation function* of the system state, and may be a function of several different state variables.
 
 ## Attractor Reconstruction / Takens' Theorem
 
