@@ -1,6 +1,6 @@
 #' @name make_surrogate_data
 #' @aliases make_surrogate_shuffle make_surrogate_ebisuzaki 
-#'   make_surrogate_seasonal
+#'   make_surrogate_seasonal make_surrogate_twin
 #' 
 #' @title Generate surrogate data for permutation/randomization tests
 #'
