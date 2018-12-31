@@ -47,46 +47,63 @@ causal inference, empirical dynamics, forecasting, time series
 
 # Introduction
 
-In ecology, models are used as approximations of reality and for various purposes (e.g. testing hypotheses regarding mechanisms or processes, explaining past observations, predicting future outcomes). In most cases these models are based on hypothesized parametric equations; however explicit equations can be impractical when the exact mechanisms are unknown or too complex to be characterized with existing datasets. Empirical models, which infer patterns and associations from the data (instead of using hypothesized equations), represent an alternative and highly flexible approach. Here, we review the theoretical background for empirical dynamic modeling (EDM) and the functionality of the `rEDM` package, which are intended for nonlinear dynamic systems that can prove problematic for traditional modeling approaches.
+In ecology, models are approximations of reality that are used for descriptive, explanatory, or predictive purposes. Conventionally, these models are based on hypothesized parametric equations, formulated from theory, and tested in laboratory or simulation settings. However, there are many situations where explicit mathematical formulations are impractical: the exact mechanisms may be unknown, too complex, or  however explicit equations can be impractical when the exact mechanisms are unknown or too complex to be characterized with existing datasets. 
+// many nonlinear interactions, difficult to parameterize using existing datasets, much less perform model selection
 
-The basic goal underlying EDM is to reconstruct the behavior of dynamic systems using time series data. This approach is based on mathematical theory developed initially by [@Takens_1981], and subsequently expanded [@Sauer_1991; @Casdagli_1991; @Deyle_2011]. Because these methods operate with minimal assumptions, they are particularly suitable for studying systems that exhibit non-equilibrium dynamics and nonlinear state-dependent behavior (i.e. where interactions change over time and as a function of the system state).
+// These challenges exacerbated the use of ecological models for predictive purposes: 
+effort may be expended on increased monitoring and observation with little improvement. Phenomenological models, which operate by inferring patterns and associations from the data (instead of through hypothesized equations), represent an alternative and highly flexible approach. Here, we review the theoretical background for empirical dynamic modeling (EDM) and the functionality of the `rEDM` package. 
+
+By combining the mathematical theory of attractor reconstruction [@Takens_1981; @Sauer_1991; @Casdagli_1991; @Deyle_2011] and simple methods for function approximation [@Sugihara_1990; @Sugihara_1994], EDM is a powerful approach for practical modeling of complex natural systems using limited time series observations. Because these methods operate with minimal assumptions, they are particularly suitable for studying systems that exhibit non-equilibrium dynamics and nonlinear state-dependent behavior (i.e. where interactions change over time and as a function of the system state).
+
+<!-- which are intended for nonlinear dynamic systems that can prove problematic for traditional modeling approaches. -->
+<!-- especially problematic when used for predictive purposes () -->
+
+<!-- Empirical models, which infer patterns and associations from the data (instead of using hypothesized equations), represent an alternative and highly flexible approach. Here, we review the theoretical background for empirical dynamic modeling (EDM) and the functionality of the `rEDM` package, which are intended for nonlinear dynamic systems that can prove problematic for traditional modeling approaches. -->
+
+<!-- The basic goal underlying EDM is to reconstruct the behavior of dynamic systems using time series data. This approach is based on mathematical theory developed initially by [@Takens_1981], and subsequently expanded [@Sauer_1991; @Casdagli_1991; @Deyle_2011]. Because these methods operate with minimal assumptions, they are particularly suitable for studying systems that exhibit non-equilibrium dynamics and nonlinear state-dependent behavior (i.e. where interactions change over time and as a function of the system state). -->
 
 # Empirical Dynamic Modeling
 
 ## Time Series as Observations of a Dynamic System
 
-The essential concept underlying EDM is that time series can be viewed as projections of the behavior of a dynamic system. Here, we assume that the state of the dynamic system can be represented as a point in a high-dimensional space. Typically, the different axes of this space are the fundamental state variables. In an ecosystem, these variables could be population abundances, resources, or environmental conditions. We also assume that the system changes over time following a set of deterministic rules. In other words, the behavior of the system is not completely stochastic.
+The essential concept underlying EDM is that time series are observations on the behavior of a *dynamic system*. At each point in time, the dynamic system is represented as a point in a high-dimensional state space (Figure \@ref(fig:time-series-projection)). The axes of this space are the fundamental state variables, and the dynamical rules (governing equations) for the system describe how it evolves in time. For example, in an experimental setup with one species of phytoplankton reared in a chemostat, the state variables are population abundance and environmental factors, such as temperature, nutrients, and light; the dynamical rules of the system are the equations for growth and nutrient uptake, and the chemostat settings for temperature, light, and nutrient input.
 
-Given this description of a dynamic system, it is possible to construct a time series by projecting the system state onto one of the coordinate axes -- sequential observations of that variable thus produce a time series for that variable. For example, in Figure \@ref(fig:time-series-projection), the states of the canonical Lorenz Attractor [-@Lorenz_1963] are projected to the $x$-axis, creating a time series of variable $x$. In simple cases, each time series corresponds to a different state variable. However, more generally, a time series is an *observation function* of the system state, and may be a function of one or several state variables.
+Sequential observations of plankton abundance comprise a time series of that state variable -- a projection from the high-dimensional state space to that particular coordinate axis. For example, in Figure \@ref(fig:time-series-projection), the states of the canonical Lorenz Attractor [-@Lorenz_1963] are projected to the $x$-axis, creating a time series of variable $x$. In many cases, each time series corresponds to a different state variable, but more generally a time series is an *observation function*, and may be a function of one or more state variables.
 
 ```{r time-series-projection, out.width = "80%", fig.cap = "Time Series Projection from the Lorenz Attractor", echo = FALSE}
 knitr::include_graphics("figure_1.pdf")
 ```
 
+In order to construct a *conventional* mathematical model of a dynamical system, knowledge of the state variables and the equations, representing the dynamical rules, is required. Uncertainty about the equations or vital parameters can be addressed using model selection and various fitting methods, applied to observational data. However, common challenges in modeling natural systems are structural uncertainty about the state variables or system equations, incomplete or noisy observations, and insufficient data to fully parameterize the equations.
+
 ## Attractor Reconstruction / Takens' Theorem
 
-The goal of EDM is to reconstruct the system dynamics from time series data. Because time series are sequential observations of the system behavior, information about the rules that govern system behavior (i.e. the system dynamics) is therefore encoded in the data. Takens' Theorem [-@Takens_1981] provides a way to recover this information using just a single time series. Although the system behavior is nominally determined by a high-dimensional state space, we can substitute lags of a time series for any unknown or unobserved variables. For example, instead of representing the system state of the Lorenz Attractor using $x$, $y$, and $z$, we can instead use $E$ lags of $x$:
+EDM addresses these challenges using the mathematical theory of attractor reconstruction [@Takens_1981; @Sauer_1991; @Casdagli_1991; @Deyle_2011]. The intuition is as follows: because time series are sequential observations of the system behavior, information about the dynamical rules is encoded in the data. Although the conventional wisdom is that knowledge of all the state variables is required; in practice, lags of a time series can substitute for unknown or unobserved variables. For example, instead of using the state variables of $x$, $y$, and $z$ to depict the Lorenz Attractor (as in Figure \@ref(fig:time-series-projection)), we can instead use lags of $x$:
 $$ \mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right) $$
+where $E$ is the embedding dimension, or number of lags.
 
 ```{r attractor-reconstruction, out.width = "80%", fig.cap = "Attractor Reconstruction from 3 Lagged Coordinates", echo = FALSE}
 knitr::include_graphics("figure_2.pdf")
 ```
 
-By Takens' Theorem, if sufficient lags are used, the reconstruction is a diffeomorphism of the original system. In other words, reconstructed states will map one-to-one to actual system states, and nearby points in the reconstruction will correspond to similar system states. Figure \@ref(fig:attractor-reconstruction) shows a reconstruction of the Lorenz attractor where the reconstructed system state is comprised of 3 lags of variable $x$. There is a clear visual correspondence between the reconstruction and the original Lorenz attractor.
+This technique, known as *attractor reconstruction*, recovers the mathematical properties of the original system, provided that a sufficient number lags are used [@Takens_1981]. More specifically, the reconstructed states, $\mathbf{x}_t$ map uniquely to points in the original state space, and nearby points in the reconstruction correspond to nearby points in state space. Figure \@ref(fig:attractor-reconstruction) shows a reconstruction of the Lorenz attractor using 3 lags of variable $x$, demonstrating the correspondence between the reconstruction and the original Lorenz attractor.
 
-There are many applications for using this approach to recover system dynamics from time series. For example, empirical models can be used for forecasting [@Sugihara_1990], to understand nonlinear behavior [@Sugihara_1994], or to uncover mechanism [@Dixon_1999]. Recent work describes how EDM can be used to identify causal interactions, by testing whether two time series are observed from the same system [@Sugihara_2012]. In the next section, we demonstrate how the **rEDM** software package can be used to accomplish these tasks.
+// because of this unique mathematical property, the dynamical rules for the system are also preserved, allowing inference of how the variable used for reconstruction, e.g. x, changes in time. This can be applied directly to forecasting the time series used for reconstruction [], but also for identifying nonlinear behavior of the underlying system. More recently, these methods have been used for identification and quantification of causal effects [], and 
+// dynamical rul
 
-# EDM Examples
+There are many applications for using this approach to recover system dynamics from time series. For example, empirical models can be used for forecasting [@Sugihara_1990], to understand nonlinear behavior [@Sugihara_1994], or to uncover mechanism [@Dixon_1999]. Recent work describes how EDM can be used to identify causal interactions, by testing whether two time series are observed from the same system [@Sugihara_2012]. 
+
+<!-- In the next section, we demonstrate how the **rEDM** software package can be used to accomplish these tasks. -->
+
+# The `rEDM` package
 
 ## Nearest Neighbor Forecasting using Simplex Projection
 
-As mentioned previously, if enough lags are used, the reconstruction will map one-to-one to the original attractor. However, if the number of lags is insufficient (i.e. the embedding dimension is too small), then the reconstruction will have singularities -- points that actually correspond to different system states, but which overlap in the reconstruction. When this occurs, the reconstruction will fail to distinguish between different trajectories, and forecast performance will suffer. Thus, prediction skill can be used as an indicator for the optimal embedding dimension.
-
-In the following example, we demonstrate how to select the embedding dimension. We use a nearest neighbor forecasting method, Simplex Projection [@Sugihara_1990], to produce forecasts, and examine prediction skill, computed as the correlation between observed and predicted values.
+Takens' Theorem [-@Takens_1981] supports attractor reconstruction when a sufficient number of lags are used. Practically, the number of lags (the embedding dimension) is determined empirically using the data. Here, we use forecasting to determine the optimal embedding dimension. The reasoning here is that when the embedding dimension is too small (i.e. the number of lags is insufficient), the reconstruction will contain singularities -- different system states which map to the same point in the reconstruction. When this occurs, it is impossible to distinguish between different trajectories of the system, and forecast skill is diminished.
 
 ### Example
 
-In this example, time series come from a simulation of the tent map that exhibits chaotic behavior. The tent map is a discrete-time dynamic system, where a sequence, $x_t$, on the interval $[0, 1]$ is iterated according to:
+In this example, we demonstrate how to determine the embedding dimension using a nearest neighbor forecasting method, Simplex Projection [@Sugihara_1990]. Here, forecast skill is operationalized as the correlation between observed and predicted values. The time series come from a simulation of the tent map, a discrete-time dynamic system where a sequence, $x_t$, on the interval $[0, 1]$ is iterated according to:
 
 \begin{equation*}
 x_{t+1} = \begin{cases}
@@ -95,45 +112,43 @@ x_{t+1} = \begin{cases}
 \end{cases}
 \end{equation*}
 
-In **rEDM**, a sample time series of the first-differenced values can be found in dataset `tentmap_del`.
-
 We begin by loading the **rEDM** package:
 ```{r load package}
 library(rEDM)
 ```
 
-Then, we can load the tentmap data:
+and then the first differences of the tentmap time series:
 ```{r load tentmap data}
 data(tentmap_del)
 str(tentmap_del)
 ```
 
-We can see that the data consists of a single vector, containing the raw first-differences values of $x_t$. Because the `simplex()` function can accept a single vector as the input time series, no further processing of the data is required.
-
-```{r lib and pred for tentmap}
-ts <- tentmap_del
-lib <- c(1, 100)
-pred <- c(201, 500)
-```
-
-We begin by initializing the `lib` and `pred` variables. These variables define the portions of the data that will be used to create the reconstruction. `lib` corresponds to the "training" portion of the data, on which nearest neighbors can be identified; and `pred` corresponds to the "test" portion of the data, on which 1-step ahead forecasts will be made. Here, the first 100 points (positions 1 to 100) in the time series constitute the "library set", and 300 points (positions 201 to 500) constitute the "prediction set".
-
-The remaining arguments will be left at their default values (see section "General Parameters" for details). For the `simplex()` function, this means that the embedding dimension, $E$, will range from $1$ to $10$.
-
-*Note that if the code detects any overlap in the lib and pred, it will prevent a vector from becoming its own neighbor by enabling leave-one-out cross-validation and outputting a warning message.*
+We can see that the data are contained in a single vector. Because the `simplex()` function accepts a numeric vector as the input data (see section XXX for more information about data formats), no further processing of the data is required.
 
 ```{r simplex on tentmap}
-simplex_output <- simplex(ts, lib, pred)
+simplex_output <- simplex(time_series = tentmap_del, 
+                          lib = c(1, 100), 
+                          pred = c(201, 500))
+```
+
+Here, the `lib` and `pred` arguments specify the portions of the input data that are used to construct the model and for generating forecasts, respectively. `lib = c(1, 100)` indicates that rows 1 through 100 of the input data define the "library set" over which the method identified nearest neighbors for the simplex projection method [@Sugihara_1990]. `pred = c(201, 500)` indicates that rows 201 through 500 define the "prediction set" over which the models are run to produce forecasts.
+
+The remaining arguments will be left at their default values (see section XXX for details). Notably, this means that the embedding dimension, $E$ will range from $1$ to $10$.
+
+```{r simplex output}
 str(simplex_output)
 ```
 
-The output is a data.frame with columns for each of the model parameters and forecast statistics, and rows for each separate model (i.e. different parameter combinations). For Simplex Projection, the model parameters are `E`, embedding dimension; `tau`, time lag between successive dimensions; `tp`, time to prediction; and `nn`, number of nearest neighbors. The forecast statistics are `num_pred`, the number of predictions made; `rho`, Pearson's correlation coefficient between predictions and observations; `mae`, mean absolute error of predictions; `rmse`, root mean squared error of predictions; `perc`, the percent of predictions that are the same sign as observations; and `p_val`, the p-value for `rho` being significantly greater than 0, using Fisher's transformation [-@Fisher_1915]. For the purpose of comparison, the last 6 columns give those same forecast statistics, but for a naive constant predictor (where the 1-step ahead forecast is the current value) over the same set of predictions.
+The output is a data.frame with rows for each separate model (in our case, the different values of the embedding dimension that were tried). The columns are model parameters and forecast statistics: for `simplex()`, the model parameters are `E`, embedding dimension; `tau`, time lag between successive dimensions; `tp`, time to prediction; and `nn`, number of nearest neighbors. The forecast statistics are `num_pred`, the number of predictions made; `rho`, Pearson's correlation coefficient between predictions and observations; `mae`, mean absolute error of predictions; `rmse`, root mean squared error of predictions; `perc`, the percent of predictions that are the same sign as observations; and `p_val`, the p-value for `rho` being significantly greater than 0, using Fisher's transformation [-@Fisher_1915]. For the purpose of comparison, the same forecast statistics are computed for a naive constant predictor (where the current value is propagated as the forecast).
 
-In this case, there are 10 separate models (one for each value of `E`), so we can plot `E` against `rho` (the correlation between observed and predicted values) to determine the optimal embedding dimension (i.e. the number of dimensions for which the reconstructed attractor is best unfolded, producing the highest forecast skill).
+```{r set up plot margins, include = FALSE}
+par(mar = c(4, 4, 1, 1), mgp = c(2.5, 1, 0))
+```
+
+To determine the optimal embedding dimension, we plot `rho` (forecast skill) versus `E` (embedding dimension).
 
 ```{r rho vs E for tentmap}
-par(mar = c(4, 4, 1, 1), mgp = c(2.5, 1, 0)) # set margins for plotting
-plot(simplex_output$E, simplex_output$rho, type = "l",  
+plot(rho ~ E, data = simplex_output, type = "l",  
      xlab = "Embedding Dimension (E)", ylab = "Forecast Skill (rho)")
 ```
 
@@ -156,7 +171,10 @@ The S-map method is implemented as the function `s_map()` in the **rEDM** packag
 Note also, that the default value for `num_neighbors` is `0`. When using S-maps to test for nonlinear behavior, we want to use all points in the reconstruction, and allow `theta` to control the weighting assigned to individual points. By using `0` for this argument (an otherwise nonsensical value), the program will use all nearest neighbors.
 
 ```{r smap for tentmap}
-smap_output <- s_map(ts, lib, pred, E = 2)
+smap_output <- s_map(time_series = tentmap_del, 
+                     lib = c(1, 100), 
+                     pred = c(201, 500), 
+                     E = 2)
 ```
 
 Again, the results are a data.frame with columns for each of the model parameters and forecast statistics, with rows for each run of the model. In this case, there is one run for each value of `theta`, so we can simply plot `theta` against `rho`:
@@ -171,8 +189,12 @@ Here, we can see that forecast skill substantially improves as `theta` increases
 By simulating the addition of some observational noise, we produce a plot that is more typical of real data:
 
 ```{r rho vs theta with noise}
-ts_err <- ts + rnorm(length(ts), sd = sd(ts) * 0.2)
-smap_output_err <- s_map(ts_err, lib, pred, E = 2)
+ts_err <- tentmap_del + rnorm(length(tentmap_del), 
+                              sd = sd(tentmap_del) * 0.2)
+smap_output_err <- s_map(time_series = ts_err, 
+                         lib = c(1, 100), 
+                         pred = c(201, 500), 
+                         E = 2)
 plot(smap_output_err$theta, smap_output_err$rho, type = "l",
      xlab = "Nonlinearity (theta)", ylab = "Forecast Skill (rho)")
 ```
@@ -373,5 +395,10 @@ Data collection for the Cedar Creek LTER was funded by NSF grant DEB-9411972 (to
 # Data accessibility {-}
 
 Example datasets used here are included in the `rEDM` package, which is hosted at https://github.com/ha0ye/rEDM and also archived on Zenodo [@Ye_2018].
+
+# Appendix
+
+*Note that if the code detects any overlap in the lib and pred, it will prevent a vector from becoming its own neighbor by enabling leave-one-out cross-validation and outputting a warning message.*
+
 
 # References
