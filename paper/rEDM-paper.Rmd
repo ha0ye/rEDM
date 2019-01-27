@@ -51,7 +51,7 @@ In ecology, models are approximations of reality that are used for descriptive, 
 
 One common application of models is to describe how important ecological variables, such as abundance, change over time, and in relation to each other. Historically, such models have been based on parametric equations that are derived from theory, and then tested in laboratory or simulation settings. However, there are many situations where explicit mathematical formulations are impractical: the exact mechanisms may be unknown or very complex; and the available data may be too limited or noisy to fully parameterize these equations.
 
-These obstacles can hinder the effective usage of ecological models; for example, effort may be expended on increased monitoring and observation, yet yield little improvement in understanding or predictive power, because of inappropriate or inflexible mathematical hypotheses. In contrast, phenomenological models are highly flexible alternatives, which operate by inferring patterns and associations from the data (instead of relying on hypothesized equations). Here, we review the theoretical background for reconstructing dynamic rules from time series data, an appropriate known as "Empirical Dynamic Modeling (EDM)"" and the functionality of the `rEDM` package in R [XXX]. 
+These obstacles can hinder the effective usage of ecological models; for example, effort may be expended on increased monitoring and observation, yet yield little improvement in understanding or predictive power, because of inappropriate or inflexible mathematical hypotheses. In contrast, phenomenological models are highly flexible alternatives, which operate by inferring patterns and associations from the data (instead of relying on hypothesized equations). Here, we review the theoretical background for reconstructing dynamic rules from time series data, an approach known as "Empirical Dynamic Modeling (EDM)" and the functionality of the `rEDM` package in R [XXX]. 
 
 EDM combines the mathematical theory of attractor reconstruction [@Takens_1981; @Sauer_1991; @Casdagli_1991; @Deyle_2011] and simple methods for function approximation [@Sugihara_1990; @Sugihara_1994] in order to model complex systems using limited time series observations. Thus, it can be a powerful method for improving ecological modeling. Moreover, becasue EDM operates with minimal assumptions, it is particularly suitable for studying systems that exhibit non-equilibrium dynamics and nonlinear state-dependent behavior (i.e. where interactions change over time and as a function of the system state).
 
@@ -66,44 +66,41 @@ EDM combines the mathematical theory of attractor reconstruction [@Takens_1981; 
 
 ## Time Series as Observations of a Dynamic System
 
-The essential concept underlying EDM is that time series are observations of a *dynamic system* over time - at each time point, the state of the dynamic system is represented as a point in a high-dimensional state space (Figure \@ref(fig:time-series-projection)). The axes of this space are the fundamental state variables, and the dynamical rules (governing equations) for the system describe how it evolves in time. For example, an experimental chemostate with one species of phytoplankton will have state variables for the population abundance and environmental factors, such as temperature, nutrients, and light. The dynamical rules for this system are the equations for growth and nutrient uptake, along with the experimental settings for temperature, light, and nutrient input.
+The essential concept underlying EDM is that time series are sequential observations of a *dynamic system*. Briefly, a dynamic system consists of a *state space* and *dynamical rules* for how the system changes over time. At any point in time, the state of the system is represented as a point in the state space (Figure \@ref(fig:time-series-projection)), whose axes are the fundamental state variables. The rules for the system are typically represented as governing equations for how the system state will change based on the current state (i.e. the combined values of the state variables).
 
-Sequential observations comprise a time series of that state variable -- a projection from the high-dimensional state space to that particular coordinate axis. For example, in Figure \@ref(fig:time-series-projection), the states of the canonical Lorenz Attractor [-@Lorenz_1963] are projected to the $x$-axis, creating a time series of variable $x$. In many cases, each time series corresponds to a different state variable, but more generally a time series is an *observation function*, and can be any function of one or more state variables.
+For example, an experimental chemostat containing one species of phytoplankton would have state variables for the population abundance and environmental factors, such as temperature, nutrients, and light. The dynamical rules are the equations for growth and nutrient uptake, along with the experimental settings for how temperature, light, and nutrient input are controlled.
+
+A time series for a state variable can be generated by projecting from the state space to the corresponding coordinate axis. For example, in Figure \@ref(fig:time-series-projection), the states of the canonical Lorenz Attractor [-@Lorenz_1963] are projected to the $x$-axis, creating a time series of variable $x$. In many cases, time series correspond to different state variables. More generally, however, a time series can be any function of one or more state variables (which may defy convenient geometrical representation).
 
 ```{r time-series-projection, out.width = "80%", fig.cap = "Time Series Projection from the Lorenz Attractor", echo = FALSE}
 knitr::include_graphics("figure_1.pdf")
 ```
 
-A *conventional* mathematical model of a dynamical system requires knowledge of both the state variables and the equations. Uncertainty about the equations or vital parameters is then be addressed using model selection and methods for fitting the quations to observational data. However, it is quite common that there is structural uncertainty about the state variables or system equations (i.e. uncertainty about the identity of the variables or the form of the equations). In addition, observations are frequently incomplete or noisy, with insufficient data to fully parameterize the equations.
+The conventional approach to modeling a dynamic system is to simulate it, using the governing equations, and instantiating the simulation using observations of the state variables. Uncertainity about vital parameters is addressed through fitting the equations to observational data; and uncertainty about the form of the equations is addressed using model selection. However, this approach assumes that the state variables are known, that they are observed sufficiently, and that the governing equations are known or can be reasonably approximated from theory. This can be problematic when seeking to model time series drawn from complex, nonlinear systems.
 
 ## Attractor Reconstruction / Takens' Theorem
 
-EDM resolves these issues using the mathematical theory of attractor reconstruction [@Takens_1981; @Sauer_1991; @Casdagli_1991; @Deyle_2011]. Here, instead of requiring knowledge of all the state variables, lags of a time series are substitute for unknown or unobserved variables. For example, instead of using the state variables of $x$, $y$, and $z$ to depict the Lorenz Attractor (as in Figure \@ref(fig:time-series-projection)), we can instead use lags of $x$:
-$$ \mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right) $$
-where $E$ is the embedding dimension, or number of lags. The intuition is as follows: because time series are sequential observations of the system behavior, information about the dynamical rules is encoded in the data.
+In the EDM framework, these issues are addressed using the mathematical theory of attractor reconstruction [@Takens_1981; @Sauer_1991; @Casdagli_1991; @Deyle_2011]. The essential idea is that the state of the system can be represented using lags of a single time series, instead of using all of the state variables. For example, in the canonical Lorenz Attractor, the position at time $t$ is typically represented as $\left(x_t, y_t, z_t \right)$, where $x$, $y$, and $z$ are the state variables (Figure \@ref(fig:time-series-projection)). However, we can also represent the state using only lags of $x$: $\mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right)$, where $E$ is the embedding dimension, or number of lags.
 
 ```{r attractor-reconstruction, out.width = "80%", fig.cap = "Attractor Reconstruction from 3 Lagged Coordinates", echo = FALSE}
 knitr::include_graphics("figure_2.pdf")
 ```
 
-This technique, known as *attractor reconstruction*, recovers the mathematical properties of the original system, provided that a sufficient number lags are used [@Takens_1981]. More specifically, the reconstructed states, $\mathbf{x}_t$ map uniquely to points in the original state space, and nearby points in the reconstruction correspond to nearby points in state space. Figure \@ref(fig:attractor-reconstruction) shows a reconstruction of the Lorenz attractor using 3 lags of variable $x$, demonstrating the correspondence between the reconstruction and the original Lorenz attractor.
+This approach, known as *attractor reconstruction*, preserves the mathematical properties of the original system, provided that a sufficient number lags are used [@Takens_1981]. More specifically, points in the reconstructed space, $\mathbf{x}_t$, map smoothly to points in the original state space ("smooth" meaning that nearby points in the reconstructed space also map to nearby points in the original state space). This relationship makes it possible to model a dynamic system using just a single time series.
 
-// because of this unique mathematical property, the dynamical rules for the system are also preserved, allowing inference of how the variable used for reconstruction, e.g. x, changes in time. This can be applied directly to forecasting the time series used for reconstruction [], but also for identifying nonlinear behavior of the underlying system. More recently, these methods have been used for identification and quantification of causal effects [], and 
-// dynamical rul
+For example, to describe the motion of $x$ in the Lorenz Attractor, the typical approach is to use a function of all of the state variables (i.e. $x_{t+1} = F\left(x_t, y_t, z_t\right))$. However, we can instead use an alternative formulation based on the reconstructed state space: $x_{t+1} = F^\prime\left(\mathbf{x}_t\right) = F^\prime\left(x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right)$. Figure \@ref(fig:attractor-reconstruction) demonstrates this point with a reconstruction that uses 3 lags of $x$, which shows a visual correspondence with the original Lorenz attractor.
 
-There are many applications for using this approach to recover system dynamics from time series. For example, empirical models can be used for forecasting [@Sugihara_1990], to understand nonlinear behavior [@Sugihara_1994], or to uncover mechanism [@Dixon_1999]. Recent work describes how EDM can be used to identify causal interactions, by testing whether two time series are observed from the same system [@Sugihara_2012]. 
+In practice, the application of this technique requires selecting an appropriate time lag, $\tau$, embedding dimension, $E$, and methods for inferring the dynamical model, $F^\prime$. In the next section, we demonstrate how the **rEDM** software package can be used to accomplish these tasks, with applications for forecasting [@Sugihara_1990], testing for nonlinear behavior [@Sugihara_1994], and testing whether two time series variables belong to the same system and might be causally related [@Sugihara_2012]. 
 
-<!-- In the next section, we demonstrate how the **rEDM** software package can be used to accomplish these tasks. -->
+# The **rEDM** package
 
-# The `rEDM` package
+## Selecting the embedding dimension using simplex projection
 
-## Nearest Neighbor Forecasting using Simplex Projection
-
-Takens' Theorem [-@Takens_1981] supports attractor reconstruction when a sufficient number of lags are used. Practically, the number of lags (the embedding dimension) is determined empirically using the data. Here, we use forecasting to determine the optimal embedding dimension. The reasoning here is that when the embedding dimension is too small (i.e. the number of lags is insufficient), the reconstruction will contain singularities -- different system states which map to the same point in the reconstruction. When this occurs, it is impossible to distinguish between different trajectories of the system, and forecast skill is diminished.
+As mentioned previously, the mathematical theory of *attractor reconstruction* requires a sufficient number of lags [@Takens_1981]. If the number of lags is too few, then the reconstructed space ($\textbf{x}_t$) no longer maps smoothly to the original state space. Intuitively, a sufficient number of lags are required to capture the influence of all of the state variables in the original state space (see also [@Whitney_1936]). Practically, the number of lags, or the embedding dimension, is determined empirically using the data; here, we use forecast skill as the metric for selecting an optimal embedding dimension.
 
 ### Example
 
-In this example, we demonstrate how to determine the embedding dimension using a nearest neighbor forecasting method, Simplex Projection [@Sugihara_1990]. Here, forecast skill is operationalized as the correlation between observed and predicted values. The time series come from a simulation of the tent map, a discrete-time dynamic system where a sequence, $x_t$, on the interval $[0, 1]$ is iterated according to:
+In this example, time series are generated from a simulation of the tent map, a discrete-time dynamic system where a sequence, $x_t$, on the interval $[0, 1]$ is iterated according to:
 
 \begin{equation*}
 x_{t+1} = \begin{cases}
@@ -112,28 +109,35 @@ x_{t+1} = \begin{cases}
 \end{cases}
 \end{equation*}
 
-We begin by loading the **rEDM** package:
+The first difference of the tentmap time series are included with the **rEDM** package:
+
 ```{r load package}
 library(rEDM)
-```
 
-and then the first differences of the tentmap time series:
-```{r load tentmap data}
 data(tentmap_del)
 str(tentmap_del)
 ```
 
-We can see that the data are contained in a single vector. Because the `simplex()` function accepts a numeric vector as the input data (see section XXX for more information about data formats), no further processing of the data is required.
+Here, the `tentmap_del` variable is a numeric vector with `r length(tentmap_del)` values. As one of the accepted input formats, no further processing of the data is required (see section XXX for more information about data formats).
+
+To select the portions of the time series to be used for fitting the model and then testing the model, we define `lib` and `pred` variables:
+
+```{r define lib and pred}
+lib <- c(1, 100)
+pred <- c(201, 500)
+```
+
+Here, `lib <- c(1, 100)` indicates that rows 1 through 100 of the input data are used for fitting the model, and `pred <- c(201, 500)` indicates that rows 201 through 500 of the input data are used for testing the model.
+
+Since the time series come from a discrete map, a time lag of `tau = 1` is appropriate (and also the default for functions in the **rEDM** package). Because the dynamics are fairly simple, we can also use the default range for the embedding dimension, $E = 1:10$. (A more general range to test would be up to $sqrt(n)$ with $n$ being the length of the time series [REF]).
 
 ```{r simplex on tentmap}
 simplex_output <- simplex(time_series = tentmap_del, 
-                          lib = c(1, 100), 
-                          pred = c(201, 500))
+                          lib = lib, pred = pred, 
+                          tau = 1, E = 1:10)
 ```
 
-Here, the `lib` and `pred` arguments specify the portions of the input data that are used to construct the model and for generating forecasts, respectively. `lib = c(1, 100)` indicates that rows 1 through 100 of the input data define the "library set" over which the method identified nearest neighbors for the simplex projection method [@Sugihara_1990]. `pred = c(201, 500)` indicates that rows 201 through 500 define the "prediction set" over which the models are run to produce forecasts.
-
-The remaining arguments will be left at their default values (see section XXX for details). Notably, this means that the embedding dimension, $E$ will range from $1$ to $10$.
+Here, the `simplex()` function applies Simplex Projection, a method that infers the dynamical model $F^\prime$ using nearest neighbors [@Sugihara_1990]. 
 
 ```{r simplex output}
 str(simplex_output)
