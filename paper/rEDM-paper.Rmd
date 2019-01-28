@@ -129,7 +129,7 @@ pred <- c(201, 500)
 
 Here, `lib <- c(1, 100)` indicates that rows 1 through 100 of the input data are used for fitting the model, and `pred <- c(201, 500)` indicates that rows 201 through 500 of the input data are used for testing the model.
 
-Since the time series come from a discrete map, a time lag of `tau = 1` is appropriate (and also the default for functions in the **rEDM** package). Because the dynamics are fairly simple, we can also use the default range for the embedding dimension, $E = 1:10$. (A more general range to test would be up to $sqrt(n)$ with $n$ being the length of the time series [REF]).
+Since the time series come from a discrete map, a time lag of `tau = 1` is appropriate (and is the default for functions in the **rEDM** package). In addition, because we know the dynamics are fairly simple, the default range of $E = 1:10$ for the embedding dimension will suffice. More generally, in the absence of prior knowledge about the system, a reasonable range of values is 1 through $sqrt(n)$ with $n$ being the length of the time series [REF]).
 
 ```{r simplex on tentmap}
 simplex_output <- simplex(time_series = tentmap_del, 
@@ -137,26 +137,26 @@ simplex_output <- simplex(time_series = tentmap_del,
                           tau = 1, E = 1:10)
 ```
 
-Here, the `simplex()` function applies Simplex Projection, a method that infers the dynamical model $F^\prime$ using nearest neighbors [@Sugihara_1990]. 
+Here, the `simplex()` function makes forecasts using the parameters just described, and employs Simplex Projection to infer the dynamical model $F^\prime$ from the data using nearest neighbor approximation [@Sugihara_1990].
 
 ```{r simplex output}
 str(simplex_output)
 ```
 
-The output is a data.frame with rows for each separate model (in our case, the different values of the embedding dimension that were tried). The columns are model parameters and forecast statistics: for `simplex()`, the model parameters are `E`, embedding dimension; `tau`, time lag between successive dimensions; `tp`, time to prediction; and `nn`, number of nearest neighbors. The forecast statistics are `num_pred`, the number of predictions made; `rho`, Pearson's correlation coefficient between predictions and observations; `mae`, mean absolute error of predictions; `rmse`, root mean squared error of predictions; `perc`, the percent of predictions that are the same sign as observations; and `p_val`, the p-value for `rho` being significantly greater than 0, using Fisher's transformation [-@Fisher_1915]. For the purpose of comparison, the same forecast statistics are computed for a naive constant predictor (where the current value is propagated as the forecast).
+The output is a data.frame with rows for each individual model run, corresponding to the unique combination of model parameters. Here, there are `r NROW(simplex_output)` rows for each value of the embedding dimension that we tried. The columns are the model parameters: `E`, embedding dimension; `tau`, time lag between successive dimensions; `tp`, time to prediction; and `nn`, number of nearest neighbors; and forecast statistics: `num_pred`, the number of predictions made; `rho`, Pearson's correlation coefficient between predictions and observations; `mae`, mean absolute error of predictions; `rmse`, root mean squared error of predictions; `perc`, the percent of predictions that are the same sign as observations; and `p_val`, the p-value for `rho` being significantly greater than 0, using Fisher's transformation [-@Fisher_1915]. For the purpose of comparison, the same forecast statistics are then computed for a naive constant predictor, where $\hat{x}_{t+tp} = x_t$.
 
 ```{r set up plot margins, include = FALSE}
 par(mar = c(4, 4, 1, 1), mgp = c(2.5, 1, 0))
 ```
 
-To determine the optimal embedding dimension, we plot `rho` (forecast skill) versus `E` (embedding dimension).
+To determine the optimal embedding dimension, we examine how forecast skill, as determined by `rho` varies with embedding dimension, `E`.
 
 ```{r rho vs E for tentmap}
 plot(rho ~ E, data = simplex_output, type = "l",  
      xlab = "Embedding Dimension (E)", ylab = "Forecast Skill (rho)")
 ```
 
-We observe that forecast skill peaks at `E = 2`, indicating that dynamics are best represented using 2 total lags of the `tentmap_del` time series. *Notably, this optimal embedding dimension does not necessarily correspond to the dimensionality of the original system.* Forecast skill is affected by factors such as observational noise, process error, and time series length. Thus, the optimal embedding dimension should be interpreted as a practical measure that is dependent on properties of the data.
+We observe that forecast skill peaks at `E = 2`, indicating that dynamics are best represented with 2 total lags of the time series. *Note that the optimal embedding dimension does not need to correspond to the dimensionality of the underlying system.* Indeed, because forecast skill is affected by factors such as observational noise, process error, and time series length, the optimal embedding dimension is best viewed as a practical measure that depends on the data.
 
 ## Identifying Nonlinearity
 
