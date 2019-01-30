@@ -45,6 +45,10 @@ causal inference, empirical dynamics, forecasting, time series
 
 \newpage
 
+```{r figure defaults, include = FALSE}
+knitr::opts_chunk$set(fig.width = 4.5, fig.height = 3)
+```
+
 # Introduction
 
 In ecology, models are approximations of reality that are used for descriptive, explanatory, or predictive purposes.
@@ -90,7 +94,7 @@ This approach, known as *attractor reconstruction*, preserves the mathematical p
 
 For example, to describe the motion of $x$ in the Lorenz Attractor, the typical approach is to use a function of all of the state variables (i.e. $x_{t+1} = F\left(x_t, y_t, z_t\right))$. However, we can instead use an alternative formulation based on the reconstructed state space: $x_{t+1} = F^\prime\left(\mathbf{x}_t\right) = F^\prime\left(x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right)$. Figure \@ref(fig:attractor-reconstruction) demonstrates this point with a reconstruction that uses 3 lags of $x$, which shows a visual correspondence with the original Lorenz attractor.
 
-In practice, the application of this technique requires selecting an appropriate time lag, $\tau$, embedding dimension, $E$, and methods for inferring the dynamical model, $F^\prime$. In the next section, we demonstrate how the **rEDM** software package can be used to accomplish these tasks, with applications for forecasting [@Sugihara_1990], testing for nonlinear behavior [@Sugihara_1994], and testing whether two time series variables belong to the same system and might be causally related [@Sugihara_2012]. 
+In practice, the application of this technique requires selecting an appropriate time lag, $\tau$, embedding dimension, $E$, and methods for inferring $F^\prime$. In the next section, we demonstrate how the **rEDM** software package can be used to accomplish these tasks, with applications for forecasting [@Sugihara_1990], testing for nonlinear behavior [@Sugihara_1994], and testing whether two time series variables belong to the same system and might be causally related [@Sugihara_2012]. 
 
 # The **rEDM** package
 
@@ -147,8 +151,8 @@ The output is a data.frame with rows for each individual model run, correspondin
 
 (ref:simplex-caption) Forecast skill (rho) vs. Embedding Dimension (E) for the `tentmap_del` time series. A peak at E = 2 indicates that 2 total lags are optimal for reconstructing the dynamics. 
 
-```{r tentmap-simplex, fig.width = 4.5, fig.height = 3, fig.cap = '(ref:simplex-caption)', echo = FALSE}
-par(mar = c(4, 4, 1, 1), mgp = c(2.5, 1, 0))
+```{r tentmap-simplex, fig.cap = '(ref:simplex-caption)', echo = FALSE}
+par(mar = c(4, 4, 1, 4), mgp = c(2.5, 1, 0))
 plot(rho ~ E, data = simplex_output, type = "l",  
      xlab = "Embedding Dimension (E)", ylab = "Forecast Skill (rho)")
 ```
@@ -177,8 +181,8 @@ Again, the results are a data.frame with rows for each model run, and columns fo
 
 (ref:smap-caption) Forecast skill (rho) vs. Nonlinearity (theta) for the `tentmap_del` time series. Increased forecast skill for theta > 0 suggests nonlinear dynamics in the data.
 
-```{r tentmap-smap, fig.width = 4.5, fig.height = 3, fig.cap = '(ref:smap-caption)', echo = FALSE}
-par(mar = c(4, 4, 1, 1), mgp = c(2.5, 1, 0))
+```{r tentmap-smap, fig.cap = '(ref:smap-caption)', echo = FALSE}
+par(mar = c(4, 4, 1, 4), mgp = c(2.5, 1, 0))
 plot(smap_output$theta, smap_output$rho, type = "l",
      xlab = "Nonlinearity (theta)", ylab = "Forecast Skill (rho)")
 ```
@@ -198,7 +202,7 @@ smap_output_err <- s_map(time_series = ts_err,
 (ref:smap-noise-caption) With added observational noise, forecast skill (rho) increases and then decreases with theta.
 
 ```{r tentmap-smap-noise, fig.width = 4.5, fig.height = 3, fig.cap = '(ref:smap-noise-caption)', echo = FALSE}
-par(mar = c(4, 4, 1, 1), mgp = c(2.5, 1, 0))
+par(mar = c(4, 4, 1, 4), mgp = c(2.5, 1, 0))
 plot(smap_output_err$theta, smap_output_err$rho, type = "l",
      xlab = "Nonlinearity (theta)", ylab = "Forecast Skill (rho)")
 ```
@@ -207,9 +211,7 @@ plot(smap_output_err$theta, smap_output_err$rho, type = "l",
 
 In addition to representing the system state using lags of a single time series [@Takens_1981], we can use different time series observed from the same system [@Sauer_1991; @Deyle_2011]. As a practical point, these *multivariate* representations can be more effective when data are limited and noisy, or there are stochastic drivers in the system that need to be explicitly included. For more details, see @Casdagli_1991.
 
-In **rEDM**, the `block_lnlp()` function generalizes the `simplex()` and `s_map()` functions: the reconstruction space can be formed from any combination of coordinates, and both Simplex Projection and S-map are supported.
-
-The data format for `block_lnlp()` is a matrix or data.frame, where each column is a time series and each row is a temporal "slice" of contemporaneous observations. A reconstruction is defined by specifying the columns to use as coordinates (the `columns` argument) and the column to be forecast (the `target_column` argument). If lags of a time series are desired as coordinates, they need to be pre-computed as separate columns (e.g. via the `make_block()` function).
+In **rEDM**, the `block_lnlp()` function generalizes the `simplex()` and `s_map()` functions: instead of lags of a single time series, any combination of time series (and their lags) can be used, with either of the Simplex Projection or S-map methods. Now, however, the coordinates of the reconstruction must be manually specified as columns of the input data (`columns`); and similarly for the variable to be forecast (the `target_column` argument). If lags of a time series are desired as coordinates, they need to be pre-computed as separate columns (e.g. via the `make_block()` function).
 
 ### Example
 
@@ -220,43 +222,41 @@ data(block_3sp)
 str(block_3sp)
 ```
 
-`block_3sp` is a 10-column data-frame, consisting of `time`, and 3 lags for each of the variables: unlagged (`_t-1`), lag-1 (`_t-1`), and lag-2 (`_t-2`). Note that the lagged columns begin with `NA` values because they correspond to missing observations of the variables (e.g. `x` at time `0`). Points that contain missing values are automatically excluded from fitting and forecasting (see section [SEC] for more details).
+`block_3sp` is a 10-column data-frame, consisting of `time`, and 3 lags for each of the variables: unlagged (`_t-1`), lag-1 (`_t-1`), and lag-2 (`_t-2`). Note that the lagged columns begin with `NA` values because some entries correspond to missing observations of the variables (e.g. `x` at time 0 or -1). Points that contain missing values are automatically excluded from fitting and forecasting (see section [SEC] for more details).
 
-Columns can be referred to by either numerical index or column name. Following R convention, `1` refers to the first column, with the option of setting `first_column_time = TRUE` to skip over a time column if it is the first column.
+Columns can be referred to by either numerical index (starting with 1) or column name. The optional argument `first_column_time` can be used to indicate that the first column is a time index, and should be ignored when indexing data. For example, supposed that we want to use the coordinates $\left(x_t, x_{t-1}, y_t\right)$ to predict future values of $x_t$. Ignoring the time column, the coordinates of the reconstruction correspond to `columns = c(1, 2, 4)` and `target_column = 1` with `first_column_time = TRUE`.
 
 ```{r block-lnlp for block-3sp, warning = FALSE}
 lib <- c(1, 100)
 pred <- c(101, 200)
 
-cols <- c(1, 2, 4)
-target <- 1
-
 block_lnlp_output <- block_lnlp(block_3sp, lib = lib, pred = pred,
-                                columns = cols, target_column = target,
-                                first_column_time = TRUE, 
+                                columns = c(1, 2, 4), 
+                                target_column = 1,
+                                first_column_time = TRUE,
                                 stats_only = FALSE)
 ```
 
-Columns can also be referred to by name. Although it is not necessary to specify `first_column_time = TRUE`, doing so will use the values in the time column to label predictions.
+Columns can also be referred to by name. Here, specifying `first_column_time = TRUE` is unnecessary, but will use the values in the time column when labeling predictions.
 
 ```{r}
-block_lnlp_output_alt <- block_lnlp(block_3sp, lib = lib, pred = pred,
-                                    columns = c("x_t", "x_t-1", "y_t"), 
-                                    target_column = "x_t", 
-                                    first_column_time = TRUE, 
-                                    stats_only = FALSE)
+block_lnlp_alt <- block_lnlp(block_3sp, lib = lib, pred = pred,
+                             columns = c("x_t", "x_t-1", "y_t"), 
+                             target_column = "x_t", 
+                             first_column_time = TRUE, 
+                             stats_only = FALSE)
 
 # test for equality
-stopifnot(identical(block_lnlp_output, block_lnlp_output_alt))
+stopifnot(identical(block_lnlp_output, block_lnlp_alt))
 ```
 
-As in `simplex()` and `s_map()`, the default value for the `tp` argument is 1, indicating that predictions are 1-step ahead. In other words, the reconstructed space consists of points, whose coordinates are the values in a single row of the input data, with columns selected by `columns`; and these points are being mapped to the values in the subsequent row and in the `target_column` column. *In some cases, the data may be formatted such that the value to be predicted is another variable in the same row, and so `tp` should be set to 0.*
+As in `simplex()` and `s_map()`, the default value for the `tp` argument is 1---predictions are 1-step ahead. That is, the forecast model is of the form $F: \left(x_t, x_{t-1}, y_t\right) \rightarrow x_{t+\texttt{tp}}$) *In some cases, the data may be formatted such that the value to be predicted is another variable in the same row, and so `tp` should be set to 0.*
 
 ```{r}
 str(block_lnlp_output)
 ```
 
-With `stats_only = FALSE`, the output also includes a list column (`model_output`), where each element is a data.frame that contains observed and predicted values for each model run. We can extract out these values to show how individual predictions match up against observed values.
+With `stats_only = FALSE`, the output also includes a list column (`model_output`), where each element is a data.frame that contains observed and predicted values for that model run. We can extract out these values to show how individual predictions match up against observed values.
 
 ```{r}
 list_of_model_predictions <- block_lnlp_output$model_output
@@ -278,70 +278,70 @@ abline(a = 0, b = 1, lty = 2, col = "blue")
 
 ## S-map Coefficients
 
-As described in [@Deyle_2016], the S-map coefficients from the appropriate multivariate embedding can be interpreted as dynamic, time-varying interaction strengths. We demonstrate this approach for the same 3-species simulation as above, using `x`, `y`, and `z` as the coordinates to predict `x`.
+As described in @Deyle_2016, the S-map coefficients can be interpreted as dynamic, time-varying interaction strengths, given an appropriate choice of coordinates for reconstruction. We demonstrate this using $\left(x_t, y_t, z_t\right)$ to predict $x_{t+1}$ in the 3-species simulation described previously.
 
 ```{r 3-species s-map coefficients example}
 data(block_3sp)
 lib <- c(1, 100)
 pred <- c(101, 200)
 
-cols <- c("x_t", "y_t", "z_t")
-target <- "x_t"
-
-block_smap_output <- block_lnlp(block_3sp, lib = lib, pred = pred,
-                                columns = cols, target_column = target,
-                                method = "s-map", theta = 2,
-                                stats_only = FALSE, first_column_time = TRUE,
-                                save_smap_coefficients = TRUE, silent = TRUE)
+block_smap <- block_lnlp(block_3sp, lib = lib, pred = pred,
+                         columns = c("x_t", "y_t", "z_t"), 
+                         target_column = "x_t",
+                         method = "s-map", theta = 2,
+                         stats_only = FALSE, 
+                         first_column_time = TRUE,
+                         save_smap_coefficients = TRUE)
 ```
 
-The `smap_coefficients` column of the output is a list-column with the data.frames for the S-map coefficients of each model. Since we have just have one model, we just want the first element of that list. The result is a data.frame with 200 rows (for each prediction) and 4 columns (for each of the 3 predictors and a constant).
+As with `model_output`, the `smap_coefficients` column is a list-column, where the elements are data.frames containing the S-map coefficients of each model.
 
 ```{r get coefficients}
-smap_coeffs <- block_smap_output$smap_coefficients[[1]]
+smap_coeffs <- block_smap$smap_coefficients[[1]]
 str(smap_coeffs)
 ```
 
-Here, we plot the time series for the observed (solid) and predicted (dashed) values of `x` in the top panel; and the inferred interactions (s-map coefficients) for the influence of `x`, `y`, and `z` on future values of `x` in the remaining 3 panels.
+(ref:smap-coeffs-caption) **A.** Time series for $x$ compared with predictions (points). **B-D.** The inferred effects of $x$, $y$, and $z$ from the S-map model that predicts future values, $x_{t+1}$.
 
-```{r, echo = FALSE}
-par(mfrow = c(4, 1), mar = c(2, 4, 1, 1), oma = c(0, 0, 0, 0),
-    mgp = c(2.5, 1, 0))
+```{r smap-coeffs, fig.width = 4.5, fig.height = 5, fig.cap = '(ref:smap-coeffs-caption)', echo = FALSE}
+par(mfrow = c(4, 1), mar = c(2, 4, 1, 4), oma = c(2, 0, 0, 0),
+    mgp = c(2.5, 1, 0), yaxs = "i", xaxs = "i")
+
+cols <- viridis::viridis(4, option = "D")
+predictions <- block_smap$model_output[[1]]
+make_panel <- function(y, col = "black", ..., label = "A")
+{
+    plot(predictions$time, y, xlim = c(100, 200), ylim = c(-2, 2), 
+         type = "l", col = col, xlab = "", lwd = 1.5, ...)
+    mtext(label, side = 3, at = 88, line = -0.2)
+}
+
+make_panel(predictions$obs, ylab = "x", col = "gray")
+points(predictions$time, predictions$pred, lty = 2, pch = 3)
+legend(x = 200, y = 2, legend = "predictions", pch = 3, bty = "n", 
+       xjust = 1, yjust = 0.75, adj = c(0, 0.5), xpd = TRUE)
+
+make_panel(smap_coeffs[, 1], col = cols[1], ylab = "effect of x", label = "B")
+make_panel(smap_coeffs[, 2], col = cols[2], ylab = "effect of y", label = "C")
+make_panel(smap_coeffs[, 3], col = cols[3], ylab = "effect of z", label = "D")
+mtext("Time", side = 1, outer = TRUE, line = 0.5, cex = 0.8)
 ```
 
-```{r smap coefficients plot, fig.width = 6, fig.height = 7}
-predictions <- block_smap_output$model_output[[1]]
-t <- predictions$time
-
-plot(t, predictions$obs, type = "l", col = "black", ylab = "x", xlab = "")
-lines(t, predictions$pred, lty = 2)
-legend("topright", legend = c("observed", "predicted"), lty = c(1, 2), bty = "n")
-
-plot(t, smap_coeffs[, 1], type = "l", col = "red", ylab = "effect of x", xlab = "")
-plot(t, smap_coeffs[, 2], type = "l", col = "blue", ylab = "effect of y", xlab = "")
-plot(t, smap_coeffs[, 3], type = "l", col = "magenta", ylab = "effect of z", xlab = "")
-```
-
-```{r, echo = FALSE}
-par(mfrow = c(1, 1), mar = c(4, 4, 1, 1))
-```
+Here, `smap_coeffs` is a data.frame with 100 rows (the number of predictions) and 4 columns (the number of predictors plus one for a constant). Figure \@ref(fig:smap-coeffs) shows the observed and predicted values of `x_{t+1}` and the influence of `x_t`, `y_t`, and `z_t`, respectively, on the predictions.
 
 ## Causality Inference and Cross Mapping
 
-One of the corollaries to Takens' Theorem is that multiple reconstructions not only map to the original system, but also to each other. Consider two variables, $x$ and $y$ that interact in a dynamic system. The univariate reconstructions based on lags of $x$ ($\mathbf{M}_x$) or $y$ ($\mathbf{M}_y$) are each capable of uniquely identifying system states. Thus, the reconstructed states of $\mathbf{M}_x$ map to reconstructed states of $\mathbf{M}_y$ (Figure \@ref(fig:cross-mapping)). This suggests a way to test whether $x$ and $y$ interact in the same system, by testing for a mapping between $\mathbf{M}_x$ and $\mathbf{M}_y$. Practically this is done by testing the predictive skill for the mapping from $\mathbf{M}_x$ to $y$ and from $\mathbf{M}_y$ to $x$.
-
+One corollary to Takens' Theorem [-@Takens_1981] is that there are smooth maps between multiple reconstructions of the same system. As an intuitive example, consider a dynamic system that contains two interacting variables, $x$ and $y$. The univariate reconstructions, based on lags of $x$ ( $\mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E_x-1)\tau} \right)$) and $y$ ( $\mathbf{y}_t = \left( y_t, y_{t-\tau}, \dots, y_{t-(E_y-1)\tau} \right)$) respectively, can each be used to uniquely identify system states. Thus, there also exists a smooth mapping between $\mathbf{x}_t$ and $\mathbf{y}_t$ (Figure \@ref(fig:cross-mapping)). In practical terms, we test for a mapping between $\mathbf{x}_t$ and $\mathbf{y}_t$ by measuring the predictive skill of mapping from $\mathbf{x}_t$ to $y_t$ and from $\mathbf{y}_t$ to $x_t$.
 
 ```{r cross-mapping, out.width = "80%", fig.cap = "Cross Mapping Between Reconstructions of the Lorenz Attractor", echo = FALSE}
 knitr::include_graphics("figure_3.pdf")
 ```
 
-Furthermore, in the case of unidirectional causality, e.g. $x$ causes $y$, but $y$ does not cause $x$, we would only expect cross mapping to be successful in one direction. Somewhat counterintuitively, if a causal variable ($x$) leaves a signature on the affected variable ($y$), then it is possible to map from $\mathbf{M}_y$ to $\mathbf{M}_x$, but not vice-versa.
+### Directionality
 
-In essence, $\mathbf{M}_y$ must have complete information about $y$, which means it must include information about all its causes, including $x$. However, because $x$ behaves independently of $y$, the reconstruction $\mathbf{M}_x$ may be missing information about $y$, preventing a *complete* cross mapping from $\mathbf{M}_x$ to $y$.
+When causation occurs only in one direction, e.g. $x$ influences $y$, but $y$ does not influence $x$, the mapping between $\mathbf{x}_t$ and $\mathbf{y}_t$ is only assured in one direction. Specifically, if $x$ influences $y$, then there is a mapping from $\mathbf{y}_t$ to $x_t$ (i.e. from the affected variable to the causal variable). Although the direction is counterintuitive, this occurs because $\mathbf{y}_t$ must capture all the dynamical rules about how $y$ changes in time, including the influence of $x$. Consequently, $\mathbf{y}_t$ will be able to recover the values of $x$. Conversely, $\mathbf{x}_t$ is only guaranteed to capture the dynamical rules for how $x$ changes in time, which can occur independently of $y$, and so there is no guarantee of a mapping from $\mathbf{x}_t$ to $y_t$.
 
-To be more precise, although $x$ has incomplete information about $y$, it does have a causal influence on $y$, and there will likely be some predictive skill in the mapping from $\mathbf{M}_x$ to $y$. However, this will be limited to the statistical association between $x$ and $y$ and will generally not improve with more data.
-
-In contrast, the mapping from $\mathbf{M}_y$ to $x$ is expected to become complete with more data. This convergence is a critical property for inferring causality, and can be tested by measuring the cross mapping skill when using different amounts of data to reconstruct $\mathbf{M}_y$. For a more detailed description of using cross mapping to infer causation, see [@Sugihara_2012; @Ye_2015a].
+Nevertheless, because $x$ does influence $y$, there will likely be some predictive skill in the mapping from $\mathbf{x}_t$ to $y_t$. However, this will be limited to a statistical association that will be capped, regardless of the amount of data used to recover the mapping. In contrast, the mapping from $\mathbf{y}_t$ to $x_t$ should continue to improve in skill with more and more data. This convergence is a critical property for inferring causality, and can be tested by measuring the cross mapping skill with larger and larger subsamples of the data. For a more detailed description of using cross mapping to infer causation, see @Sugihara_2012 and @Ye_2015a.
 
 ## Convergent Cross Mapping (CCM)
 
