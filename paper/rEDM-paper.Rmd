@@ -20,13 +20,13 @@ affiliation:
   - code: 3
     address: Scripps Institution of Oceanography, University of California San Diego, 9500 Gilman Drive MC 0202, La Jolla, CA USA 92093-0202
 abstract: "
-  1. Modeling the ecological processes that underlie time series observations can often be challenging because of uncertainty about the actual equations, or because governing equations depend on state variables that are unknown or unobserved.
+  1. Modeling the ecological time series can be challenging because of uncertainty about the mathematical representation behind the underlying processes, or because of dependence on unknown or unobserved state variables.
   
-  2. Empirical dynamic modeling (EDM) is an emerging framework for modeling dynamic systems, based on the mathematical theory of attractor reconstruction. These methods can be successful even when there is only one observed time series from a multivariate system.
+  2. Empirical dynamic modeling (EDM) is an emerging framework for using the mathematical theory of attractor reconstruction to model time series observed from dynamic systems. The `rEDM` package is an implemention of EDM methods in R, building on software developed in the Sugihara Lab.
+
+  3. `rEDM` contains functions for time series analysis, including: peprocessing of data, forecasting, inferring causal relationships, and quantifying dynamic interactions.
   
-  3. The `rEDM` package contains a number of functions for EDM, including methods for forecasting, inferring causal relationships among time series, and measuring changing interactions.
-  
-  4. `rEDM` facilitates the use of EDM approaches for understanding ecosystems, through the creation of models more robust to observations and structural uncertainty about equations, testing for causal relationships between observed variables, or exploratory analysis of time series datasets that can lead to hypothesis generation."
+  4. `rEDM` facilitates the use of EDM for developing ecological insights through empirical analysis of time series, supporting both exploratory data analysis and confirmation of existing hypotheses."
 header-includes: >
   \usepackage{amsmath}
   \usepackage{setspace}
@@ -51,13 +51,14 @@ knitr::opts_chunk$set(fig.width = 4.5, fig.height = 3)
 
 # Introduction
 
+<!-- 
 In ecology, models are approximations of reality that are used for descriptive, explanatory, or predictive purposes.
 
 One common application of models is to describe how important ecological variables, such as abundance, change over time, and in relation to each other. Historically, such models have been based on parametric equations that are derived from theory, and then tested in laboratory or simulation settings. However, there are many situations where explicit mathematical formulations are impractical: the exact mechanisms may be unknown or very complex; and the available data may be too limited or noisy to fully parameterize these equations.
 
 These obstacles can hinder the effective usage of ecological models; for example, effort may be expended on increased monitoring and observation, yet yield little improvement in understanding or predictive power, because of inappropriate or inflexible mathematical hypotheses. In contrast, phenomenological models are highly flexible alternatives, which operate by inferring patterns and associations from the data (instead of relying on hypothesized equations). Here, we review the theoretical background for reconstructing dynamic rules from time series data, an approach known as "Empirical Dynamic Modeling (EDM)" and the functionality of the `rEDM` package in R [@Ye_2018]. 
 
-EDM combines the mathematical theory of attractor reconstruction [@Takens_1981; @Sauer_1991; @Casdagli_1991; @Deyle_2011] and simple methods for function approximation [@Sugihara_1990; @Sugihara_1994] in order to model complex systems using limited time series observations. Thus, it can be a powerful method for improving ecological modeling. Moreover, becasue EDM operates with minimal assumptions, it is particularly suitable for studying systems that exhibit non-equilibrium dynamics and nonlinear state-dependent behavior (i.e. where interactions change over time and as a function of the system state).
+EDM combines the mathematical theory of attractor reconstruction [@Takens_1981; @Sauer_1991; @Casdagli_1991; @Deyle_2011] and simple methods for function approximation [@Sugihara_1990; @Sugihara_1994] in order to model complex systems using limited time series observations. Thus, it can be a powerful method for improving ecological modeling. Moreover, becasue EDM operates with minimal assumptions, it is particularly suitable for studying systems that exhibit non-equilibrium dynamics and nonlinear state-dependent behavior (i.e. where interactions change over time and as a function of the system state). -->
 
 <!-- which are intended for nonlinear dynamic systems that can prove problematic for traditional modeling approaches. -->
 <!-- especially problematic when used for predictive purposes () -->
@@ -70,23 +71,23 @@ EDM combines the mathematical theory of attractor reconstruction [@Takens_1981; 
 
 ## Time Series as Observations of a Dynamic System
 
-The essential concept underlying EDM is that time series are sequential observations of a *dynamic system*. Briefly, a dynamic system consists of a *state space* and *dynamical rules* for how the system changes over time. At any point in time, the state of the system is represented as a point in the state space (Figure \@ref(fig:time-series-projection)), whose axes are the fundamental state variables. The rules for the system are typically represented as governing equations for how the system state will change as a function of the current state.
+We review some of the basic concepts underlying EDM, though see @Sauer_1991 for a more detailed treatment. Briefly, time series are sequential observations of a *dynamic system*, which consists of a *state space* and *dynamical rules* for how the system changes over time. At any point in time, the state of the system is a point in the state space (Figure \@ref(fig:time-series-projection)), whose axes are the fundamental state variables. The dynamical rules are typically represented as governing equations for how changes in the system state.
 
-For example, an experimental chemostat setup might be represented with state variables for plankton abundance and the environmental factors of temperature, nutrients, and light. The dynamical rules are the equations for growth and nutrient uptake, and the experimental settings for temperature, light, and nutrient input.
+For example, an experimental chemostat can be represented with state variables for plankton abundance and the environmental factors of temperature, nutrients, and light. The dynamical rules are the equations for growth and nutrient uptake, and the experimental settings for temperature, light, and nutrient input (e.g. constant or following a diel cycle).
 
-The time series for a state variable can be generated by projecting from the state space to the corresponding coordinate axis. For example, in Figure \@ref(fig:time-series-projection), the states of the canonical Lorenz Attractor [-@Lorenz_1963] are projected to the $x$-axis, creating a time series of variable $x$. In many cases, different time series correspond to different state variables. More generally, however, a time series can be any function of one or more state variables (e.g. total plant cover doesn't distinguish individual species).
+Time series can be generated by projecting from the state space to the corresponding coordinate axis. For example, in Figure \@ref(fig:time-series-projection), states of the canonical Lorenz Attractor [-@Lorenz_1963] are projected to the $x$-axis, creating a time series of $x$. Time series frequently correspond to state variables, though more generally, a time series can be any function of one or more state variables (e.g. a time series of total plant cover ignores the dynamics of individual species).
 
-(ref:time-series-projection-caption) Projecting the system state of the Lorenz Attractor to the $x$-axis produces a time series of variable $x$.
+(ref:time-series-projection-caption) Projecting the system state of the Lorenz Attractor to the $x$-axis produces a time series of $x$.
 
 ```{r time-series-projection, out.width = "4.5in", fig.cap = '(ref:time-series-projection-caption)', echo = FALSE}
 knitr::include_graphics("figure_1.pdf")
 ```
 
-The conventional approach to modeling a dynamic system is to run the governing equations forward in time, and use observations of the state variables to determine the system state at different points in time. Uncertainty about vital parameters is addressed by fitting the equations to observational data; and uncertainty about the form of the equations is addressed with model selection. However, this approach assumes that the state variables are known, that they are observed sufficiently, and that the governing equations are known or can be reasonably approximated from theory. These assumptions can be problematic when modeling time series observed from complex, nonlinear systems.
+The conventional approach to modeling a dynamic system is to simulate the governing equations, fitting them to observations to determine the vital parameters. Uncertainty about the form of the equations is typically addressed through model seleciton. However, this requires that the state variables are known, that they are observed sufficiently, and that the governing equations are known or can be reasonably approximated from theory. These assumptions can be problematic when dealing with time series observed from complex, nonlinear systems.
 
 ## Attractor Reconstruction / Takens' Theorem
 
-The EDM framework resolves these issues using the mathematical theory of attractor reconstruction [@Takens_1981; @Sauer_1991; @Casdagli_1991; @Deyle_2011]. The essential idea is to represent the state of the system with lags of a single time series, instead of all of the state variables. For example, in the canonical Lorenz Attractor, the state at time $t$ is nominally represented as $\left(x_t, y_t, z_t \right)$, where $x$, $y$, and $z$ are the state variables (Figure \@ref(fig:time-series-projection)). However, we can use an alternative represention consisting only of lags of $x$: $\mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right)$, where $E$ is the embedding dimension, or number of lags.
+The EDM framework resolves these issues using the mathematical theory of attractor reconstruction [@Takens_1981; @Sauer_1991; @Casdagli_1991; @Deyle_2011]. The essential idea is to use an alternative representation of the system state, composed of lags of a single time series. For example, in the canonical Lorenz Attractor, the system state at time $t$ is conventionally represented as $\left(x_t, y_t, z_t \right)$, where $x$, $y$, and $z$ are the state variables (Figure \@ref(fig:time-series-projection)). However, we can use an alternative represention consisting only of lags of $x$: $\mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right)$, where $E$ is the number of lags, or embedding dimension.
 
 (ref:attractor-reconstruction-caption) Reconstruction of the Lorenz Attractor using 3 lags of x: $\mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right)$. The reconstruction maps smoothly to the original Lorenz Attractor (Figure \@ref(fig:time-series-projection)) and shows a clear visual correspondence.
 
@@ -94,17 +95,17 @@ The EDM framework resolves these issues using the mathematical theory of attract
 knitr::include_graphics("figure_2.pdf")
 ```
 
-This approach, known as *attractor reconstruction*, preserves the mathematical properties of the original system, provided that a sufficient number lags are used [@Takens_1981]. More specifically, points in the reconstructed space, $\mathbf{x}_t$, map smoothly to points in the original state space ("smooth" meaning that nearby points in the reconstructed space also map to nearby points in the original state space). This relationship makes it possible to model a dynamic system using just a single time series.
+This approach preserves the mathematical properties of the original system, provided that a sufficient number lags are used [@Takens_1981]. More specifically, points in the reconstructed space, $\mathbf{x}_t$, map smoothly to points in the original state space ("smooth" meaning that nearby points in the reconstructed space map to nearby points in the original state space). This relationship makes it possible to model the system using just a single time series.
 
-For example, to describe the motion of $x$ in the Lorenz Attractor, we would ordinarily use a function of all of the state variables: $x_{t+1} = F\left(x_t, y_t, z_t\right)$. However, we can instead use an alternative formulation based on the reconstructed state space: $x_{t+1} = F^\prime\left(\mathbf{x}_t\right) = F^\prime\left(x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right)$. Figure \@ref(fig:attractor-reconstruction) demonstrates this point with a reconstruction that uses 3 lags of $x$, which shows a visual correspondence with the original Lorenz attractor.
+For example, in the Lorenz Attractor, we would ordinarily need to model the behavior of $x$ as a function of all of the state variables: $x_{t+1} = F\left(x_t, y_t, z_t\right)$. However, we can instead use the reconstructed state space: $x_{t+1} = G\left(\mathbf{x}_t\right) = G\left(x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right)$. Figure \@ref(fig:attractor-reconstruction) demonstrates this point with a reconstruction that uses 3 lags of $x$, which shows a visual correspondence with the original Lorenz attractor.
 
-In practice, the application of this technique also requires selecting an appropriate time lag ($\tau$), embedding dimension ($E$), and methods for inferring $F^\prime$. We demonstrate how the `rEDM` software package can be used to accomplish these tasks, in the contexts of forecasting [@Sugihara_1990], testing for nonlinear behavior [@Sugihara_1994], and testing whether two time series variables belong to the same system and might be causally related [@Sugihara_2012]. 
+In practice, the application of this technique also requires selecting an appropriate time lag ($\tau$), embedding dimension ($E$), and methods for inferring $G$. We demonstrate how the `rEDM` software package can be used to accomplish these tasks, in the contexts of forecasting [@Sugihara_1990], testing for nonlinear behavior [@Sugihara_1994], and testing whether two time series variables belong to the same system and might be causally related [@Sugihara_2012]. 
 
 # The `rEDM` package
 
 ## Selecting the embedding dimension using simplex projection
 
-As mentioned previously, the mathematical theory of *attractor reconstruction* requires a sufficient number of lags [@Takens_1981]. If the number of lags is too few, then the reconstructed space ($\textbf{x}_t$) will not map smoothly to the original state space. Intuitively, we need enough lags so as to capture the influence of all of the state variables in the original state space (see also [@Whitney_1936]). Practically, the number of lags, or the embedding dimension, is determined empirically as a property of the data; we use forecast skill as the metric for selecting an optimal embedding dimension.
+As mentioned previously, attractor reconstruction requires a sufficient number of lags [@Takens_1981]. If the number of lags is too few, then the reconstructed space ($\textbf{x}_t$) will not map smoothly to the original state space. Intuitively, we need enough lags to capture the influence of all of the state variables (see also [@Whitney_1936]). Practically, the number of lags, or embedding dimension, is determined empirically as a property of the data; we use forecast skill as the metric for selecting an optimal embedding dimension.
 
 ### Example
 
@@ -117,7 +118,7 @@ x_{t+1} = \begin{cases}
 \end{cases}
 \end{equation*}
 
-The first difference of the tentmap time series are included with the package:
+The first differences of the tentmap time series are included in `rEDM`:
 
 ```{r load package}
 library(rEDM)
@@ -126,16 +127,16 @@ data(tentmap_del)
 str(tentmap_del)
 ```
 
-To select the portions of the time series to be used for fitting the model and then testing the model, we define `lib` and `pred` variables:
+To select the portions of the time series to be used for fitting the model and testing the model, we define `lib` and `pred` variables:
 
 ```{r define lib and pred}
 lib <- c(1, 100)
 pred <- c(201, 500)
 ```
 
-Here, `lib <- c(1, 100)` indicates that rows 1 through 100 of the input data are used for fitting the model, and `pred <- c(201, 500)` indicates that rows 201 through 500 of the input data are used for testing the model.
+`lib <- c(1, 100)` indicates that rows 1 through 100 of the data are used for fitting the model, and `pred <- c(201, 500)` indicates that rows 201 through 500 of the input are used for testing the model.
 
-Since the time series come from a discrete map, a time lag of `tau = 1` is appropriate (and is the default parameter value). In addition, because we know the dynamics are fairly simple, the default range of $E = 1:10$ for the embedding dimension will suffice. More generally, in the absence of prior knowledge about the system, a reasonable range of values is 1 through $sqrt(n)$ with $n$ being the length of the time series [REF]).
+Since the time series come from a discrete map, a time lag of `tau = 1` is appropriate (and is the default parameter value). In addition, because we know the dynamics are fairly simple, the default range of `E = 1:10` for the embedding dimension will suffice. More generally, in the absence of prior knowledge about the system, it is reasonable to test values up to $sqrt(n)$ with $n$ being the length of the time series [REF]).
 
 ```{r simplex on tentmap}
 simplex_output <- simplex(time_series = tentmap_del, 
@@ -143,13 +144,13 @@ simplex_output <- simplex(time_series = tentmap_del,
                           tau = 1, E = 1:10)
 ```
 
-Here, the `simplex()` function makes forecasts, employing Simplex Projection to infer the dynamical model $F^\prime$ from the data using nearest neighbor approximation [@Sugihara_1990].
+The `simplex()` function makes forecasts, employing Simplex Projection to infer the dynamical function $G$ from the data using nearest neighbor approximation [@Sugihara_1990].
 
 ```{r simplex output}
 str(simplex_output)
 ```
 
-The output is a data.frame with rows for each individual model run, one row for each unique combination of model parameters. Here, there are `r NROW(simplex_output)` rows because we chose to vary the embedding dimension from 1 to 10. The first four columns are the model parameters: `E`, embedding dimension; `tau`, time lag between successive dimensions; `tp`, time to prediction; and `nn`, number of nearest neighbors. Next are the forecast statistics: `num_pred`, the number of predictions made; `rho`, Pearson's correlation coefficient between predictions and observations; `mae`, mean absolute error of predictions; `rmse`, root mean squared error of predictions; `perc`, the percent of predictions that are the same sign as observations; and `p_val`, the p-value for `rho` being significantly greater than 0, using Fisher's transformation [-@Fisher_1915]. For the purpose of comparison, the same forecast statistics are provided for a naive constant predictor, $\hat{x}_{t+tp} = x_t$.
+The output is a data.frame with one row for each individual model run. Here, there are 10 rows because we chose to vary the embedding dimension from 1 to 10. The first four columns are the model parameters: `E`, embedding dimension; `tau`, time lag between successive dimensions; `tp`, time to prediction; and `nn`, number of nearest neighbors. Next are the forecast statistics: `num_pred`, the number of predictions made; `rho`, Pearson's correlation coefficient between predictions and observations; `mae`, mean absolute error of predictions; `rmse`, root mean squared error of predictions; `perc`, the percent of predictions that are the same sign as observations; and `p_val`, the p-value for `rho` being significantly greater than 0, using Fisher's transformation [-@Fisher_1915]. For the purpose of comparison, the same forecast statistics are provided for a naive constant predictor, $\hat{x}_{t+tp} = x_t$.
 
 (ref:simplex-caption) Forecast skill (rho) vs. Embedding Dimension (E) for the `tentmap_del` time series. A peak at E = 2 indicates that 2 total lags are optimal for reconstructing the dynamics. 
 
@@ -159,21 +160,21 @@ plot(rho ~ E, data = simplex_output, type = "l",
      xlab = "Embedding Dimension (E)", ylab = "Forecast Skill (rho)")
 ```
 
-Figure \@ref(fig:tentmap-simplex) shows that forecast skill peaks at E = 2, indicating that the dynamics of the `tentmap_del` time series are best represented using 2 total lags. *Notably, this optimal embedding dimension does not necessarily correspond to the dimensionality of the original system.* Forecast skill is affected by factors such as observational noise, process error, and time series length. Thus, the optimal embedding dimension should be interpreted as a practical measure that is dependent on properties of the data.
+Figure \@ref(fig:tentmap-simplex) shows that forecast skill peaks at E = 2, indicating that the dynamics of the `tentmap_del` time series are best represented using 2 lags. *Note that the optimal embedding dimension may not correspond to the dimensionality of the underlying system.* Indeed, because forecast skill is affected by observational noise, process error, time series length, etc., the optimal embedding dimension is best viewed as a practical property of the data.
 
 ## Identifying Nonlinearity
 
-One concern is that forecast skill can occur because of temporal autocorrelation in the time series. In this approach to forecasting, we infer the function, $F^\prime$, that relates lags of a time series to its next value; consequently, this approach will also succeed when used to model temporally autocorrelated data (i.e. red noise). To distinguish between time series that contain deterministic nonlinear dynamics and red noise, we employ S-maps [@Sugihara_1994].
+One concern is that the ability to forecast may result from temporal autocorrelation in the time series. Because we infer a function, $G$ that relates lags of a time series to its next value, this will also work when modelling temporally autocorrelated data (i.e. red noise). To distinguish between time series that contain deterministic nonlinear dynamics and red noise, we employ S-maps [@Sugihara_1994].
 
-Whereas Simplex Projection approximates $F^\prime$ using nearest neighbors in the reconstruction space [@Sugihara_1990], the S-map uses local linear maps [@Sugihara_1994]. For each forecast, a local linear map is fitted, such that each point is assigned a weight depending on its distance (typically the Euclidean distance) to the point being forecast and the nonlinear tuning parameter, $\theta$. This allows the S-map to approximate any potential function, with $\theta$ controlling how nonlinear $F^\prime$ can be.
+Whereas Simplex Projection approximates $G$ using nearest neighbors in the reconstruction space [@Sugihara_1990], the S-map uses local linear maps [@Sugihara_1994]. For each individual forecast, a local linear map is fitted with the data points assigned weights based on their distance (typically the Euclidean distance) to the point being forecast and the nonlinear tuning parameter, $\theta$. This allows the S-map to approximate any potential function, with $\theta$ controlling how nonlinear $G$ can be.
 
-When $\theta = 0$, all points receive equal weights, and the local linear map is the same across the reconstruction space, making $F^\prime$ equivalent to a single global linear map. In contrast, for $\theta > 0$, nearby points receive larger weights, and the local linear map depends more on similar system states. Larger values of $\theta$ allow the forecast function, $F^\prime$ to be more "wiggly", similar to the weighting scheme in a LOESS [REF].
+When $\theta = 0$, all points receive equal weights, and the local linear map is the same across the reconstruction space, making $G$ equivalent to a single global linear map. For $\theta > 0$, nearby points receive larger weights, and the local linear map depends more on similar system states. Larger values of $\theta$ allow the forecast function, $G$ to be more "wiggly", similar to the scale parameter in a LOESS [REF].
 
-To distinguish between red noise and deterministic nonlinear dynamics, we evaluate how forecast skill depends on $\theta$. For autoregressived red noise, a single global map ($\theta = 0$) should produce the best forecasts, becauses it is fit to all of the data points, and therefore minimizes the effects of observational noise. However, for deterministic nonlinear dynamics, the true forecast function, $F^\prime$, will vary as a function of system state, and forecast skill will improve when $\theta > 0$.
+To distinguish between red noise and deterministic nonlinear dynamics, we evaluate how forecast skill depends on $\theta$. For red noise, a single global map ($\theta = 0$) should produce the best forecasts, becauses it is fit to all of the data points, thereby minimizing the effects of observational noise. However, for nonlinear dynamics, the true forecast function, $G$, will vary as a function of system state, and forecast skill will improve when $\theta > 0$.
 
 ### Example
 
-The function `s_map()` implements the S-map method. Following from the previous example, we use the tent map time series, and fix `E = 2` based on the results from simplex projection. Similarly, the default values for `tau` and `tp` remain appropriate -- if we had used different values when determining the optimal embedding dimension, we would want to use the same values here. We also use the default set of values for `theta`, ranging from 0 to 8.
+The function `s_map()` implements the S-map method. We use the same data sa the previous example, and fix `E = 2` based on the results from simplex projection. Similarly, the default values for `tau` and `tp` remain appropriate -- if we had used different values when determining the optimal embedding dimension, we would do the same here. We also use the default set of values for `theta`, ranging from 0 to 8.
 
 ```{r smap for tentmap}
 smap_output <- s_map(time_series = tentmap_del, 
@@ -181,9 +182,9 @@ smap_output <- s_map(time_series = tentmap_del,
                      E = 2)
 ```
 
-Again, the result is a data.frame with rows for each model run, and columns for the model parameters and forecast statistics. Note that the default is `num_neighbors = 0`: this parameter controls how many of the nearest points the S-map is allowed to be fit to (which can ease calculations when there are a large number of data points). A value of 0 tells the S-map to use all the points.
+Again, the result is a data.frame with rows for each model run, and columns for the model parameters and forecast statistics. Note that `num_neighbors = 0`: this parameter controls how many of the nearest points the S-map is allowed to be fit to (which can ease calculations when there are a large number of data points). A value of 0 tells the S-map to use all the points.
 
-(ref:smap-caption) Forecast skill (rho) vs. Nonlinearity (theta) for the `tentmap_del` time series. Increased forecast skill for theta > 0 suggests nonlinear dynamics in the data.
+(ref:smap-caption) Forecast skill (rho) vs. Nonlinearity (theta) for the `tentmap_del` time series. Increased forecast skill for theta > 0 suggests nonlinear dynamics.
 
 ```{r tentmap-smap, fig.cap = '(ref:smap-caption)', echo = FALSE}
 par(mar = c(4, 4, 1, 4), mgp = c(2.5, 1, 0))
@@ -191,9 +192,9 @@ plot(smap_output$theta, smap_output$rho, type = "l",
      xlab = "Nonlinearity (theta)", ylab = "Forecast Skill (rho)")
 ```
 
-Figure \@ref(fig:tentmap-smap) shows that forecast skill substantially improves as $\theta$ increases, indicating the presence of nonlinear dynamics. Typically, we would also expect forecast skill to decrease as $\theta$ continues to increase, because the model will start to become overfit to individual points. However, because the data in this example are observed without any noise, the S-map continues to converge closer to the true function as $\theta$ increases.
+Figure \@ref(fig:tentmap-smap) shows that forecast skill substantially improves as $\theta$ increases, indicating nonlinear dynamics. Typically, we would expect forecast skill to decrease as $\theta$ continues to increase, because the model will become overfit to individual points. However, because the data in this example are observed without any noise, the S-map continues to converge closer to the true function as $\theta$ increases.
 
-If we simulate additive observational error and re-run the S-map analysis, the result is more typical of real data (Figure \@ref(fig:tentmap-smap-noise)).
+Simulating the S-map analysis with additive observational error gives a result that is more typical of real data (Figure \@ref(fig:tentmap-smap-noise)).
 
 ```{r rho vs theta with noise}
 ts_err <- tentmap_del + rnorm(length(tentmap_del), 
@@ -213,9 +214,9 @@ plot(smap_output_err$theta, smap_output_err$rho, type = "l",
 
 ## Generalized Takens's Theorem
 
-Rather than representing the system state with lags of a single time series [@Takens_1981], we can use different time series observed from the same system [@Sauer_1991; @Deyle_2011]. These *multivariate* representations can often be more effective when data are limited and noisy, or necessary when there are stochastic drivers in the system that need to be explicitly included. For more details, see @Casdagli_1991.
+Rather than representing the system state with lags of a single time series [@Takens_1981], we can use different time series observed from the same system [@Sauer_1991; @Deyle_2011]. These *multivariate* representations can be more effective when data are limited and noisy, or necessary when there are stochastic drivers in the system that need to be explicitly included (see @Casdagli_1991 for more details).
 
-The `block_lnlp()` function generalizes the `simplex()` and `s_map()` functions: any combination of time series (and their lags) can be used, with either of the Simplex Projection or S-map methods. Instead of lags of one time series, the coordinates of the reconstruction must be manually specified as columns of the input data (`columns`); and similarly for the variable to be forecast (the `target_column` argument). If lags of a time series are desired as coordinates, they need to be pre-computed as additional columns (e.g. via the `make_block()` function).
+The `block_lnlp()` function generalizes the `simplex()` and `s_map()` functions: any combination of time series (and their lags) can be used, with either the Simplex Projection or S-map. Instead of lags of one time series, the coordinates of the reconstruction are manually specified as columns of the input data (`columns`); and similarly for the variable to be forecast (the `target_column` argument). If lags of a time series are desired as coordinates, they need to be pre-computed as additional columns (e.g. via the `make_block()` function).
 
 ### Example
 
@@ -228,7 +229,7 @@ str(block_3sp)
 
 `block_3sp` is a 10-column data-frame, consisting of `time`, and 3 lags of each of the variables: unlagged (`_t-1`), lag-1 (`_t-1`), and lag-2 (`_t-2`). Note that the lagged columns begin with `NA` values because the entries correspond to missing observations of the variables (e.g. `x` at time 0 or -1). Points that contain missing values are automatically excluded from fitting and forecasting.
 
-Columns can be referred to by numerical index (starting with 1) or column name. The optional argument `first_column_time` is used to indicate that the input data has a time index in the first column is a time index, and should be skipped. For example, supposed that we want to use the coordinates $\left(x_t, x_{t-1}, y_t\right)$ to predict future values of $x_t$. To properly ignore the time column, the coordinates of the reconstruction correspond to `columns = c(1, 2, 4)` and `target_column = 1` with `first_column_time = TRUE`.
+Columns can be referred to by numerical index (starting with 1) or column name. The optional argument `first_column_time` is used to indicate that the input data has a time index in the first column is a time index, and should be skipped. For example, to use the coordinates $\left(x_t, x_{t-1}, y_t\right)$ to predict future values of $x_t$, we would specify `columns = c(1, 2, 4)`, `target_column = 1` , and `first_column_time = TRUE`.
 
 ```{r block-lnlp for block-3sp, warning = FALSE}
 lib <- c(1, 100)
@@ -241,7 +242,7 @@ block_lnlp_output <- block_lnlp(block_3sp, lib = lib, pred = pred,
                                 stats_only = FALSE)
 ```
 
-We can also refer to columns by name. Here, specifying `first_column_time = TRUE` is unnecessary, helps in labeling the predictions with the correct time value.
+We can also refer to columns by name. Here, specifying `first_column_time = TRUE` is unnecessary, but will aid in labeling the predictions with the correct time value.
 
 ```{r block-lnlp with alternative column reference}
 block_lnlp_alt <- block_lnlp(block_3sp, lib = lib, pred = pred,
@@ -254,13 +255,13 @@ block_lnlp_alt <- block_lnlp(block_3sp, lib = lib, pred = pred,
 stopifnot(identical(block_lnlp_output, block_lnlp_alt))
 ```
 
-As in `simplex()` and `s_map()`, the default value for the `tp` argument is 1---predictions are 1-step ahead. That is, the forecast model is of the form $F^\prime: \left(x_t, x_{t-1}, y_t\right) \rightarrow x_{t+\texttt{tp}}$) *In some cases, the data may be formatted such dependent variable is a different column in the same row, and so `tp` should be set to 0.*
+As in `simplex()` and `s_map()`, the default value for the `tp` argument is 1---predictions are 1-step ahead. That is, the forecast model is $G: \left(x_t, x_{t-1}, y_t\right) \rightarrow x_{t+\texttt{tp}}$) *In some cases, the data may be formatted with the dependent variable as a different column in the same row, and `tp` should be set to 0.*
 
 ```{r block-lnlp output}
 str(block_lnlp_output)
 ```
 
-With `stats_only = FALSE`, the output also includes a list column (`model_output`), where each element is a data.frame that contains observed and predicted values for that model run. We can extract out these values to inspect how individual predictions line up against observed values.
+With `stats_only = FALSE`, the output also includes a list column (`model_output`), where each element is a data.frame that contains observed and predicted values for that model run. We can extract these values to inspect how individual predictions compare to observed values.
 
 ```{r extract block-lnlp predictions}
 list_of_model_predictions <- block_lnlp_output$model_output
@@ -270,7 +271,7 @@ observed <- first_model_predictions$obs
 predicted <- first_model_predictions$pred
 ```
 
-(ref:block-pred-vs-obs-caption) The predictions of variable $x$ against the observed values of $x$ from running `block_lnlp()`. Perfect predictions will fall on the 1:1 line (blue dashed line).
+(ref:block-pred-vs-obs-caption) The predictions of variable $x$ against the observed values of $x$; perfect predictions will fall on the 1:1 line (blue dashed line).
 
 ```{r block-pred-vs-obs, fig.width = 4, fig.height = 4, fig.cap = '(ref:block-pred-vs-obs-caption)', echo = FALSE}
 par(pty = "s")
@@ -282,7 +283,7 @@ abline(a = 0, b = 1, lty = 2, col = "blue")
 
 ## S-map Coefficients
 
-As described in @Deyle_2016, the S-map coefficients can be interpreted as dynamic, time-varying interaction strengths, given an appropriate choice of coordinates for reconstruction. We demonstrate this using $\left(x_t, y_t, z_t\right)$ to predict $x_{t+1}$ in the 3-species simulation described previously.
+As described in @Deyle_2016, the S-map coefficients can be interpreted as dynamic, time-varying interaction strengths, given an appropriate choice of reconstruction coordinates. We demonstrate this using $\left(x_t, y_t, z_t\right)$ to predict $x_{t+1}$ for the 3-species simulation described previously.
 
 ```{r 3-species s-map coefficients example}
 data(block_3sp)
@@ -298,14 +299,14 @@ block_smap <- block_lnlp(block_3sp, lib = lib, pred = pred,
                          save_smap_coefficients = TRUE)
 ```
 
-As with `model_output`, the `smap_coefficients` column is a list-column, where the elements are data.frames containing the S-map coefficients of each model.
+As with `model_output`, the `smap_coefficients` column is a list-column, where the elements are data.frames with the S-map coefficients.
 
 ```{r get coefficients}
 smap_coeffs <- block_smap$smap_coefficients[[1]]
 str(smap_coeffs)
 ```
 
-(ref:smap-coeffs-caption) **A.** Time series for $x$ compared with predictions (points). **B-D.** The inferred effects of $x$, $y$, and $z$ from the S-map model that predicts future values, $x_{t+1}$.
+(ref:smap-coeffs-caption) **A.** Time series of $x$ and its predictions (points). **B-D.** The inferred effects of $x$, $y$, and $z$ from the S-map model.
 
 ```{r smap-coeffs, fig.width = 4.5, fig.height = 5, fig.cap = '(ref:smap-coeffs-caption)', echo = FALSE}
 par(mfrow = c(4, 1), mar = c(2, 4, 1, 4), oma = c(2, 0, 0, 0),
@@ -335,9 +336,9 @@ Here, `smap_coeffs` is a data.frame with 100 rows (the number of predictions) an
 
 ## Causal Inference and Cross Mapping
 
-One corollary to Takens' Theorem [-@Takens_1981] is that smooth maps also exist between multiple reconstructions of the same system. Consider a dynamic system that contains two interacting variables, $x$ and $y$. The univariate reconstructions, based on lags of $x$ ( $\mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E_x-1)\tau} \right)$) and $y$ ( $\mathbf{y}_t = \left( y_t, y_{t-\tau}, \dots, y_{t-(E_y-1)\tau} \right)$) respectively, are each capable of uniquely identifying system states. Thus, there is also a smooth map between $\mathbf{x}_t$ and $\mathbf{y}_t$ (Figure \@ref(fig:cross-mapping)). In practical terms, we can test for the map between $\mathbf{x}_t$ and $\mathbf{y}_t$ by measuring the predictive skill of mapping from $\mathbf{x}_t$ to $y_t$ and from $\mathbf{y}_t$ to $x_t$.
+One corollary to Takens' Theorem [-@Takens_1981] is that smooth maps exist between multiple reconstructions of the same system. Consider a dynamic system that contains two interacting variables, $x$ and $y$. The univariate reconstructions, based on lags of $x$ ( $\mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E_x-1)\tau} \right)$) and $y$ ( $\mathbf{y}_t = \left( y_t, y_{t-\tau}, \dots, y_{t-(E_y-1)\tau} \right)$) respectively, each map smoothly to the original state space. Thus, there is also a smooth map between $\mathbf{x}_t$ and $\mathbf{y}_t$ (Figure \@ref(fig:cross-mapping)). We can test for the map between $\mathbf{x}_t$ and $\mathbf{y}_t$ by measuring the predictive skill of mapping from $\mathbf{x}_t$ to $y_t$ and from $\mathbf{y}_t$ to $x_t$.
 
-(ref:cross-mapping-caption) Two reconstructions of the Lorenz Attractor. The one on the left uses lags of $x$ ( $\mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E_x-1)\tau} \right)$) and the one on the right uses lags of $y$ ( $\mathbf{y}_t = \left( y_t, y_{t-\tau}, \dots, y_{t-(E_y-1)\tau} \right)$). There is a smooth map between the two reconstructions, which also show a visual correspondence with each other.
+(ref:cross-mapping-caption) Two reconstructions of the Lorenz Attractor. The one on the left uses lags of $x$ ( $\mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E_x-1)\tau} \right)$) and the one on the right uses lags of $y$ ( $\mathbf{y}_t = \left( y_t, y_{t-\tau}, \dots, y_{t-(E_y-1)\tau} \right)$). There is a smooth map between the two reconstructions, which also show a visual correspondence.
 
 ```{r cross-mapping, out.width = "4.5in", fig.cap = '(ref:cross-mapping-caption)', echo = FALSE}
 knitr::include_graphics("figure_3.pdf")
@@ -345,9 +346,9 @@ knitr::include_graphics("figure_3.pdf")
 
 ### Directionality
 
-When causation occurs in only one direction, e.g. $x$ influences $y$, but $y$ does not influence $x$, the mapping between $\mathbf{x}_t$ and $\mathbf{y}_t$ is only assured in one direction. Specifically, if $x$ influences $y$, then there is a mapping from $\mathbf{y}_t$ to $x_t$ (i.e. from the affected variable to the causal variable). Although the direction is counterintuitive, this occurs because $\mathbf{y}_t$ must capture all of the dynamical rules about how $y$ changes in time, including the influence of $x$. Consequently, $\mathbf{y}_t$ will be able to recover the values of $x$. Conversely, $\mathbf{x}_t$ is only guaranteed to capture the dynamical rules for how $x$ changes in time, and this does not require any information about $y$. Thus, there is no guarantee of a mapping from $\mathbf{x}_t$ to $y_t$.
+When causation occurs in only one direction, e.g. $x$ influences $y$, but $y$ does not influence $x$, the mapping between $\mathbf{x}_t$ and $\mathbf{y}_t$ is only assured in one direction. Specifically, if $x$ influences $y$, then there is a mapping from $\mathbf{y}_t$ to $x_t$ (i.e. from the affected variable to the causal variable). Although the direction is counterintuitive, this occurs because $\mathbf{y}_t$ must capture all of the dynamical rules for changes in $y$, which includes the influence of $x$. Consequently, $\mathbf{y}_t$ can recover the values of $x$. Conversely, $\mathbf{x}_t$ is only guaranteed to capture the dynamical rules for changes in $x$, which does not require any information about $y$. Thus, there is no guarantee of a mapping from $\mathbf{x}_t$ to $y_t$.
 
-Nevertheless, because $x$ does influence $y$, there will be some predictive skill in the mapping from $\mathbf{x}_t$ to $y_t$. However, except in cases where $y$ is synchronized to $x$ [@Rulkov_1995], the quality of the mapping will be limited, regardless of the amount of data. In contrast, the mapping from $\mathbf{y}_t$ to $x_t$ will continue to improve in skill with more and more data. This convergence is a critical property for inferring causality, and can be tested by measuring the cross mapping skill with larger and larger subsamples of the data. For a more detailed description of using cross mapping to infer causation, see @Sugihara_2012 and @Ye_2015a.
+Nevertheless, because $x$ does influence $y$, there is typically some predictive skill in the mapping from $\mathbf{x}_t$ to $y_t$. Except in cases where $y$ is synchronized to $x$ [@Rulkov_1995], the quality of the mapping will be limited, while the mapping from $\mathbf{y}_t$ to $x_t$ will continue to improve in skill with more and more data. This convergence is a critical property for inferring causality, and can be tested by measuring the cross mapping skill with larger and larger subsamples of the data. For a more detailed description of using cross mapping to infer causation, see @Sugihara_2012 and @Ye_2015a.
 
 ## Convergent Cross Mapping (CCM)
 
