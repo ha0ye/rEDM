@@ -7,6 +7,9 @@ cache:
 sudo: required
 warnings_are_errors: false
 
+r_packages:
+  - covr
+  
 r:
   - release
   - devel
@@ -15,12 +18,14 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install texlive-latex-base
   - tlmgr install pgfplots algorithmicx
+  
 r_build_args: '--no-build-vignettes'
 r_check_args: '--ignore-vignettes --no-examples'
 
 after_success:
   - R CMD INSTALL .
   - Rscript -e 'pkgdown::build_site()'
+  - Rscript -e 'covr::codecov()'
   
 deploy:
   provider: pages
