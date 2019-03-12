@@ -30,7 +30,7 @@ generate_lorenz_attractor <- function(out_file = "model_lorenz.Rdata",
     dat <- matrix(20, nrow = num_points, ncol = 3)
     
     # generate data using Runge-Kutta
-    for (i in 1:(num_points-1))
+    for (i in 1:(num_points - 1))
     {
         xx <- dat[i,]
         for (k in 1:down_sample)
@@ -73,7 +73,7 @@ draw_lagged_attractor <- function(v, FUN = lines3d, t = 1220,
 }
 
 # Plot Lorenz attractor with projected time series
-make_figure_1 <- function(dat, t = 1120, future_len = 40, 
+make_figure_1 <- function(dat, t = 1130, start_t = 7, future_len = 40, 
                           rescale_buffer = 0.05, 
                           userMatrix = matrix(c(0.0001, 0.2484, 0.9687, 0.05, 
                                                 0.9417, -0.3258, 0.0835, 0, 
@@ -81,13 +81,14 @@ make_figure_1 <- function(dat, t = 1120, future_len = 40,
                                                 0, 0, 0, 1), nrow = 4, byrow = TRUE),
                           FOV = 15, zoom = 0.7, cex = 1.75, scale = c(1, 1, 1), 
                           windowRect = c(50, 50, 700, 500),
-                          plot_file = NULL)
+                          plot_file = NULL, 
+                          point_size = NULL)
 {
     par3d(windowRect = windowRect, scale = scale, 
           userMatrix = userMatrix, 
           zoom = zoom, FOV = FOV, cex = cex)
     
-    idx <- seq(from = 1, to = t + future_len)
+    idx <- seq(from = start_t, to = t + future_len)
     x <- rescale(dat[idx, 1], rescale_buffer)
     y <- rescale(-dat[idx, 2], rescale_buffer)
     z <- rescale(dat[idx, 3], rescale_buffer)
@@ -102,14 +103,14 @@ make_figure_1 <- function(dat, t = 1120, future_len = 40,
     
     # draw axes
     lines3d(c(0, 1), 0, 0, lwd = 2)
-    text3d(0.75, 0, -0.05, "x", 
-           family = "serif", font = 3, usePlotmath = FALSE)
+    text3d(0.85, 0, -0.08, "x", 
+           family = "serif", font = 3, usePlotmath = FALSE, cex = 2)
     lines3d(0, c(0, 1), 0, lwd = 2)
     text3d(0, 0.5, -0.1, "y", 
-           family = "serif", font = 3, usePlotmath = FALSE)
+           family = "serif", font = 3, usePlotmath = FALSE, cex = 2)
     lines3d(0, 1, c(0, 1), lwd = 2)
     text3d(0, 1.15, 0.6, "z", 
-           family = "serif", font = 3, usePlotmath = FALSE)
+           family = "serif", font = 3, usePlotmath = FALSE, cex = 2)
     
     # draw projected time series
     theta_x <- -pi/2 - 0.2
@@ -119,13 +120,27 @@ make_figure_1 <- function(dat, t = 1120, future_len = 40,
             ts_path * sin(theta_x), 
             color = color_red, lwd = 2)
     pos_text <- 1.2
-    text3d(-0.05, pos_text * cos(theta_x), pos_text * sin(theta_x), "time")
+    lines3d(0, c(1.5, 0.2) * cos(theta_x), c(1.5, 0.2) * sin(theta_x), 
+            color = "#888888", lwd = 2)
+    text3d(-0.1, pos_text * cos(theta_x), pos_text * sin(theta_x), "time", cex = 2)
     
     # draw projection from attractor to axis
     xx <- x[t]
     yy <- y[t]
     zz <- z[t]
-    points3d(xx, yy, zz, color = "black", size = 8)
+    if (!is.null(point_size))
+    {
+        points3d(xx, yy, zz, color = "black", size = point_size)
+        dx <- 1.2 - xx
+        dy <- yy - yy
+        dz <- 0.3 - zz
+        lines3d(xx + c(0.1, 0.8) * dx, 
+                yy + c(0.1, 0.8) * dy, 
+                zz + c(0.1, 0.8) * dz, 
+                color = color_blue, lwd = 1)
+        text3d(1.2, yy, 0.3, "(x(t), y(t), z(t))", 
+               family = "serif", font = 3, usePlotmath = FALSE, cex = 1.5)
+    }
     lines3d(c(xx, xx, xx), c(0, yy, yy), c(0, 0, zz), color = color_red, lwd = 1.5)
     
     par3d(windowRect = windowRect, scale = scale, 
@@ -275,17 +290,17 @@ if(TRUE)
     
 
     fig_1_file <- here("vignettes", "vignette_figs", "figure_1.pdf")
-    make_figure_1(dat, plot_file = fig_1_file)
+    make_figure_1(dat, plot_file = fig_1_file, point_size = 10)
     
-    open3d()
-
-    fig_2_file <- here("vignettes", "vignette_figs", "figure_2.pdf")
-    make_figure_2(dat, plot_file = fig_2_file)
-    
-    open3d()
-    
-    fig_3_file <- here("vignettes", "vignette_figs", "figure_3.pdf")
-    make_figure_3(dat, plot_file = fig_3_file)
+    # open3d()
+    # 
+    # fig_2_file <- here("vignettes", "vignette_figs", "figure_2.pdf")
+    # make_figure_2(dat, plot_file = fig_2_file)
+    # 
+    # open3d()
+    # 
+    # fig_3_file <- here("vignettes", "vignette_figs", "figure_3.pdf")
+    # make_figure_3(dat, plot_file = fig_3_file)
 }
 
 # 
