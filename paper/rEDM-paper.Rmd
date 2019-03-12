@@ -20,13 +20,13 @@ affiliation:
   - code: 3
     address: Scripps Institution of Oceanography, University of California San Diego, 9500 Gilman Drive MC 0202, La Jolla, CA USA 92093-0202
 abstract: "
-  1. Modeling the ecological time series can be challenging because of uncertainty about the mathematical representation behind the underlying processes, or because of dependence on unknown or unobserved state variables.
+  1. Because ecosystems are inherently complex, modeling ecological time series can be challenging due to uncertainty about the correct mathematical representation of underlying processes, and unknown or unobserved variables.
   
-  2. Empirical dynamic modeling (EDM) is an emerging framework for using the mathematical theory of attractor reconstruction to model time series observed from dynamic systems. The `rEDM` package is an implemention of EDM methods in R, building on software developed in the Sugihara Lab.
+  2. Empirical dynamic modeling (EDM) is an emerging framework that addresses these issues by modeling time series empirically, using the mathematical theory of attractor reconstruction. The `rEDM` package implements EDM methods in R, building on software developed in the Sugihara Lab.
 
   3. `rEDM` contains functions for time series analysis, including: peprocessing of data, forecasting, inferring causal relationships, and quantifying dynamic interactions.
   
-  4. `rEDM` facilitates the use of EDM for developing ecological insights through empirical analysis of time series, supporting both exploratory data analysis and confirmation of existing hypotheses."
+  4. `rEDM` facilitates the use of EDM for developing ecological insights through both exploratory analyses and confirmation of existing hypotheses."
 header-includes: >
   \usepackage{amsmath}
   \usepackage{setspace}
@@ -38,7 +38,7 @@ output:
     # base_format: rmarkdown::pdf_document 
 ---
 ### Keywords {-}
-causal inference, empirical dynamics, forecasting, time series
+causal inference, empirical dynamics, forecasting, nonlinear dynamics, time series
 
 ### Running Title {-}
 `rEDM`: Empirical Dynamic Modeling in R
@@ -51,27 +51,15 @@ knitr::opts_chunk$set(fig.width = 4.5, fig.height = 3)
 
 # Introduction
 
-<!-- 
-In ecology, models are approximations of reality that are used for descriptive, explanatory, or predictive purposes.
+In contrast to other scientific fields, ecology lacks governing equations. Moreover, ecosystems are inherently complex, with behavior arising from nonlinear interactions between components and across scales. Thus, it is challenging to model ecological time series with the conventional approach of fitting parameteric equations---these equations can be impractical when the exact mechanisms are unknown or when data are too short, noisy, or incomplete to effectively parameterize them. Empirical approaches, which infer patterns and associations from the data (instead of using hypothesized forms), represent an alternative and highly flexible approach.
 
-One common application of models is to describe how important ecological variables, such as abundance, change over time, and in relation to each other. Historically, such models have been based on parametric equations that are derived from theory, and then tested in laboratory or simulation settings. However, there are many situations where explicit mathematical formulations are impractical: the exact mechanisms may be unknown or very complex; and the available data may be too limited or noisy to fully parameterize these equations.
-
-These obstacles can hinder the effective usage of ecological models; for example, effort may be expended on increased monitoring and observation, yet yield little improvement in understanding or predictive power, because of inappropriate or inflexible mathematical hypotheses. In contrast, phenomenological models are highly flexible alternatives, which operate by inferring patterns and associations from the data (instead of relying on hypothesized equations). Here, we review the theoretical background for reconstructing dynamic rules from time series data, an approach known as "Empirical Dynamic Modeling (EDM)" and the functionality of the `rEDM` package in R [@Ye_2018]. 
-
-EDM combines the mathematical theory of attractor reconstruction [@Takens_1981; @Sauer_1991; @Casdagli_1991; @Deyle_2011] and simple methods for function approximation [@Sugihara_1990; @Sugihara_1994] in order to model complex systems using limited time series observations. Thus, it can be a powerful method for improving ecological modeling. Moreover, becasue EDM operates with minimal assumptions, it is particularly suitable for studying systems that exhibit non-equilibrium dynamics and nonlinear state-dependent behavior (i.e. where interactions change over time and as a function of the system state). -->
-
-<!-- which are intended for nonlinear dynamic systems that can prove problematic for traditional modeling approaches. -->
-<!-- especially problematic when used for predictive purposes () -->
-
-<!-- Empirical models, which infer patterns and associations from the data (instead of using hypothesized equations), represent an alternative and highly flexible approach. Here, we review the theoretical background for empirical dynamic modeling (EDM) and the functionality of the `rEDM` package, which are intended for nonlinear dynamic systems that can prove problematic for traditional modeling approaches. -->
-
-<!-- The basic goal underlying EDM is to reconstruct the behavior of dynamic systems using time series data. This approach is based on mathematical theory developed initially by [@Takens_1981], and subsequently expanded [@Sauer_1991; @Casdagli_1991; @Deyle_2011]. Because these methods operate with minimal assumptions, they are particularly suitable for studying systems that exhibit non-equilibrium dynamics and nonlinear state-dependent behavior (i.e. where interactions change over time and as a function of the system state). -->
+Empirical dynamic modeling (EDM) is an emerging framework for modeling time series empirically, by reconstructing the behavior of the underlying dynamic systems from time series observations, and is based on the mathematical theory of attractor reconstruction [@Takens_1981; @Sauer_1991; @Casdagli_1991; @Deyle_2011]. Because EDM operates with minimal assumptions, it is well-suited for modeling ecological time series. The `rEDM` package is an implemention of EDM in R, and builds on software developed in the Sugihara Lab [@Ye_2018]. Here, we review the theoretical background for empirical dynamic modeling (EDM) and the functionality of the `rEDM` package.
 
 # Empirical Dynamic Modeling
 
 ## Time Series as Observations of a Dynamic System
 
-We review some of the basic concepts underlying EDM, though see @Sauer_1991 for a more detailed treatment. Briefly, time series are sequential observations of a *dynamic system*, which consists of a *state space* and *dynamical rules* for how the system changes over time. At any point in time, the state of the system is a point in the state space (Figure \@ref(fig:time-series-projection)), whose axes are the fundamental state variables. The dynamical rules are typically represented as governing equations for how changes in the system state.
+We review the basic concepts underlying EDM, but see @Sauer_1991 and @Chang_2017 for more detailed treatments. Briefly, time series are sequential observations of a *dynamic system*, which consists of a *state space* and *dynamical rules* for how the state changes over time. At any point in time, the state is a point in the state space (Figure \@ref(fig:time-series-projection)), whose axes are the fundamental state variables. The dynamical rules are typically represented as governing equations.
 
 For example, an experimental chemostat can be represented with state variables for plankton abundance and the environmental factors of temperature, nutrients, and light. The dynamical rules are the equations for growth and nutrient uptake, and the experimental settings for temperature, light, and nutrient input (e.g. constant or following a diel cycle).
 
@@ -352,9 +340,9 @@ Nevertheless, because $x$ does influence $y$, there is typically some predictive
 
 ## Convergent Cross Mapping (CCM)
 
-Convergent cross mapping is implemented as the `ccm()` function, which provides a wrapper to compute cross map skill for different sized subsamples of the data. In the following example, we reproduce the analysis from [@Sugihara_2012] to identify causality between anchovy landings in California and Newport Pier sea-surface temperature.
+The `ccm()` function is a wrapper to compute cross map skill for different sized subsamples of the data. In the following example, we examine the relationship between sardine landings in California and Scripps Pier sea-surface temperature as in @Sugihara_2012.
 
-To identify convergence, we compute cross-map skill (Pearson's correlation, $\rho$ between observed and predicted values) over many random subsamples of the time series. The `lib_sizes` argument specifies the size of the library set, and `num_samples` specifies the number of subsamples at each library size. `random_libs` and `replace` specify how the subsamples will be generated. Here, setting both to `TRUE` enables random sampling with replacement. We use `E = 3`, following the supplementary materials for @Sugihara_2012.
+To identify convergence, we compute cross-map skill over many random subsamples of the time series. `lib_sizes` specifies the sizes of the library set subsamples, and `num_samples` specifies the number of subsamples at each library size. `random_libs` and `replace` specify how to generate the subsamples. Here, setting both to `TRUE` enables random sampling with replacement. We use `E = 3`, following the supplementary materials for @Sugihara_2012.
 
 ```{r sardine-sst-cross-mapping}
 data(sardine_anchovy_sst)
@@ -369,7 +357,7 @@ sst_sardine <- ccm(sardine_anchovy_sst, E = 3,
 str(sardine_sst)
 ```
 
-As before, the output is a data.frame with statistics for each model run (in this case, 100 models at each of 8 library sizes). To interpret the results, we use the `ccm_means()` function to compute a mean value of the forecast statistics at each unique library size. 
+As before, the output is a data.frame with rows for each model run (in this case, 100 models at each of 8 library sizes). To interpret the results, we use the `ccm_means()` function to compute a mean value of the forecast statistics at each unique library size.
 
 ```{r sardine-sst-ccm-means}
 sardine_sst_ccm_means <- ccm_means(sardine_sst)
@@ -377,7 +365,7 @@ sst_sardine_ccm_means <- ccm_means(sst_sardine)
 str(sardine_sst_ccm_means)
 ```
 
-Figure \@ref(fig:sardine-sst) shows the cross mapping between California sardine landings and Scripps Pier sea-surface temperature. Here, cross-map skill improves with larger library size for sardines cross mapping to SST, suggesting an influence of temperature on sardines. As expected, in the opposite direction, there is no evidence that the sardines influence sea-surface temperature.
+Figure \@ref(fig:sardine-sst) shows the cross mapping between sardines and sea-surface temperature. Increasing cross-map skill with library size suggest a causal influence; here cross mapping from sardines to SST indicates an effect of temperature on sardines. As expected, there is no cross mapping in the opposite direction, because sardines do not influence temperature.
 
 (ref:sardine-sst-caption) Cross mapping between California sardine landings and Scripps Pier sea-surface temperature suggests an influence of temperature on sardines, but not vice-versa.
 
@@ -395,27 +383,19 @@ legend(x = "topleft", legend = c("sardine xmap SST", "SST xmap sardine"),
 
 # Data Formats
 
-`rEDM` is designed to work with commonly used data structures. Functions that operate on single-variable time-series data (e.g. `simplex()`, `s_map()`) will accept native R vectors or `ts` time-series objects. Functions that operate on multivariate time-series data (e.g. `block_lnlp()`, `ccm()`) will accept native R matrices, data.frames, or `mts` time-series objects. Please see the documentation associated with individual functions for more details.
+`rEDM` is designed to work with common data structures in R. Functions that operate on single-variable time-series data (e.g. `simplex()`, `s_map()`) will accept numeric vectors or `ts` time-series objects. Functions that operate on multivariate time-series data (e.g. `block_lnlp()`, `ccm()`) will accept numeric matrices, data.frames, or `mts` time-series objects. Please see the documentation associated with individual functions for more details.
 
-Missing data can be recorded using `NA` or `NaN` values. These missing values are automatically ignored as appropriate. For example, when using Simplex Projection, nearest neighbors must be complete vectors, and reconstructed vectors that contain missing coordinates will be ignored.
+Missing data can be recorded using `NA` or `NaN` values. These missing values are automatically ignored as appropriate. For example, when using Simplex Projection, nearest neighbors must be complete vectors, so reconstructed vectors that are missing one or more coordinates will be ignored.
 
-Note that in the absence of an observed target value, it is still possible to make a forecast if there is a complete set of predictor variables. Thus it is possible to forecast unobserved (future) states. This can be accomplished by substituting NA for unknown future values. However, note that these forecasts are not subsequently re-used as input for multi-step-ahead predictions.
+Note that it is possible to make forecasts as long as there is a complete set of predictor variables. Thus forecasting unobserved (future) states is possible by substituting NA for unknown future values. However, these forecasts are not subsequently re-used as input, so the user will need to set up their own code for multi-step forward projections, if desired.
 
 # Conclusion
 
-
-
-
-Chang_2017
-
-
-# Authors’ contributions {-}
-
-H.Y. and G.S. conceived the package; H.Y. designed the package, with assistance from A.T.C. and E.R.D. on coding, testing, and documentation; All authors were involved with writing and editing the paper.
+Here, we provided examples of using the `rEDM` package for modeling, forecasting, and inferring causal relationships among, time series. In addition, `rEDM` includes several vignettes that provide further details and other use cases: `rEDM-algorithms` gives a formal description of the Simplex Projection and S-map methods, `rEDM-coprediction` describes how to quantify dynamic similarity, and `rEDM-time-delay-ccm` explains how to assess time delays in causal effects. The implementation of these methods and associated documentation in `rEDM` will ultimately save time for ecologists, and provide a highly useful toolbox for a wide variety of applications in modeling ecological time series. 
 
 # Acknowledgements {-}
 
-`rEDM` is an implementation of EDM code as an R package, and benefits from past versions developed by George Sugihara, Alan Trombla, Richard Penner, Victor Wong, Martin Casdagli, Jerome Cartagena, Mohsen Azarbayejani, Ava Pierce, Jennifer Trezzo, and Hao Ye.
+`rEDM` is an implementation of EDM as an R package, and benefits from past versions developed by George Sugihara, Alan Trombla, Richard Penner, Victor Wong, Martin Casdagli, Jerome Cartagena, Mohsen Azarbayejani, Ava Pierce, Jennifer Trezzo, and Hao Ye.
 
 We thank Jun Cai, Jane Cowles, Yair Daon, Andrew Edwards, Oliver Keyes, Steve Munch, James Stagge, Masayuki Ushio, and Ethan White, for their suggestions and contributions to the package.
 
@@ -423,13 +403,12 @@ This project is supported by a Gordon and Betty Moore Foundation Data-Driven Dis
 
 Data collection for the Cedar Creek LTER was funded by NSF grant DEB-9411972 (to G. David Tilman), DEB-0080382 (to G. David Tilman), DEB-0620652 (to G. David Tilman), and DEB-1234162 (to Eric Seabloom).
 
+# Authors’ contributions {-}
+
+H.Y. and G.S. conceived the package; H.Y. designed the package, with assistance from A.T.C. and E.R.D. on coding, testing, and documentation; All authors were involved with writing and editing the paper.
+
 # Data accessibility {-}
 
-Example datasets used here are included in the `rEDM` package, which is hosted at https://github.com/ha0ye/rEDM and also archived on Zenodo [@Ye_2018].
-
-# Appendix
-
-*Note that if the code detects any overlap in the lib and pred, it will prevent a vector from becoming its own neighbor by enabling leave-one-out cross-validation and outputting a warning message.*
-
+Example datasets used here are included in the `rEDM` package [@Ye_2018].
 
 # References
