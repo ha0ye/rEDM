@@ -167,6 +167,10 @@ test_that("make_surrogate_ebisuzaki works", {
     set.seed(42)
     expect_error(dat2 <- make_surrogate_data(1:100, "ebisuzaki", 15), NA)
     expect_equal(dat, dat2)
+    set.seed(42)
+    expect_error(dat <- make_surrogate_ebisuzaki(1:99, 15), NA)
+    expect_equal(nrow(dat), 99)
+    expect_equal(ncol(dat), 15)
 })
 
 test_that("make_surrogate_seasonal works", {
@@ -194,5 +198,7 @@ test_that("make_surrogate_twin works", {
     expect_equal(dat, dat2)
     set.seed(42)
     expect_error(dat3 <- make_surrogate_data(ts, "twin", 15, T_period = 13))
+    set.seed(42)
+    expect_error(dat3 <- make_surrogate_data(ts, "twin", 15, T_period = 13, dim = 2))
 })
 

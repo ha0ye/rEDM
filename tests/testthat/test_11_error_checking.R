@@ -36,5 +36,5 @@ test_that("P-norm with P = 0.5 works", {
                                         pred = c(101, 200), 
                                         norm = 0.5), 
                  NA)
-    expect_known_hash(simplex_out, "32911833c0")
+    expect_known_hash(round(simplex_out, 4), "0ed9636fd8")
 })
