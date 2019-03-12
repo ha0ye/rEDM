@@ -116,9 +116,9 @@ simplex <- function(time_series, lib = c(1, NROW(time_series)), pred = lib,
     params$nn <- as.numeric(params$nn)
     
     # check params
-    idx <- sapply(seq(NROW(params)), function(i) {
+    idx <- vapply(seq(NROW(params)), function(i) {
         check_params_against_lib(params$E[i], params$tau[i], params$tp[i], lib, 
-                                 silent = silent)})
+                                 silent = silent)}, FALSE)
     if (!any(idx))
     {
         stop("No valid parameter combinations to run, stopping.")
@@ -213,9 +213,9 @@ s_map <- function(time_series, lib = c(1, NROW(time_series)), pred = lib,
     params$nn <- as.numeric(params$nn)
     
     # check params
-    idx <- sapply(seq(NROW(params)), function(i) {
+    idx <- vapply(seq(NROW(params)), function(i) {
         check_params_against_lib(params$E[i], params$tau[i], params$tp[i], lib, 
-                                 silent = silent)})
+                                 silent = silent)}, FALSE)
     if (!any(idx))
     {
         stop("No valid parameter combinations to run, stopping.")
@@ -223,7 +223,7 @@ s_map <- function(time_series, lib = c(1, NROW(time_series)), pred = lib,
     params <- params[idx, ]
     
     # apply model prediction function to params
-    output <- lapply(1:NROW(params), function(i) {
+    output <- lapply(seq_len(NROW(params)), function(i) {
         model$set_params(params$E[i], params$tau[i], params$tp[i], params$nn[i])
         model$set_theta(params$theta[i])
         model$run()

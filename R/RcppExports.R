@@ -4,4 +4,3 @@
 compute_stats <- function(observed, predicted) {
     .Call(`_rEDM_compute_stats`, observed, predicted)
 }
-

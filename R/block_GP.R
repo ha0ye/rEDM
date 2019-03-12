@@ -131,7 +131,7 @@ block_gp <- function(block, lib = c(1, NROW(block)), pred = lib,
         col_names <- paste("ts_", seq_len(NCOL(block)))
     }
     if (is.null(columns)) {
-        columns <- list(1:NCOL(block))
+        columns <- list(seq_len(NCOL(block)))
     } else if (is.list(columns)) {
         columns <- lapply(columns, function(embedding) {
             convert_to_column_indices(embedding, block)
@@ -139,7 +139,7 @@ block_gp <- function(block, lib = c(1, NROW(block)), pred = lib,
     } else if (is.vector(columns)) {
         columns <- list(convert_to_column_indices(columns, block))
     } else if (is.matrix(columns)) {
-        columns <- lapply(1:NROW(columns), function(i) {
+        columns <- lapply(seq_len(NROW(columns)), function(i) {
             convert_to_column_indices(columns[i, ], block)})
     }
     
@@ -156,7 +156,7 @@ block_gp <- function(block, lib = c(1, NROW(block)), pred = lib,
                           eta = eta, 
                           embedding_index = seq_along(columns))
     
-    output <- do.call(rbind, lapply(1:NROW(params), function(i) {
+    output <- do.call(rbind, lapply(seq_len(NROW(params)), function(i) {
         tp <- params$tp[i]
         phi <- params$phi[i]
         v_e <- params$v_e[i]
@@ -184,9 +184,9 @@ block_gp <- function(block, lib = c(1, NROW(block)), pred = lib,
                  "(after correcting for tp)")
         
         # set indices for lib and pred
-        lib_idx <- sort(unique(do.call(c, lapply(1:NROW(lib), function(i) {
+        lib_idx <- sort(unique(do.call(c, lapply(seq_len(NROW(lib)), function(i) {
             seq(from = lib[i, 1], to = lib[i, 2])}))))
-        pred_idx <- sort(unique(do.call(c, lapply(1:NROW(pred), function(i) {
+        pred_idx <- sort(unique(do.call(c, lapply(seq_len(NROW(pred)), function(i) {
             seq(from = pred[i, 1], to = pred[i, 2])}))))
         
         # define inputs to fitting of GP (data, and params)
@@ -459,8 +459,8 @@ compute_gp <- function(x_lib, y_lib,
     if (!is.null(x_pred)) # compute full distance matrix using lib and pred
     {
         dist_xy <- as.matrix(dist(rbind(x_lib, x_pred)))
-        lib_idx <- 1:NROW(x_lib)
-        pred_idx <- NROW(x_lib) + 1:NROW(x_pred)
+        lib_idx <- seq_len(NROW(x_lib))
+        pred_idx <- NROW(x_lib) + seq_len(NROW(x_pred))
         
         squared_dist_lib_lib <- dist_xy[lib_idx, lib_idx] ^ 2
         K_pred_pred <- eta_scaled * 

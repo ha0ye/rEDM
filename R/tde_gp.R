@@ -59,7 +59,7 @@ tde_gp <- function(time_series, lib = c(1, NROW(time_series)), pred = lib,
     time_series <- dat$time_series
     
     params <- expand.grid(E = E, tau = tau)
-    output <- do.call(rbind, lapply(1:NROW(params), function(i) {
+    output <- do.call(rbind, lapply(seq_len(NROW(params)), function(i) {
         E <- params$E[i]
         tau <- params$tau[i]
         

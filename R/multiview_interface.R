@@ -116,7 +116,7 @@ multiview <- function(block, lib = c(1, floor(NROW(block) / 2)),
     valid_embeddings_idx <- apply(embeddings_list %% max_lag, 1, 
                                   function(x) {1 %in% x})
     embeddings_list <- embeddings_list[valid_embeddings_idx, ]
-    my_embeddings <- lapply(1:NROW(embeddings_list),
+    my_embeddings <- lapply(seq_len(NROW(embeddings_list)),
                             function(i) {embeddings_list[i, ]})
     
     ## make sure that if target_column is given as a column index, it

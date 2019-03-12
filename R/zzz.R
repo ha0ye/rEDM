@@ -1,6 +1,6 @@
-loadModule("lnlp_module", TRUE)
-loadModule("block_lnlp_module", TRUE)
-loadModule("xmap_module", TRUE)
+Rcpp::loadModule("lnlp_module", TRUE)
+Rcpp::loadModule("block_lnlp_module", TRUE)
+Rcpp::loadModule("xmap_module", TRUE)
 
 .onAttach <- function(...) {
     if (!interactive()) return()

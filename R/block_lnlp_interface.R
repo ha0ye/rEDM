@@ -154,7 +154,7 @@ block_lnlp <- function(block, lib = c(1, NROW(block)), pred = lib,
     }
     if (is.null(columns))
     {
-        columns <- list(1:NCOL(block))
+        columns <- list(seq_len(NCOL(block)))
     } else if (is.list(columns)) {
         columns <- lapply(columns, function(embedding) {
             convert_to_column_indices(embedding, block, silent = silent)
@@ -162,8 +162,8 @@ block_lnlp <- function(block, lib = c(1, NROW(block)), pred = lib,
     } else if (is.vector(columns)) {
         columns <- list(convert_to_column_indices(columns, block, silent = silent))
     } else if (is.matrix(columns)) {
-        columns <- lapply(1:NROW(columns), function(i) {
-            convert_to_column_indices(columns[i,], block, silent = silent)})
+        columns <- lapply(seq_len(NROW(columns)), function(i) {
+            convert_to_column_indices(columns[i, ], block, silent = silent)})
     }
     embedding_index <- seq_along(columns)
     
@@ -172,16 +172,17 @@ block_lnlp <- function(block, lib = c(1, NROW(block)), pred = lib,
     {
         params <- expand.grid(tp, num_neighbors, theta, embedding_index)
         names(params) <- c("tp", "nn", "theta", "embedding")
-        params <- params[,c("embedding", "tp", "nn", "theta")]
+        params <- params[, c("embedding", "tp", "nn", "theta")]
         e_plus_1_index <- match(num_neighbors, 
                                 c("e+1", "E+1", "e + 1", "E + 1"))
         if (any(e_plus_1_index, na.rm = TRUE))
-            params$nn <- 1 + sapply(columns, length)
+            params$nn <- 1 + vapply(columns, length, 0)
         params$nn <- as.numeric(params$nn)
         
         # check params
-        idx <- sapply(seq(NROW(params)), function(i) {
-            check_params_against_lib(1, 0, params$tp[i], lib, silent = silent)})
+        idx <- vapply(seq(NROW(params)), function(i) {
+            check_params_against_lib(1, 0, params$tp[i], lib, silent = silent)}, 
+            FALSE)
         if (!any(idx))
         {
             stop("No valid parameter combinations to run, stopping.")
@@ -189,7 +190,7 @@ block_lnlp <- function(block, lib = c(1, NROW(block)), pred = lib,
         params <- params[idx, ]
         
         # apply model prediction function to params
-        output <- lapply(1:NROW(params), function(i) {
+        output <- lapply(seq_len(NROW(params)), function(i) {
             model$set_embedding(columns[[params$embedding[i]]])
             model$set_params(params$tp[i], params$nn[i])
             model$set_theta(params$theta[i])
@@ -218,12 +219,13 @@ block_lnlp <- function(block, lib = c(1, NROW(block)), pred = lib,
         e_plus_1_index <- match(num_neighbors, 
                                 c("e+1", "E+1", "e + 1", "E + 1"))
         if (any(e_plus_1_index, na.rm = TRUE))
-            params$nn <- 1 + sapply(columns, length)
+            params$nn <- 1 + vapply(columns, length, 0)
         params$nn <- as.numeric(params$nn)
         
         # check params
-        idx <- sapply(seq(NROW(params)), function(i) {
-            check_params_against_lib(1, 0, params$tp[i], lib, silent = silent)})
+        idx <- vapply(seq(NROW(params)), function(i) {
+            check_params_against_lib(1, 0, params$tp[i], lib, silent = silent)}, 
+            FALSE)
         if (!any(idx))
         {
             stop("No valid parameter combinations to run, stopping.")
@@ -231,7 +233,7 @@ block_lnlp <- function(block, lib = c(1, NROW(block)), pred = lib,
         params <- params[idx, ]
         
         # apply model prediction function to params
-        output <- lapply(1:NROW(params), function(i) {
+        output <- lapply(seq_len(NROW(params)), function(i) {
             model$set_embedding(columns[[params$embedding[i]]])
             model$set_params(params$tp[i], params$nn[i])
             model$run()
@@ -247,7 +249,7 @@ block_lnlp <- function(block, lib = c(1, NROW(block)), pred = lib,
     }
     
     # create embedding column in params
-    params$embedding <- sapply(params$embedding, function(i) {
-        paste(columns[[i]], sep = "", collapse = ", ")})
+    params$embedding <- vapply(params$embedding, function(i) {
+        paste(columns[[i]], sep = "", collapse = ", ")}, "")
     return(cbind(params, do.call(rbind, output), row.names = NULL))
 }
