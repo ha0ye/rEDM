@@ -99,8 +99,8 @@ test_that("make_block produces desired output", {
     expect_error(out <- make_block(1:100), NA)
     expect_equal(out, out_actual)
     
-    df <- data.frame(x = c(1, 4, 5, 8, 7, 8, 4, 2, 5, 2, 5, 7 ),
-                     y = c(5, 7, 3, 9, 3, 2, 5, 1, 0, 8, 4, 6 ))
+    df <- data.frame(x = c(1, 4, 5, 8, 7, 8, 4, 2, 5, 2, 5, 7),
+                     y = c(5, 7, 3, 9, 3, 2, 5, 1, 0, 8, 4, 6))
     lib <- matrix(c(1, 4, 5, 12), ncol = 2, byrow = TRUE)
     
     lag_one_actual <- data.frame(
@@ -197,8 +197,7 @@ test_that("make_surrogate_twin works", {
     expect_error(dat2 <- make_surrogate_data(ts, "twin", 15, T_period = 12), NA)
     expect_equal(dat, dat2)
     set.seed(42)
-    expect_error(dat3 <- make_surrogate_data(ts, "twin", 15, T_period = 13))
+    expect_error(dat3 <- make_surrogate_data(ts, "twin", 15, T_period = 14))
     set.seed(42)
     expect_error(dat3 <- make_surrogate_data(ts, "twin", 15, T_period = 13, dim = 2))
 })
-

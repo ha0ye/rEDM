@@ -69,7 +69,7 @@ test_that("s-map smap_coefficient_covariances works", {
     expect_equal(length(smap_coeff_covariances), 200)
     expect_null(smap_coeff_covariances[[1]])
     expect_null(smap_coeff_covariances[[200]])
-    expect_equal(sapply(smap_coeff_covariances[2:199], dim), 
+    expect_equal(vapply(smap_coeff_covariances[2:199], dim, c(1, 1)), 
                  matrix(3, nrow = 2, ncol = 198))
     expect_error(covariance_mat <- do.call(rbind, smap_coeff_covariances[2:199]), NA)
     expect_equal(digest::digest(round(covariance_mat, 4)), 

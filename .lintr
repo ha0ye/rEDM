@@ -1,0 +1,4 @@
+linters: with_defaults(line_length_linter = line_length_linter(90), 
+                       closed_curly_linter = NULL, 
+                       open_curly_linter = NULL, 
+                       trailing_whitespace_linter = NULL)

@@ -7,8 +7,8 @@ rEDM_warning <- function(..., silent = FALSE)
 
 check_params_against_lib <- function(E, tau, tp, lib, silent = FALSE)
 {
-    vector_start <- max(-(E - 1) * tau, 0, tp)
-    vector_end <- min(-(E - 1) * tau, 0, tp)
+    vector_start <- max(- (E - 1) * tau, 0, tp)
+    vector_end <- min(- (E - 1) * tau, 0, tp)
     vector_length <- abs(vector_start - vector_end) + 1
     
     max_lib_segment <- max(lib[, 2] - lib[, 1] + 1)

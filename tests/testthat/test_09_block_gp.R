@@ -69,7 +69,7 @@ test_that("block_gp covariance matrix works", {
 })
 
 test_that("block_gp works on multivariate time series", {
-    expect_error(output <- block_gp(EuStockMarkets[1:300,], columns = c("DAX", "SMI"),
+    expect_error(output <- block_gp(EuStockMarkets[1:300, ], columns = c("DAX", "SMI"),
                                     target_column = "CAC", 
                                     phi = 0.5, v_e = 0.005, eta = 100, 
                                     stats_only = FALSE, 

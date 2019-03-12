@@ -276,7 +276,7 @@ identify_twins <- function(block,
                      "length(twins) = ", length(twins), "\n", 
                      "names(twins) = ", names(twins))
             }
-            break()
+            break
         }
     }
     
@@ -383,7 +383,7 @@ make_block <- function(block, t = NULL, max_lag = 3, tau = 1, lib = NULL,
                        restrict_to_lib = TRUE)
 {
     # be sure to convert block if input is a vector
-    if(is.vector(block))
+    if (is.vector(block))
         block <- matrix(block, ncol = 1)
     num_vars <- NCOL(block)
     num_rows <- NROW(block)
@@ -411,7 +411,7 @@ make_block <- function(block, t = NULL, max_lag = 3, tau = 1, lib = NULL,
     for (j in 1:num_vars)
     {
         ts <- block[, j]
-        if(is.list(ts))
+        if (is.list(ts))
         {
             ts <- unlist(ts)
         }
@@ -429,7 +429,7 @@ make_block <- function(block, t = NULL, max_lag = 3, tau = 1, lib = NULL,
                 # make sure we pad beginning of lib segments with tau x NAs
                 if (!is.null(lib))
                 {
-                    for (k in 1:NROW(lib))
+                    for (k in seq_len(NROW(lib)))
                     {
                         ts[lib[k, 1] - 1 + (1:tau)] <- NA
                     }
