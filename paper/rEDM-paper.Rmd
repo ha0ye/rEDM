@@ -124,7 +124,7 @@ pred <- c(201, 500)
 
 `lib <- c(1, 100)` indicates that rows 1 through 100 of the data are used for fitting the model, and `pred <- c(201, 500)` indicates that rows 201 through 500 of the input are used for testing the model.
 
-Since the time series come from a discrete map, a time lag of `tau = 1` is appropriate (and is the default parameter value). In addition, because we know the dynamics are fairly simple, the default range of `E = 1:10` for the embedding dimension will suffice. More generally, in the absence of prior knowledge about the system, it is reasonable to test values up to $sqrt(n)$ with $n$ being the length of the time series [REF]).
+Since the time series come from a discrete map, a time lag of `tau = 1` is appropriate (and is the default parameter value). In addition, because we know the dynamics are fairly simple, the default range of `E = 1:10` for the embedding dimension will suffice. More generally, in the absence of prior knowledge about the system, it is reasonable to test values up to $\sim sqrt(n)$ with $n$ being the length of the time series [Cheng_1994]).
 
 ```{r simplex on tentmap}
 simplex_output <- simplex(time_series = tentmap_del, 
@@ -156,7 +156,7 @@ One concern is that the ability to forecast may result from temporal autocorrela
 
 Whereas Simplex Projection approximates $G$ using nearest neighbors in the reconstruction space [@Sugihara_1990], the S-map uses local linear maps [@Sugihara_1994]. For each individual forecast, a local linear map is fitted with the data points assigned weights based on their distance (typically the Euclidean distance) to the point being forecast and the nonlinear tuning parameter, $\theta$. This allows the S-map to approximate any potential function, with $\theta$ controlling how nonlinear $G$ can be.
 
-When $\theta = 0$, all points receive equal weights, and the local linear map is the same across the reconstruction space, making $G$ equivalent to a single global linear map. For $\theta > 0$, nearby points receive larger weights, and the local linear map depends more on similar system states. Larger values of $\theta$ allow the forecast function, $G$ to be more "wiggly", similar to the scale parameter in a LOESS [REF].
+When $\theta = 0$, all points receive equal weights, and the local linear map is the same across the reconstruction space, making $G$ equivalent to a single global linear map. For $\theta > 0$, nearby points receive larger weights, and the local linear map depends more on similar system states. Larger values of $\theta$ allow the forecast function, $G$ to vary more across the state-space, similar to the length-scale of a locally-weighted regression [@Cleveland_1979].
 
 To distinguish between red noise and deterministic nonlinear dynamics, we evaluate how forecast skill depends on $\theta$. For red noise, a single global map ($\theta = 0$) should produce the best forecasts, becauses it is fit to all of the data points, thereby minimizing the effects of observational noise. However, for nonlinear dynamics, the true forecast function, $G$, will vary as a function of system state, and forecast skill will improve when $\theta > 0$.
 
@@ -340,7 +340,7 @@ Nevertheless, because $x$ does influence $y$, there is typically some predictive
 
 ## Convergent Cross Mapping (CCM)
 
-The `ccm()` function is a wrapper to compute cross map skill for different sized subsamples of the data. In the following example, we examine the relationship between sardine landings in California and Scripps Pier sea-surface temperature as in @Sugihara_2012.
+The `ccm()` function is a wrapper to compute cross map skill for different sized subsamples of the data. In the following example, we examine the relationship between sardine landings in California and Scripps Pier sea-surface temperature as in @Sugihara_2012 (but see also [@Deyle_2013]).
 
 To identify convergence, we compute cross-map skill over many random subsamples of the time series. `lib_sizes` specifies the sizes of the library set subsamples, and `num_samples` specifies the number of subsamples at each library size. `random_libs` and `replace` specify how to generate the subsamples. Here, setting both to `TRUE` enables random sampling with replacement. We use `E = 3`, following the supplementary materials for @Sugihara_2012.
 
