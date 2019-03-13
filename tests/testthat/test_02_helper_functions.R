@@ -192,7 +192,7 @@ test_that("make_surrogate_twin works", {
     {
         suppressWarnings(RNGkind(sample.kind = "Rounding"))
     }
-    
+    set.seed(12)
     ts <- rnorm(100) + sin(1:100 * pi / 6)
     set.seed(42)
     expect_error(dat <- make_surrogate_twin(ts, 15, T_period = 12), NA)
