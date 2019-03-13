@@ -138,7 +138,7 @@ make_figure_1 <- function(dat, t = 1130, start_t = 7, future_len = 40,
                 yy + c(0.1, 0.8) * dy, 
                 zz + c(0.1, 0.8) * dz, 
                 color = color_blue, lwd = 1)
-        text3d(1.2, yy, 0.3, "(x(t), y(t), z(t))", 
+        text3d(1.2, yy, 0.3, "(xt, yt, zt)", 
                family = "serif", font = 3, usePlotmath = FALSE, cex = 1.5)
     }
     lines3d(c(xx, xx, xx), c(0, yy, yy), c(0, 0, zz), color = color_red, lwd = 1.5)
@@ -154,7 +154,7 @@ make_figure_1 <- function(dat, t = 1130, start_t = 7, future_len = 40,
 }
 
 # Plot lags of time series x and associated lagged attractor
-make_figure_2 <- function(dat, t = 1130, tau = 8, 
+make_figure_2 <- function(dat, t = 1138, start_t = 9, tau = 8, 
                           rescale_buffer = 0.05,
                           userMatrix = matrix(c(0.7570, 0.6533, 0.0131, 0,
                                                 -0.1319, 0.1332, 0.9823, 0,
@@ -162,7 +162,9 @@ make_figure_2 <- function(dat, t = 1130, tau = 8,
                                                 0, 0, 0, 1), nrow = 4, byrow = TRUE), 
                           FOV = 10, zoom = 1, cex = 1.5, scale = c(1, 1, 1), 
                           windowRect = c(50, 50, 700, 500), 
-                          plot_file = NULL)
+                          attractor_label = NULL, 
+                          plot_file = NULL, 
+                          point_size = NULL)
 {
     # set up plot
     par3d(windowRect = windowRect)
@@ -203,11 +205,11 @@ make_figure_2 <- function(dat, t = 1130, tau = 8,
         lines3d(c(0, 0, 1, 1, 0), c(1, 0, 0, 1, 1) / 4 + spacing, c(0, 0, 0, 0, 0))
         text3d(-0.2, 0.5 / 4 + spacing, 0, lab, adj = 0, col = col)
     }
-    draw_lagged_ts(x, t + 2 * tau, t + 2 * tau, 0.3, lab = "x_t")
-    draw_lagged_ts(x, t - 10 * tau, t + 2 * tau, 0, lab = "x_t-tau", col = "#BB0000")
-    draw_lagged_ts(x, t - 22 * tau, t + 2 * tau, -0.3, lab = "x_t-2tau", col = "#880000")
+    draw_lagged_ts(x, t + 2 * tau, t + 2 * tau, 0.3, lab = "xt")
+    draw_lagged_ts(x, t - 10 * tau, t + 2 * tau, 0, lab = "xt-tau", col = "#BB0000")
+    draw_lagged_ts(x, t - 22 * tau, t + 2 * tau, -0.3, lab = "xt-2tau", col = "#880000")
     lines3d(c(0.6, 0.6), c(-0.3, 0.55), c(0, 0), lwd = 2)
-    text3d(0.6, -0.34, 0, "t", cex = 1)
+    text3d(0.6, -0.34, 0, "t")
     par3d(userMatrix = matrix(c(1, 0, 0, 0,
                                 0, 1, 0, 0,
                                 0, 0, 1, 0,
@@ -220,19 +222,41 @@ make_figure_2 <- function(dat, t = 1130, tau = 8,
           zoom = zoom, FOV = FOV, cex = cex)
     
     x <- rescale(dat[, 1], buffer = rescale_buffer)
-    m_x_t <- draw_lagged_attractor(x, idx = seq(from = 1, to = t), lwd = 2)
-    points3d(m_x_t[1], m_x_t[2], m_x_t[3], color = "black", size = 8)
-    draw_lagged_attractor(x, idx = seq(from = t + 1, length.out = 40), lwd = 0.5)
+    m_x_t <- draw_lagged_attractor(x, idx = seq(from = start_t, to = t), lwd = 2)
+    if (!is.null(point_size))
+    {
+        points3d(m_x_t[1], m_x_t[2], m_x_t[3], color = "black", size = point_size)
+        dx <- 0.4 - m_x_t[1]
+        dy <- m_x_t[2] - m_x_t[2]
+        dz <- 1.2 - m_x_t[3]
+        lines3d(m_x_t[1] + c(0.1, 0.8) * dx, 
+                m_x_t[2] + c(0.1, 0.8) * dy, 
+                m_x_t[3] + c(0.1, 0.8) * dz, 
+                color = color_blue, lwd = 1)
+        text3d(0.4, m_x_t[2], 1.2, "(xt, xt-tau, xt-2tau)", 
+               family = "serif", font = 3, usePlotmath = FALSE, cex = 1.5)
+    }
+    
+    # draw future lagged attractor
+    future_t <- seq(from = t, length.out = 40)
+    if (length(future_t) %% 2 == 1)
+        future_t <- future_t[-1]
+    segments3d(x[future_t], x[future_t - tau], x[future_t - 2 * tau], lwd = 1)
+    
+#    draw_lagged_attractor(x, idx = seq(from = t + 1, length.out = 40), lwd = 0.5)
     lines3d(c(0, 1), 0, 0, lwd = 2, col = "#EE0000")
-    text3d(0.5, 0, -0.05, "x_t", col = "#EE0000", 
+    text3d(0.5, 0, -0.05, "xt", col = "#EE0000", 
            family = "serif", font = 3, usePlotmath = FALSE)
     lines3d(1, c(0, 1), 0, lwd = 2, col = "#BB0000")
-    text3d(1, 0.75, -0.1, "x_t-tau", col = "#BB0000", 
+    text3d(1, 0.75, -0.1, "xt-tau", col = "#BB0000", 
            family = "serif", font = 3, usePlotmath = FALSE)
     lines3d(0, 0, c(0, 1), lwd = 2, col = "#880000")
-    text3d(0.1, 0.1, 1.0, "x_t-2tau", col = "#880000", 
+    text3d(0.1, 0.1, 1.0, "xt-2tau", col = "#880000", 
            family = "serif", font = 3, usePlotmath = FALSE)
-    text3d(0.2, 0.5, 0.9, "M_x", cex = 1.75)
+    if (!is.null(attractor_label))
+    {
+        text3d(0.2, 0.5, 0.9, attractor_label, cex = 2)
+    }
     
     if (!is.null(plot_file))
         rgl.postscript(plot_file, fmt = "pdf")
@@ -241,8 +265,8 @@ make_figure_2 <- function(dat, t = 1130, tau = 8,
 }
 
 # Plot reconstructed attractors using lags of x and y
-make_figure_3 <- function(dat, t = 1220, 
-                          shift = 0.55, 
+make_figure_3 <- function(dat, t = 1212, start_t = 41, tau = 8, 
+                          shift = 0.8, 
                           rescale_buffer = 0.05, 
                           userMatrix = matrix(c(0.9809, 0.1941, -0.0105, 0, 
                                                 -0.0382, 0.2453, 0.9687, 0, 
@@ -250,7 +274,9 @@ make_figure_3 <- function(dat, t = 1220,
                                                 0, 0, 0, 1), nrow = 4, byrow = TRUE),
                           FOV = 10, zoom = 0.7, cex = 1.75, scale = c(1, 1, 1), 
                           windowRect = c(50, 50, 700, 500),
-                          plot_file = NULL)
+                          plot_file = NULL, 
+                          attractor_label = NULL, 
+                          point_size = 10)
 {
     par3d(windowRect = windowRect, scale = scale, 
           userMatrix = userMatrix, 
@@ -258,25 +284,62 @@ make_figure_3 <- function(dat, t = 1220,
     
     x <- rescale(dat[, 1], buffer = rescale_buffer)
     y <- rescale(dat[, 2], buffer = rescale_buffer)
+    z <- rescale(dat[, 3], buffer = rescale_buffer)
     
     plot3d(0, 0, 0, type = "n", 
            xlab = "", ylab = "", zlab = "", axes = FALSE)
     
     spacing_x <- c(-shift, 0, 0)
-    m_x_t <- draw_lagged_attractor(x, spacing = spacing_x, lwd = 2)
-    points3d(m_x_t[1], m_x_t[2], m_x_t[3], color = "black", size = 8)
-    draw_lagged_attractor(x, idx = seq(from = t + 1, length.out = 80), 
-                          spacing = spacing_x, lwd = 0.5)
-    text3d(0.2 + spacing_x[1], 0.5 + spacing_x[2], 1 + spacing_x[3], "M_x", cex = 2)
+    m_x_t <- draw_lagged_attractor(x, idx = seq(from = start_t, to = t), 
+                                   spacing = spacing_x, lwd = 1.5)
+    points3d(m_x_t[1], m_x_t[2], m_x_t[3], color = "black", size = point_size)
+    
+    future_t <- seq(from = t, length.out = 40)
+    if (length(future_t) %% 2 == 1)
+        future_t <- future_t[-1]
+    segments3d(x[future_t] + spacing_x[1], 
+               x[future_t - tau] + spacing_x[2], 
+               x[future_t - 2 * tau] + spacing_x[3], lwd = 1)
+    
+    # draw_lagged_attractor(x, idx = seq(from = t + 1, length.out = 80), 
+    #                        spacing = spacing_x, lwd = 0.5)
+    if (!is.null(attractor_label))
+    {
+        text3d(0.2 + spacing_x[1], 0.5 + spacing_x[2], 1 + spacing_x[3], attractor_label[1], cex = 2)
+    }
     
     spacing_y <- c(shift, 0, 0)
-    m_y_t <- draw_lagged_attractor(y, spacing = spacing_y, lwd = 2)
+    m_y_t <- draw_lagged_attractor(y, idx = seq(from = start_t, to = t), 
+                                   spacing = spacing_y, lwd = 1.5)
     points3d(m_y_t[1], m_y_t[2], m_y_t[3], color = "black", size = 8)
-    draw_lagged_attractor(y, idx = seq(from = t + 1, length.out = 80), 
-                          spacing = spacing_y, lwd = 0.5)
-    text3d(1 + spacing_y[1], 0.5 + spacing_y[2], 1 + spacing_y[3], "M_y", cex = 2)
+    future_t <- seq(from = t, length.out = 40)
+    if (length(future_t) %% 2 == 1)
+        future_t <- future_t[-1]
+    segments3d(y[future_t] + spacing_y[1], 
+               y[future_t - tau] + spacing_y[2], 
+               y[future_t - 2 * tau] + spacing_y[3], lwd = 1)
+    # draw_lagged_attractor(y, idx = seq(from = t + 1, length.out = 80), 
+    #                       spacing = spacing_y, lwd = 0.5)
+    if (!is.null(attractor_label))
+    {
+        text3d(1 + spacing_y[1], 0.5 + spacing_y[2], 1 + spacing_y[3], attractor_label[2], cex = 2)
+    }
     
-    lines3d(rbind(m_x_t, m_y_t), color = color_blue)
+    spacing_z <- c(0, 0, shift * 1.2)
+    idx <- seq(from = start_t, to = t)
+    lines3d(x[idx] + spacing_z[1], 
+            y[idx] + spacing_z[2], 
+            z[idx] + spacing_z[3], color = "black", lwd = 1.5)
+    points3d(x[t] + spacing_z[1], 
+             y[t] + spacing_z[2], 
+             z[t] + spacing_z[3], color = "black", size = point_size)
+    
+    future_t <- seq(from = t, length.out = 40)
+    if (length(future_t) %% 2 == 1)
+        future_t <- future_t[-1]
+    segments3d(x[future_t] + spacing_z[1], 
+               y[future_t] + spacing_z[2], 
+               z[future_t] + spacing_z[3], lwd = 1)
     
     if (!is.null(plot_file))
         rgl.postscript(plot_file, fmt = "pdf")
@@ -284,24 +347,21 @@ make_figure_3 <- function(dat, t = 1220,
     return()
 }
 
-if(TRUE)
+if (TRUE)
 {
     dat <- generate_lorenz_attractor()
-    
-
-    fig_1_file <- here("vignettes", "vignette_figs", "figure_1.pdf")
-    make_figure_1(dat, plot_file = fig_1_file, point_size = 10)
-    
+    # 
+    # 
+    # fig_1_file <- here("vignettes", "vignette_figs", "figure_1.pdf")
+    # make_figure_1(dat, plot_file = fig_1_file, point_size = 10)
+    # 
     # open3d()
     # 
     # fig_2_file <- here("vignettes", "vignette_figs", "figure_2.pdf")
-    # make_figure_2(dat, plot_file = fig_2_file)
+    # make_figure_2(dat, plot_file = fig_2_file, point_size = 10)
     # 
     # open3d()
-    # 
-    # fig_3_file <- here("vignettes", "vignette_figs", "figure_3.pdf")
-    # make_figure_3(dat, plot_file = fig_3_file)
+
+    fig_3_file <- here("vignettes", "vignette_figs", "figure_3.pdf")
+    make_figure_3(dat, plot_file = fig_3_file)
 }
-
-# 
-
