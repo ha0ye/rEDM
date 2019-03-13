@@ -188,6 +188,11 @@ test_that("make_surrogate_seasonal works", {
 })
 
 test_that("make_surrogate_twin works", {
+    if ("sample.kind" %in% names(formals(RNGkind)))
+    {
+        suppressWarnings(RNGkind(sample.kind = "Rounding"))
+    }
+    
     ts <- rnorm(100) + sin(1:100 * pi / 6)
     set.seed(42)
     expect_error(dat <- make_surrogate_twin(ts, 15, T_period = 12), NA)
@@ -197,7 +202,7 @@ test_that("make_surrogate_twin works", {
     expect_error(dat2 <- make_surrogate_data(ts, "twin", 15, T_period = 12), NA)
     expect_equal(dat, dat2)
     set.seed(42)
-    expect_error(dat3 <- make_surrogate_data(ts, "twin", 15, T_period = 14))
+    expect_error(dat3 <- make_surrogate_data(ts, "twin", 15, T_period = 13))
     set.seed(42)
     expect_error(dat3 <- make_surrogate_data(ts, "twin", 15, T_period = 13, dim = 2))
 })
