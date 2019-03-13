@@ -77,7 +77,7 @@ The conventional approach to modeling a dynamic system is to simulate the govern
 
 The EDM framework resolves these issues using the mathematical theory of attractor reconstruction [@Takens_1981; @Sauer_1991; @Casdagli_1991; @Deyle_2011]. The essential idea is to use an alternative representation of the system state, composed of lags of a single time series. For example, in the canonical Lorenz Attractor, the system state at time $t$ is conventionally represented as $\left(x_t, y_t, z_t \right)$, where $x$, $y$, and $z$ are the state variables (Figure \@ref(fig:time-series-projection)). However, we can use an alternative represention consisting only of lags of $x$: $\mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right)$, where $E$ is the number of lags, or embedding dimension.
 
-(ref:attractor-reconstruction-caption) Reconstruction of the Lorenz Attractor using 3 lags of x: $\mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right)$. The reconstruction maps smoothly to the original Lorenz Attractor (Figure \@ref(fig:time-series-projection)) and shows a clear visual correspondence.
+(ref:attractor-reconstruction-caption) Reconstruction of the Lorenz Attractor using 3 lags of x: $\mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right)$. The reconstruction maps smoothly to the original Lorenz Attractor (Figure \@ref(fig:time-series-projection)).
 
 ```{r attractor-reconstruction, out.width = "4.5in", fig.cap = '(ref:attractor-reconstruction-caption)', echo = FALSE}
 knitr::include_graphics("figure_2.pdf")
@@ -85,7 +85,7 @@ knitr::include_graphics("figure_2.pdf")
 
 This approach preserves the mathematical properties of the original system, provided that a sufficient number lags are used [@Takens_1981]. More specifically, points in the reconstructed space, $\mathbf{x}_t$, map smoothly to points in the original state space ("smooth" meaning that nearby points in the reconstructed space map to nearby points in the original state space). This relationship makes it possible to model the system using just a single time series.
 
-For example, in the Lorenz Attractor, we would ordinarily need to model the behavior of $x$ as a function of all of the state variables: $x_{t+1} = F\left(x_t, y_t, z_t\right)$. However, we can instead use the reconstructed state space: $x_{t+1} = G\left(\mathbf{x}_t\right) = G\left(x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right)$. Figure \@ref(fig:attractor-reconstruction) demonstrates this point with a reconstruction that uses 3 lags of $x$, which shows a visual correspondence with the original Lorenz attractor.
+For example, in the Lorenz Attractor, we would ordinarily need to model the behavior of $x$ as a function of all of the state variables: $x_{t+1} = F\left(x_t, y_t, z_t\right)$. However, we can instead use the reconstructed state space: $x_{t+1} = G\left(\mathbf{x}_t\right) = G\left(x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right)$. Figure \@ref(fig:attractor-reconstruction) demonstrates a reconstruction that uses 3 lags of $x$, which shows a visual correspondence with the original Lorenz attractor.
 
 In practice, the application of this technique also requires selecting an appropriate time lag ($\tau$), embedding dimension ($E$), and methods for inferring $G$. We demonstrate how the `rEDM` software package can be used to accomplish these tasks, in the contexts of forecasting [@Sugihara_1990], testing for nonlinear behavior [@Sugihara_1994], and testing whether two time series variables belong to the same system and might be causally related [@Sugihara_2012]. 
 
@@ -326,7 +326,7 @@ Here, `smap_coeffs` is a data.frame with 100 rows (the number of predictions) an
 
 One corollary to Takens' Theorem [-@Takens_1981] is that smooth maps exist between multiple reconstructions of the same system. Consider a dynamic system that contains two interacting variables, $x$ and $y$. The univariate reconstructions, based on lags of $x$ ( $\mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E_x-1)\tau} \right)$) and $y$ ( $\mathbf{y}_t = \left( y_t, y_{t-\tau}, \dots, y_{t-(E_y-1)\tau} \right)$) respectively, each map smoothly to the original state space. Thus, there is also a smooth map between $\mathbf{x}_t$ and $\mathbf{y}_t$ (Figure \@ref(fig:cross-mapping)). We can test for the map between $\mathbf{x}_t$ and $\mathbf{y}_t$ by measuring the predictive skill of mapping from $\mathbf{x}_t$ to $y_t$ and from $\mathbf{y}_t$ to $x_t$.
 
-(ref:cross-mapping-caption) Two reconstructions of the Lorenz Attractor. The one on the left uses lags of $x$ ( $\mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E_x-1)\tau} \right)$) and the one on the right uses lags of $y$ ( $\mathbf{y}_t = \left( y_t, y_{t-\tau}, \dots, y_{t-(E_y-1)\tau} \right)$). There is a smooth map between the two reconstructions, which also show a visual correspondence.
+(ref:cross-mapping-caption) Smooth maps between reconstructions of the Lorenz Attractor. The one on the left uses lags of $x$ and the one on the right uses lags of $y$. By Takens' Theorem [-@Takens_1981], both reconstructions map smoothly to the original Lorenz Attractor (gray), and therefore to each other (magenta).
 
 ```{r cross-mapping, out.width = "4.5in", fig.cap = '(ref:cross-mapping-caption)', echo = FALSE}
 knitr::include_graphics("figure_3.pdf")
