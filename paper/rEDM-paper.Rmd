@@ -7,17 +7,19 @@ author:
     corresponding: true
     email: haoye@ufl.edu
   - name: Adam T. Clark
-    affiliation: 2
+    affiliation: 2, 3
   - name: Ethan R. Deyle
-    affiliation: 3
+    affiliation: 4
   - name: George Sugihara
-    affiliation: 3
+    affiliation: 4
 affiliation:
   - code: 1
     address: Department of Wildlife Ecology and Conservation, University of Florida, 110 Newins-Ziegler Hall, PO Box 110430, Gainesville, FL USA 32611-0430
   - code: 2
-    address: German Centre for Integrative Biodiversity Research (iDiv)
+    address: Department of Physiological Diversity, Helmholtz Centre for Environmental Research (UFZ)
   - code: 3
+    address: German Centre for Integrative Biodiversity Research (iDiv)
+  - code: 4
     address: Scripps Institution of Oceanography, University of California San Diego, 9500 Gilman Drive MC 0202, La Jolla, CA USA 92093-0202
 abstract: "
   1. Because ecosystems are inherently complex, modeling ecological time series can be challenging due to uncertainty about the correct mathematical representation of underlying processes, and unknown or unobserved variables.
@@ -26,7 +28,7 @@ abstract: "
 
   3. `rEDM` contains functions for time series analysis, including: peprocessing of data, forecasting, inferring causal relationships, and quantifying dynamic interactions.
   
-  4. `rEDM` facilitates the use of EDM for developing ecological insights through both exploratory analyses and confirmation of existing hypotheses."
+  4. `rEDM` facilitates the use of EDM for developing ecological insights through exploratory analyses and testing of existing hypotheses."
 header-includes: >
   \usepackage{amsmath}
   \usepackage{setspace}
@@ -51,7 +53,7 @@ knitr::opts_chunk$set(fig.width = 4.5, fig.height = 3)
 
 # Introduction
 
-In contrast to other scientific fields, ecology lacks governing equations. Moreover, ecosystems are inherently complex, with behavior arising from nonlinear interactions between components and across scales. Thus, it is challenging to model ecological time series with the conventional approach of fitting parameteric equations---these equations can be impractical when the exact mechanisms are unknown or when data are too short, noisy, or incomplete to effectively parameterize them. Empirical approaches, which infer patterns and associations from the data (instead of using hypothesized forms), represent an alternative and highly flexible approach.
+In contrast to other scientific fields, ecology lacks governing equations. Moreover, ecosystems are inherently complex, with behavior arising from nonlinear interactions among components and across scales. Thus, it is challenging to model ecological time series with the conventional approach of fitting parameteric equations---these equations can be impractical when the exact mechanisms are unknown or when data are too short, noisy, or incomplete to effectively parameterize them. Empirical approaches, which infer patterns and associations from the data (instead of using hypothesized functional forms), represent an alternative and highly flexible approach.
 
 Empirical dynamic modeling (EDM) is an emerging framework for modeling time series empirically, by reconstructing the behavior of the underlying dynamic systems from time series observations, and is based on the mathematical theory of attractor reconstruction [@Takens_1981; @Sauer_1991; @Casdagli_1991; @Deyle_2011]. Because EDM operates with minimal assumptions, it is well-suited for modeling ecological time series. The `rEDM` package is an implemention of EDM in R, and builds on software developed in the Sugihara Lab [@Ye_2018]. Here, we review the theoretical background for empirical dynamic modeling (EDM) and the functionality of the `rEDM` package.
 
@@ -59,11 +61,12 @@ Empirical dynamic modeling (EDM) is an emerging framework for modeling time seri
 
 ## Time Series as Observations of a Dynamic System
 
-We review the basic concepts underlying EDM, but see @Sauer_1991 and @Chang_2017 for more detailed treatments. Briefly, time series are sequential observations of a *dynamic system*, which consists of a *state space* and *dynamical rules* for how the state changes over time. At any point in time, the state is a point in the state space (Figure \@ref(fig:time-series-projection)), whose axes are the fundamental state variables. The dynamical rules are typically represented as governing equations.
+We review the basic concepts underlying EDM, but see @Sauer_1991 and @Chang_2017 for more detailed treatments. Briefly, time series are sequential observations of a *dynamic system*, which consists of a *state space* and *dynamical rules* for how the state changes over time. At any point in time, the state is a point in the state space (Figure \@ref(fig:time-series-projection)), whose axes are the fundamental state variables. The dynamical rules describe how the system state changes (i.e. how the point moves in the state space), and are often (but not always) represented as governing equations.
 
-For example, an experimental chemostat can be represented with state variables for plankton abundance and the environmental factors of temperature, nutrients, and light. The dynamical rules are the equations for growth and nutrient uptake, and the experimental settings for temperature, light, and nutrient input (e.g. constant or following a diel cycle).
+For example, an experimental chemostat might be described with state variables for plankton abundance and the environmental factors of temperature, nutrients, and light. The dynamical rules
+can be represented as equations for growth and nutrient uptake, and the experimental settings for temperature, light, and nutrient input (e.g. constant or following a diel cycle).
 
-Time series can be generated by projecting from the state space to the corresponding coordinate axis. For example, in Figure \@ref(fig:time-series-projection), states of the canonical Lorenz Attractor [-@Lorenz_1963] are projected to the $x$-axis, creating a time series of $x$. Time series frequently correspond to state variables, though more generally, a time series can be any function of one or more state variables (e.g. a time series of total plant cover ignores the dynamics of individual species).
+Time series can be generated by projecting from the state space to the corresponding coordinate axis. For example, in Figure \@ref(fig:time-series-projection), states of the canonical Lorenz Attractor [-@Lorenz_1963] are projected to the $x$-axis, creating a time series of $x$. Time series frequently correspond to individual state variables; more generally, a time series can be any function of one or more state variables, such as a time series of total plant cover constructed from the sum of state variables for the cover of each species.
 
 (ref:time-series-projection-caption) Projecting the system state of the Lorenz Attractor to the $x$-axis produces a time series of $x$.
 
@@ -71,11 +74,11 @@ Time series can be generated by projecting from the state space to the correspon
 knitr::include_graphics("figure_1.pdf")
 ```
 
-The conventional approach to modeling a dynamic system is to simulate the governing equations, fitting them to observations to determine the vital parameters. Uncertainty about the form of the equations is typically addressed through model seleciton. However, this requires that the state variables are known, that they are observed sufficiently, and that the governing equations are known or can be reasonably approximated from theory. These assumptions can be problematic when dealing with time series observed from complex, nonlinear systems.
+The conventional approach to modeling a dynamic system is to simulate the governing equations, and fit them to observations to determine prameter values. Uncertainty about the form of the equations is typically addressed through model selection, or is incorporated into an error term. However, this requires that the state variables are known, that they are observed sufficiently, and that the governing equations are known or can be reasonably approximated from theory. These assumptions can be problematic when dealing with time series observed from complex, nonlinear systems.
 
 ## Attractor Reconstruction / Takens' Theorem
 
-The EDM framework resolves these issues using the mathematical theory of attractor reconstruction [@Takens_1981; @Sauer_1991; @Casdagli_1991; @Deyle_2011]. The essential idea is to use an alternative representation of the system state, composed of lags of a single time series. For example, in the canonical Lorenz Attractor, the system state at time $t$ is conventionally represented as $\left(x_t, y_t, z_t \right)$, where $x$, $y$, and $z$ are the state variables (Figure \@ref(fig:time-series-projection)). However, we can use an alternative represention consisting only of lags of $x$: $\mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right)$, where $E$ is the number of lags, or embedding dimension.
+The EDM framework resolves these issues using the mathematical theory of attractor reconstruction [@Takens_1981; @Sauer_1991; @Casdagli_1991; @Deyle_2011]. The essential idea is to use an alternative representation of the system state, composed of lags of a single time series. For example, in the canonical Lorenz Attractor, the system state at time $t$ is conventionally represented as $\left(x_t, y_t, z_t \right)$, where $x$, $y$, and $z$ are the three state variables that make up the system (Figure \@ref(fig:time-series-projection)). However, we can use an alternative represention consisting only of lags of $x$: $\mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right)$, where $E$ is the embedding dimension, or the number of lags.
 
 (ref:attractor-reconstruction-caption) Reconstruction of the Lorenz Attractor using 3 lags of x: $\mathbf{x}_t = \left( x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right)$. The reconstruction maps smoothly to the original Lorenz Attractor (Figure \@ref(fig:time-series-projection)).
 
@@ -83,7 +86,7 @@ The EDM framework resolves these issues using the mathematical theory of attract
 knitr::include_graphics("figure_2.pdf")
 ```
 
-This approach preserves the mathematical properties of the original system, provided that a sufficient number lags are used [@Takens_1981]. More specifically, points in the reconstructed space, $\mathbf{x}_t$, map smoothly to points in the original state space ("smooth" meaning that nearby points in the reconstructed space map to nearby points in the original state space). This relationship makes it possible to model the system using just a single time series.
+This approach preserves the mathematical properties of the original system, provided that a sufficient number lags are used [@Takens_1981]. More specifically, points in the reconstructed space, $\mathbf{x}_t$, map smoothly to points in the original state space. This relationship makes it possible to model the system using just a single time series, even without direct observations of all three variables x, y, and z.
 
 For example, in the Lorenz Attractor, we would ordinarily need to model the behavior of $x$ as a function of all of the state variables: $x_{t+1} = F\left(x_t, y_t, z_t\right)$. However, we can instead use the reconstructed state space: $x_{t+1} = G\left(\mathbf{x}_t\right) = G\left(x_t, x_{t-\tau}, \dots, x_{t-(E-1)\tau} \right)$. Figure \@ref(fig:attractor-reconstruction) demonstrates a reconstruction that uses 3 lags of $x$, which shows a visual correspondence with the original Lorenz attractor.
 
@@ -106,7 +109,7 @@ x_{t+1} = \begin{cases}
 \end{cases}
 \end{equation*}
 
-The first differences of the tentmap time series are included in `rEDM`:
+The "first differences" ($x_{t+1}-x_{t}$) of the tentmap time series are included in `rEDM`:
 
 ```{r load package}
 library(rEDM)
@@ -148,7 +151,7 @@ plot(rho ~ E, data = simplex_output, type = "l",
      xlab = "Embedding Dimension (E)", ylab = "Forecast Skill (rho)")
 ```
 
-Figure \@ref(fig:tentmap-simplex) shows that forecast skill peaks at E = 2, indicating that the dynamics of the `tentmap_del` time series are best represented using 2 lags. *Note that the optimal embedding dimension may not correspond to the dimensionality of the underlying system.* Indeed, because forecast skill is affected by observational noise, process error, time series length, etc., the optimal embedding dimension is best viewed as a practical property of the data.
+Figure \@ref(fig:tentmap-simplex) shows that forecast skill peaks at E = 2, indicating that the dynamics of the `tentmap_del` time series are best represented using 2 lags. *Note that the optimal embedding dimension may not correspond to the dimensionality of the underlying system.* Indeed, because forecast skill is affected by observational noise, process error, time series length, etc., the optimal embedding dimension is best viewed as an emergent property of the data.
 
 ## Identifying Nonlinearity
 
@@ -162,7 +165,7 @@ To distinguish between red noise and deterministic nonlinear dynamics, we evalua
 
 ### Example
 
-The function `s_map()` implements the S-map method. We use the same data sa the previous example, and fix `E = 2` based on the results from simplex projection. Similarly, the default values for `tau` and `tp` remain appropriate -- if we had used different values when determining the optimal embedding dimension, we would do the same here. We also use the default set of values for `theta`, ranging from 0 to 8.
+The function `s_map()` implements the S-map method. We use the same data as the previous example, and fix `E = 2` based on the results from simplex projection. Similarly, the default values for `tau` and `tp` remain appropriate -- if we had used different values when determining the optimal embedding dimension, we would do the same here. We also use the default set of values for `theta`, ranging from 0 to 8.
 
 ```{r smap for tentmap}
 smap_output <- s_map(time_series = tentmap_del, 
@@ -243,7 +246,7 @@ block_lnlp_alt <- block_lnlp(block_3sp, lib = lib, pred = pred,
 stopifnot(identical(block_lnlp_output, block_lnlp_alt))
 ```
 
-As in `simplex()` and `s_map()`, the default value for the `tp` argument is 1---predictions are 1-step ahead. That is, the forecast model is $G: \left(x_t, x_{t-1}, y_t\right) \rightarrow x_{t+\texttt{tp}}$) *In some cases, the data may be formatted with the dependent variable as a different column in the same row, and `tp` should be set to 0.*
+As in `simplex()` and `s_map()`, the default value for the `tp` argument is 1---predictions are 1-step ahead. That is, the forecast model is $G: \left(x_t, x_{t-1}, y_t\right) \rightarrow x_{t+\texttt{tp}}$) *Note that in cases where the dependent variable is not forecasted, but is included as a separate column, `tp` should be set to 0.*
 
 ```{r block-lnlp output}
 str(block_lnlp_output)
