@@ -22,13 +22,13 @@ affiliation:
   - code: 4
     address: Scripps Institution of Oceanography, University of California San Diego, 9500 Gilman Drive MC 0202, La Jolla, CA USA 92093-0202
 abstract: "
-  1. Because ecosystems are inherently complex, modeling ecological time series can be challenging due to uncertainty about the correct mathematical representation of underlying processes, and unknown or unobserved variables.
+  1. Modeling ecological time series is challenging: ecosystems are inherently complex, there is considerable uncertainty about the best mathematical representation of underlying processes, and many datasets are sparse or incomplete.
   
-  2. Empirical dynamic modeling (EDM) is an emerging framework that addresses these issues by modeling time series empirically, using the mathematical theory of attractor reconstruction. The `rEDM` package implements EDM methods in R, building on software developed in the Sugihara Lab.
+  2. Empirical dynamic modeling (EDM) is an emerging framework that addresses these issues by modeling time series empirically, using the mathematical theory of attractor reconstruction.
 
-  3. `rEDM` contains functions for time series analysis, including: peprocessing of data, forecasting, inferring causal relationships, and quantifying dynamic interactions.
+  3.  The `rEDM` package implements EDM methods in R and contains functions for time series analysis, including: preprocessing of data, forecasting, inferring causal relationships, and quantifying dynamic interactions.
   
-  4. `rEDM` facilitates the use of EDM for developing ecological insights through exploratory analyses and testing of existing hypotheses."
+  4. `rEDM` facilitates the use of empirical dynamic modeling for developing ecological insights through exploratory analyses and testing of existing hypotheses."
 header-includes: >
   \usepackage{amsmath}
   \usepackage{setspace}
@@ -37,13 +37,14 @@ bibliography: refs.bib
 output: 
   rticles::peerj_article:
     base_format: bookdown::pdf_document2 # for using \@ref()
+    keep_tex: true
     # base_format: rmarkdown::pdf_document 
 ---
 ### Keywords {-}
 causal inference, empirical dynamics, forecasting, nonlinear dynamics, time series
 
 ### Running Title {-}
-`rEDM`: Empirical Dynamic Modeling in R
+`rEDM`: Empirical Dynamic Modeling
 
 \newpage
 
@@ -207,7 +208,7 @@ plot(smap_output_err$theta, smap_output_err$rho, type = "l",
 
 Rather than representing the system state with lags of a single time series [@Takens_1981], we can use different time series observed from the same system [@Sauer_1991; @Deyle_2011]. These *multivariate* representations can be more effective when data are limited and noisy, or necessary when there are stochastic drivers in the system that need to be explicitly included (see @Casdagli_1991 for more details).
 
-The `block_lnlp()` function generalizes the `simplex()` and `s_map()` functions: any combination of time series (and their lags) can be used, with either the Simplex Projection or S-map. Instead of lags of one time series, the coordinates of the reconstruction are manually specified as columns of the input data (`columns`); and similarly for the variable to be forecast (the `target_column` argument). If lags of a time series are desired as coordinates, they need to be pre-computed as additional columns (e.g. via the `make_block()` function).
+The `block_lnlp()` function generalizes the `simplex()` and `s_map()` functions: any combination of time series (and their lags) can be used, with either the Simplex Projection or S-map. Instead of lags of one time series, the coordinates of the reconstruction are manually specified as columns of the input data (`columns`); and similarly for the variable to be forecast (the `target_column` argument). If lags of a time series are desired as coordinates, they need to be precomputed as additional columns (e.g. via the `make_block()` function).
 
 ### Example
 
@@ -252,7 +253,7 @@ As in `simplex()` and `s_map()`, the default value for the `tp` argument is 1---
 str(block_lnlp_output)
 ```
 
-With `stats_only = FALSE`, the output also includes a list column (`model_output`), where each element is a data.frame that contains observed and predicted values for that model run. We can extract these values to inspect how individual predictions compare to observed values.
+With `stats_only = FALSE`, the output also includes a list column (`model_output`), where each element is a data.frame that contains observed and predicted values for that model run. We can extract these values to inspect how individual predictions compare to observed values (Figure \@ref(fig:block-pred-vs-obs)).
 
 ```{r extract block-lnlp predictions}
 list_of_model_predictions <- block_lnlp_output$model_output
@@ -343,7 +344,7 @@ Nevertheless, because $x$ does influence $y$, there is typically some predictive
 
 ## Convergent Cross Mapping (CCM)
 
-The `ccm()` function is a wrapper to compute cross map skill for different sized subsamples of the data. In the following example, we examine the relationship between sardine landings in California and Scripps Pier sea-surface temperature as in @Sugihara_2012 (but see also [@Deyle_2013]).
+The `ccm()` function is a wrapper to compute cross map skill for different sized subsamples of the data. In the following example, we examine the relationship between sardine landings in California and Scripps Pier sea-surface temperature (SST) as in @Sugihara_2012 (but see also [@Deyle_2013]).
 
 To identify convergence, we compute cross-map skill over many random subsamples of the time series. `lib_sizes` specifies the sizes of the library set subsamples, and `num_samples` specifies the number of subsamples at each library size. `random_libs` and `replace` specify how to generate the subsamples. Here, setting both to `TRUE` enables random sampling with replacement. We use `E = 3`, following the supplementary materials for @Sugihara_2012.
 
