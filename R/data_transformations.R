@@ -68,6 +68,11 @@ make_surrogate_shuffle <- function(ts, num_surr = 100)
 #' 
 make_surrogate_ebisuzaki <- function(ts, num_surr = 100)
 {
+    if (is.data.frame(ts))
+    {
+        ts <- ts[, 1]
+    }
+    
     if (any(!is.finite(ts)))
         stop("input time series contained invalid values")
     
@@ -118,6 +123,10 @@ make_surrogate_ebisuzaki <- function(ts, num_surr = 100)
 #' 
 make_surrogate_seasonal <- function(ts, num_surr = 100, T_period = 12)
 {
+    if (is.data.frame(ts))
+    {
+        ts <- ts[, 1]
+    }
     
     if (any(!is.finite(ts)))
         stop("input time series contained invalid values")
