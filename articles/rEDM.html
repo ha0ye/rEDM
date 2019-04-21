@@ -89,7 +89,7 @@
                         <h4 class="author">Ethan Deyle</h4>
                         <h4 class="author">George Sugihara</h4>
             
-            <h4 class="date">2019-03-13</h4>
+            <h4 class="date">2019-04-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ha0ye/rEDM/blob/master/vignettes/rEDM.Rmd"><code>vignettes/rEDM.Rmd</code></a></small>
       <div class="hidden name"><code>rEDM.Rmd</code></div>
@@ -114,7 +114,7 @@
 <p>The <strong>rEDM</strong> package can be obtained in two main ways. The standard version of the package can be obtained through CRAN (the Comprehensive R Archive Network): <a href="https://cran.r-project.org/package=rEDM" class="uri">https://cran.r-project.org/package=rEDM</a>:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"rEDM"</span>)</a></code></pre></div>
 <p>However, the most recent version is available on GitHub: <a href="https://github.com/ha0ye/rEDM" class="uri">https://github.com/ha0ye/rEDM</a>, and can be installed using the <code>install_github()</code> function in the <strong>devtools</strong> package.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"ha0ye/rEDM"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">"ha0ye/rEDM"</span>)</a></code></pre></div>
 </div>
 </div>
 <div id="empirical-dynamic-modeling" class="section level1">
@@ -487,9 +487,9 @@
 ##  $ target_column: Factor w/ 1 level "np_sst": 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ lib_size     : num  10 10 10 10 10 10 10 10 10 10 ...
 ##  $ num_pred     : num  76 76 76 76 76 76 76 76 76 76 ...
-##  $ rho          : num  0.339 0.267 0.139 0.105 -0.211 ...
-##  $ mae          : num  1.122 1.04 0.923 0.972 1.025 ...
-##  $ rmse         : num  1.35 1.27 1.19 1.22 1.28 ...</code></pre>
+##  $ rho          : num  -0.14492 0.00706 0.22011 0.26876 0.00755 ...
+##  $ mae          : num  0.951 0.996 0.862 0.985 0.88 ...
+##  $ rmse         : num  1.14 1.27 1.07 1.22 1.09 ...</code></pre>
 <p>The output is a data.frame with statistics for each model run (in this case, 100 models at each of 8 library sizes). To interpret the results, we aggregate the cross map performance at each library size using the <code><a href="../reference/ccm_means.html">ccm_means()</a></code> function, which computes a mean value at each unique <code>lib_size</code>. Because average cross map skill less than 0 means there is no prediction skill, (predictions should not be anticorrelated with observations), we set negative values to 0 when plotting.</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1">a_xmap_t_means &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ccm_means.html">ccm_means</a></span>(anchovy_xmap_sst)</a>
 <a class="sourceLine" id="cb35-2" data-line-number="2">t_xmap_a_means &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ccm_means.html">ccm_means</a></span>(sst_xmap_anchovy)</a>
@@ -539,8 +539,8 @@
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" data-line-number="1">output<span class="op">$</span>direction &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste</a></span>(output<span class="op">$</span>lib_column, <span class="st">"xmap to</span><span class="ch">\n</span><span class="st">"</span>, output<span class="op">$</span>target_column)</a>
 <a class="sourceLine" id="cb41-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb41-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggplot2)</a>
-<a class="sourceLine" id="cb41-4" data-line-number="4">time_delay_ccm_fig &lt;-<span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(output, <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> tp, <span class="dt">y =</span> rho, <span class="dt">color =</span> direction)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb41-5" data-line-number="5"><span class="st">    </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()</a></code></pre></div>
+<a class="sourceLine" id="cb41-4" data-line-number="4">time_delay_ccm_fig &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(output, <span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> tp, <span class="dt">y =</span> rho, <span class="dt">color =</span> direction)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb41-5" data-line-number="5"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>()</a></code></pre></div>
 <div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(time_delay_ccm_fig)</a></code></pre></div>
 <p><img src="rEDM_files/figure-html/unnamed-chunk-17-1.png" width="480"></p>
 <p>As expected for this simple predator-prey system, we see evidence for causation in both directions (cross map skill, <code>rho</code>, peaks for negative <code>tp</code>). Using cross map skill as a proxy for interaction strength (under the assumption that all else is equal, which is reasonable for this laboratory experiment), it looks like the causal interaction is equally strong in both directions. We further note that the estimated time delay for the effect of predators (<em>Didinium</em>) on prey (<em>Paramecium</em>) is fast (<code>tp = -1</code> for “paramecium xmap to didinium”) compared to the effect of prey on predators (<code>tp = -4</code> for “didinium xmap to paramecium”). This is consistent with the ecological interpretation that changes in predator abundance affect prey abundance quickly, while there is a lag in the response of predator abundance to changes in prey abundance.</p>
