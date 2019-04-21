@@ -4,7 +4,7 @@
 # rEDM
 
 [![Build
-Status](https://travis-ci.com/ha0ye/rEDM.svg?branch=master)](https://travis-ci.com/ha0ye/rEDM)
+Status](https://travis-ci.org/ha0ye/rEDM.svg?branch=master)](https://travis-ci.org/ha0ye/rEDM)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.596502.svg)](https://doi.org/10.5281/zenodo.596502)
 [![codecov](https://codecov.io/gh/ha0ye/rEDM/branch/master/graph/badge.svg)](https://codecov.io/gh/ha0ye/rEDM)
 [![downloads](https://cranlogs.r-pkg.org/badges/grand-total/rEDM)](https://cran.rstudio.com/web/packages/rEDM/index.html)
