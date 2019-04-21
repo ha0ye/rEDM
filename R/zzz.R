@@ -6,6 +6,6 @@ Rcpp::loadModule("xmap_module", TRUE)
     if (!interactive()) return()
     
     intro_message <- paste("If you're new to the rEDM package, please check out the tutorial:",
-                           "> vignette(\"rEDM-tutorial\")", sep = "\n")
+                           "> vignette(\"rEDM\")", sep = "\n")
     packageStartupMessage(intro_message)
 }

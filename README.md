@@ -39,8 +39,8 @@ install.packages("rEDM")
 OR from github with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("ha0ye/rEDM")
+# install.packages("remotes")
+remotes::install_github("ha0ye/rEDM")
 ```
 
 ## Example
