@@ -203,11 +203,28 @@ test_that("make_surrogate_twin works", {
     expect_error(dat3 <- make_surrogate_data(ts, "twin", 15, T_period = 13, dim = 2))
 })
 
-test_that("surrogate functions work data.frames", {
+test_that("surrogate functions work on data.frames", {
     set.seed(42)
     df <- data.frame(ts = rnorm(50))
     expect_error(out <- make_surrogate_shuffle(df, num_surr = 4), NA)
+    expect_false(any(is.na(out)))
     expect_error(out <- make_surrogate_ebisuzaki(df, num_surr = 4), NA)
+    expect_false(any(is.na(out)))
     expect_error(out <- make_surrogate_seasonal(df, num_surr = 4), NA)
+    expect_false(any(is.na(out)))
     expect_error(out <- make_surrogate_twin(df, num_surr = 4, T_period = 2), NA)
+    expect_false(any(is.na(out)))
+})
+
+test_that("surrogate functions work on tibbles", {
+    set.seed(42)
+    df <- tibble::tibble(ts = rnorm(50), y = rep(NA, 50))
+    expect_error(out <- make_surrogate_shuffle(df, num_surr = 4), NA)
+    expect_false(any(is.na(out)))
+    expect_error(out <- make_surrogate_ebisuzaki(df, num_surr = 4), NA)
+    expect_false(any(is.na(out)))
+    expect_error(out <- make_surrogate_seasonal(df, num_surr = 4), NA)
+    expect_false(any(is.na(out)))
+    expect_error(out <- make_surrogate_twin(df, num_surr = 4, T_period = 2), NA)
+    expect_false(any(is.na(out)))
 })
