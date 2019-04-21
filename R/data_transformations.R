@@ -48,6 +48,11 @@ make_surrogate_data <- function(ts, method = c("random_shuffle", "ebisuzaki",
 #' 
 make_surrogate_shuffle <- function(ts, num_surr = 100)
 {
+    if (is.data.frame(ts))
+    {
+        ts <- ts[[1]]
+    }
+    
     matrix(unlist(
         lapply(seq(num_surr), function(i) {
             sample(ts, size = length(ts))
@@ -70,7 +75,7 @@ make_surrogate_ebisuzaki <- function(ts, num_surr = 100)
 {
     if (is.data.frame(ts))
     {
-        ts <- ts[, 1]
+        ts <- ts[[1]]
     }
     
     if (any(!is.finite(ts)))
@@ -86,24 +91,24 @@ make_surrogate_ebisuzaki <- function(ts, num_surr = 100)
     
     matrix(unlist(
         lapply(seq(num_surr), function(i) {
-        if (n %% 2 == 0) # even length
-        {
-            thetas <- 2 * pi * runif(n2 - 1)
-            angles <- c(0, thetas, 0, -rev(thetas))
-            recf <- amplitudes * exp(complex(imaginary = angles))
-            recf[n2] <- complex(real = sqrt(2) * amplitudes[n2] * 
-                                    cos(runif(1) * 2 * pi))
-        }
-        else # odd length
-        {
-            thetas <- 2 * pi * runif(n2)
-            angles <- c(0, thetas, -rev(thetas))
-            recf <- amplitudes * exp(complex(imaginary = angles))
-        }
-        temp <- Re(fft(recf, inverse = TRUE) / n)
-        
-        # adjust variance of the surrogate time series to match original
-        return(temp / sd(temp) * sigma)
+            if (n %% 2 == 0) # even length
+            {
+                thetas <- 2 * pi * runif(n2 - 1)
+                angles <- c(0, thetas, 0, -rev(thetas))
+                recf <- amplitudes * exp(complex(imaginary = angles))
+                recf[n2] <- complex(real = sqrt(2) * amplitudes[n2] * 
+                                        cos(runif(1) * 2 * pi))
+            }
+            else # odd length
+            {
+                thetas <- 2 * pi * runif(n2)
+                angles <- c(0, thetas, -rev(thetas))
+                recf <- amplitudes * exp(complex(imaginary = angles))
+            }
+            temp <- Re(fft(recf, inverse = TRUE) / n)
+            
+            # adjust variance of the surrogate time series to match original
+            return(temp / sd(temp) * sigma)
         })
     ), ncol = num_surr)
 }
@@ -125,7 +130,7 @@ make_surrogate_seasonal <- function(ts, num_surr = 100, T_period = 12)
 {
     if (is.data.frame(ts))
     {
-        ts <- ts[, 1]
+        ts <- ts[[1]]
     }
     
     if (any(!is.finite(ts)))
@@ -318,13 +323,18 @@ identify_twins <- function(block,
 #' make_surrogate_twin(rnorm(100, sd = 0.1) + sin(1:100 * pi / 6), 10)
 #' 
 make_surrogate_twin <- function(ts,
-                                 num_surr = 1,
-                                 dim = 1, tau = 1, 
-                                 phase_lock = TRUE, 
-                                 T_period = 24, 
-                                 initial_point = "same_season", 
-                                 ...)
+                                num_surr = 1,
+                                dim = 1, tau = 1, 
+                                phase_lock = TRUE, 
+                                T_period = 24, 
+                                initial_point = "same_season", 
+                                ...)
 {
+    if (is.data.frame(ts))
+    {
+        ts <- ts[[1]]
+    }
+    
     # generate time-lag embedding matrix
     if (dim > 1) {
         block <- rEDM::make_block(ts, max_lag = dim, tau = tau)
