@@ -20,8 +20,7 @@ test_that("simplex works", {
     simplex_out <- data.frame(lapply(simplex_out, function(y) 
         if (is.numeric(y)) round(y, 4) else y))
     attributes(simplex_out) <- attributes(simplex_out)[sort(names(attributes(simplex_out)))]
-    expect_equal(digest::digest(simplex_out), 
-                 "19b7ca9c40138adf04ba91e6be68fa82")
+    expect_known_hash(simplex_out, "19b7ca9c40")
 })
 
 test_that("simplex model_output works", {
@@ -36,34 +35,33 @@ test_that("simplex model_output works", {
     expect_true("pred" %in% names(model_output))
     expect_true("pred_var" %in% names(model_output))
     expect_equal(dim(model_output), c(200, 4))
-    expect_equal(digest::digest(round(model_output, 4)), 
-                 "3ca91650810e31a0f84eccc8d35a513c")
+    expect_known_hash(round(model_output, 4), "3ca9165081")
 })
 
 test_that("simplex works on time series", {
     expect_warning(output <- simplex(AirPassengers, 
                                      E = 7, stats_only = FALSE))
     model_output <- round(output$model_output[[1]], 4)
-    expect_equal(digest::digest(model_output), "22d06a4d868f1e3070aef99f270f1dee")
-    
+    expect_known_hash(model_output, "22d06a4d86")
+
     output <- output[, !(names(output) %in% "model_output")]
     output <- data.frame(lapply(output, function(y) 
         if (is.numeric(y)) round(y, 4) else y))
     attributes(output) <- attributes(output)[sort(names(attributes(output)))]
-    expect_equal(digest::digest(output), "e3d42ba41f5d9e7527af7e31a2cad576")
+    expect_known_hash(output, "e3d42ba41f")
 })
 
 test_that("simplex works on multivariate time series", {
     expect_warning(output <- simplex(EuStockMarkets, 
                                      E = 6, stats_only = FALSE))
     model_output <- round(output$model_output[[1]], 4)
-    expect_equal(digest::digest(model_output), "a5bb66a31ce1816b11599acb59f3b55b")
-    
+    expect_known_hash(model_output, "a5bb66a31c")
+
     output <- output[, !(names(output) %in% "model_output")]
     output <- data.frame(lapply(output, function(y) 
         if (is.numeric(y)) round(y, 4) else y))
     attributes(output) <- attributes(output)[sort(names(attributes(output)))]
-    expect_equal(digest::digest(output), "53a3720878b52780ddf89b9a604d49b2")
+    expect_known_hash(output, "53a3720878")
 })
 
 test_that("simplex error checking works", {

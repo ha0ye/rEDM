@@ -20,7 +20,7 @@ test_that("block_lnlp works", {
     output <- data.frame(lapply(output, function(y) 
         if (is.numeric(y)) round(y, 4) else y))
     attributes(output) <- attributes(output)[sort(names(attributes(output)))]
-    expect_equal(digest::digest(output), "3f457044ffc65c1b7a6e54f47ebbcc97")
+    expect_known_hash(output, "3f457044ff")
 })
 
 test_that("block_lnlp model_output works", {
@@ -37,8 +37,7 @@ test_that("block_lnlp model_output works", {
     expect_true("pred" %in% names(model_output))
     expect_true("pred_var" %in% names(model_output))
     expect_equal(dim(model_output), c(200, 4))
-    expect_equal(digest::digest(round(model_output, 4)), 
-                 "56a6aac91d858ff5a81c619ef0bf92f6")
+    expect_known_hash(round(model_output, 4), "56a6aac91d")
 })
 
 test_that("block_lnlp smap_coefficients works", {
@@ -55,8 +54,7 @@ test_that("block_lnlp smap_coefficients works", {
     expect_true("c_2" %in% names(smap_coefficients))
     expect_true("c_0" %in% names(smap_coefficients))
     expect_equal(dim(smap_coefficients), c(200, 3))
-    expect_equal(digest::digest(round(smap_coefficients, 4)), 
-                 "82a3b6164cfcfe8d69d98689b95d04c7")
+    expect_known_hash(round(smap_coefficients, 4), "82a3b6164c")
 })
 
 test_that("block_lnlp smap_coefficient_covariances works", {
@@ -74,8 +72,7 @@ test_that("block_lnlp smap_coefficient_covariances works", {
     expect_equal(vapply(smap_coeff_covariances[1:199], dim, c(1, 1)), 
                  matrix(3, nrow = 2, ncol = 199))
     expect_error(covariance_mat <- do.call(rbind, smap_coeff_covariances[1:199]), NA)
-    expect_equal(digest::digest(round(covariance_mat, 4)), 
-                 "440dcb1311b66571f942575c77aa0eb8")
+    expect_known_hash(round(covariance_mat, 4), "440dcb1311")
 })
 
 test_that("block_lnlp works on multivariate time series", {
@@ -84,13 +81,14 @@ test_that("block_lnlp works on multivariate time series", {
                                         method = "s-map", theta = 1, 
                                         stats_only = FALSE))
     model_output <- round(output$model_output[[1]], 4)
-    expect_equal(digest::digest(model_output), "0aa6e157bcaa8a827f592364edffdd9b")
-    
+    expect_known_hash(is.na(model_output), "5c19e78fc9")
+    expect_known_hash(na.omit(model_output), "734a971f4f")
+
     output <- output[, !(names(output) %in% "model_output")]
     output <- data.frame(lapply(output, function(y) 
         if (is.numeric(y)) round(y, 4) else y))
     attributes(output) <- attributes(output)[sort(names(attributes(output)))]
-    expect_equal(digest::digest(output), "708342ad3fd0a0250345f637b5cc67ec")
+    expect_known_hash(output, "708342ad3f")
 })
 
 test_that("block_lnlp error checking works", {
