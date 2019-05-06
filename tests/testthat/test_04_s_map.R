@@ -18,8 +18,7 @@ test_that("s-map works", {
     expect_true("mae" %in% names(smap_out))
     expect_true("rmse" %in% names(smap_out))
     expect_equal(NROW(smap_out), length(theta_list))
-    expect_equal(digest::digest(round(smap_out$rho, 4)), 
-                 "51c159a4ab5d37fe1b0cf3b1c07bc509")
+    expect_known_hash(round(smap_out$rho, 4), "51c159a4ab")
 })
 
 test_that("s-map model_output works", {
@@ -36,8 +35,7 @@ test_that("s-map model_output works", {
     expect_true("pred" %in% names(model_output))
     expect_true("pred_var" %in% names(model_output))
     expect_equal(dim(model_output), c(200, 4))
-    expect_equal(digest::digest(round(model_output, 4)), 
-                 "d180a19cc4629e64c36712153226e8e0")
+    expect_known_hash(round(model_output, 4), "d180a19cc4")
 })
 
 test_that("s-map smap_coefficients works", {
@@ -53,8 +51,7 @@ test_that("s-map smap_coefficients works", {
     expect_true("c_2" %in% names(smap_coefficients))
     expect_true("c_0" %in% names(smap_coefficients))
     expect_equal(dim(smap_coefficients), c(200, 3))
-    expect_equal(digest::digest(round(smap_coefficients, 4)), 
-                 "d63e5b1c25e79b2c65352fa3ec118e99")
+    expect_known_hash(round(smap_coefficients, 4), "d63e5b1c25")
 })
 
 test_that("s-map smap_coefficient_covariances works", {
@@ -72,35 +69,36 @@ test_that("s-map smap_coefficient_covariances works", {
     expect_equal(vapply(smap_coeff_covariances[2:199], dim, c(1, 1)), 
                  matrix(3, nrow = 2, ncol = 198))
     expect_error(covariance_mat <- do.call(rbind, smap_coeff_covariances[2:199]), NA)
-    expect_equal(digest::digest(round(covariance_mat, 4)), 
-                 "4c4643578927d95cc473c9bf873afcf6")
+    expect_known_hash(round(covariance_mat, 4), "4c46435789")
 })
 
 test_that("s-map works on time series", {
     expect_warning(output <- s_map(AirPassengers, 
                                    E = 7, theta = 1, stats_only = FALSE))
     model_output <- round(output$model_output[[1]], 4)
-    expect_equal(digest::digest(model_output), "2e8bddf61e78cef8493b47046c00d071")
-    
+    expect_known_hash(is.na(model_output), "45d1c1d488")
+    expect_known_hash(na.omit(model_output), "0013478103")
+
     output <- output[, !(names(output) %in% "model_output")]
     output <- data.frame(lapply(output, function(y) 
         if (is.numeric(y)) round(y, 4) else y))
     attributes(output) <- attributes(output)[sort(names(attributes(output)))]
-    expect_equal(digest::digest(output), "b31f94cc3d234f45e4b26aa4a4444159")
+    expect_known_hash(output, "b31f94cc3d")
 })
 
 
 test_that("s-map works on multivariate time series", {
     expect_warning(output <- s_map(EuStockMarkets, 
-                                     E = 6, theta = 1, stats_only = FALSE))
+                                   E = 6, theta = 1, stats_only = FALSE))
     model_output <- round(output$model_output[[1]], 4)
-    expect_equal(digest::digest(model_output), "b72187b45cc3bc56fae75daeec740e11")
+    expect_known_hash(is.na(model_output), "4a5c6d65e4")
+    expect_known_hash(na.omit(model_output), "dc105fe880")
     
     output <- output[, !(names(output) %in% "model_output")]
     output <- data.frame(lapply(output, function(y) 
         if (is.numeric(y)) round(y, 4) else y))
     attributes(output) <- attributes(output)[sort(names(attributes(output)))]
-    expect_equal(digest::digest(output), "db27e5eeec3de0f898ee82f9837558f4")
+    expect_known_hash(output, "db27e5eeec")
 })
 
 test_that("s-map error checking works", {
