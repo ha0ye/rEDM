@@ -90,9 +90,9 @@ test_that("s-map works on time series", {
 test_that("s-map works on multivariate time series", {
     expect_warning(output <- s_map(EuStockMarkets, 
                                    E = 6, theta = 1, stats_only = FALSE))
-    model_output <- round(output$model_output[[1]], 4)
+    model_output <- round(output$model_output[[1]], 2)
     expect_known_hash(is.na(model_output), "4a5c6d65e4")
-    expect_known_hash(na.omit(model_output), "dc105fe880")
+    expect_known_hash(na.omit(model_output), "404e647060")
     
     output <- output[, !(names(output) %in% "model_output")]
     output <- data.frame(lapply(output, function(y) 

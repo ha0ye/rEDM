@@ -80,9 +80,9 @@ test_that("block_lnlp works on multivariate time series", {
                                         target_column = "CAC", 
                                         method = "s-map", theta = 1, 
                                         stats_only = FALSE))
-    model_output <- round(output$model_output[[1]], 4)
+    model_output <- round(output$model_output[[1]], 2)
     expect_known_hash(is.na(model_output), "5c19e78fc9")
-    expect_known_hash(na.omit(model_output), "734a971f4f")
+    expect_known_hash(na.omit(model_output), "1795978cff")
 
     output <- output[, !(names(output) %in% "model_output")]
     output <- data.frame(lapply(output, function(y) 
