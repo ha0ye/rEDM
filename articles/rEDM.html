@@ -89,7 +89,7 @@
                         <h4 class="author">Ethan Deyle</h4>
                         <h4 class="author">George Sugihara</h4>
             
-            <h4 class="date">2019-04-21</h4>
+            <h4 class="date">2019-06-17</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ha0ye/rEDM/blob/master/vignettes/rEDM.Rmd"><code>vignettes/rEDM.Rmd</code></a></small>
       <div class="hidden name"><code>rEDM.Rmd</code></div>
@@ -487,9 +487,9 @@
 ##  $ target_column: Factor w/ 1 level "np_sst": 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ lib_size     : num  10 10 10 10 10 10 10 10 10 10 ...
 ##  $ num_pred     : num  76 76 76 76 76 76 76 76 76 76 ...
-##  $ rho          : num  0.06781 -0.19537 0.00583 -0.00602 0.06909 ...
-##  $ mae          : num  0.925 0.987 0.963 0.83 1.206 ...
-##  $ rmse         : num  1.15 1.19 1.16 1.07 1.45 ...</code></pre>
+##  $ rho          : num  0.0585 0.2334 0.2369 -0.0941 0.2689 ...
+##  $ mae          : num  1.083 0.939 0.926 0.999 0.904 ...
+##  $ rmse         : num  1.35 1.18 1.11 1.22 1.12 ...</code></pre>
 <p>The output is a data.frame with statistics for each model run (in this case, 100 models at each of 8 library sizes). To interpret the results, we aggregate the cross map performance at each library size using the <code><a href="../reference/ccm_means.html">ccm_means()</a></code> function, which computes a mean value at each unique <code>lib_size</code>. Because average cross map skill less than 0 means there is no prediction skill, (predictions should not be anticorrelated with observations), we set negative values to 0 when plotting.</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1">a_xmap_t_means &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ccm_means.html">ccm_means</a></span>(anchovy_xmap_sst)</a>
 <a class="sourceLine" id="cb35-2" data-line-number="2">t_xmap_a_means &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ccm_means.html">ccm_means</a></span>(sst_xmap_anchovy)</a>
@@ -619,7 +619,7 @@
 <a class="sourceLine" id="cb49-15" data-line-number="15">})</a>
 <a class="sourceLine" id="cb49-16" data-line-number="16">best_E</a></code></pre></div>
 <pre><code>## AbvBioAnnProd     noh020tot   invrichness 
-##             4             3             4</code></pre>
+##             4             3             3</code></pre>
 <p><img src="rEDM_files/figure-html/simplex%20on%20e120-1.png" width="576"></p>
 <p>Note that for two variables (aboveground biomass and invader richness), the best embedding dimension is also the maximum that we test. These results suggest that the dynamics could be high-dimensional, or that our results might be biased because of the limited time series length for each segment. Collecting longer time series would be beneficial to enable better predictions and more clearly distinguish between these possibilities.</p>
 <p>Using these values for the embedding dimension, we can identify nonlinearity using the <code><a href="../reference/simplex.html">s_map()</a></code> function:</p>
@@ -691,7 +691,7 @@
 <a class="sourceLine" id="cb55-17" data-line-number="17">    <span class="dv">2</span>)), <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste</a></span>(<span class="st">"(biomass and prec.) rho ="</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(Precip_output<span class="op">$</span>rho, <span class="dv">2</span>))), <span class="dt">lty =</span> <span class="dv">3</span>, </a>
 <a class="sourceLine" id="cb55-18" data-line-number="18">    <span class="dt">lwd =</span> <span class="dv">2</span>, <span class="dt">col =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"black"</span>, <span class="st">"red"</span>), <span class="dt">box.col =</span> <span class="ot">NA</span>, <span class="dt">xpd =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <p><img src="rEDM_files/figure-html/block_lnlp%20on%20e120-1.png" width="384"></p>
-<p>There is a marked improvement in forecast skill when including precipitation as a predictor, and the relationship between predicted and observed values falls closer to the 1:1 line (compare the red dashed line to the black dashed line). However, there is still a great deal of variability in biomass that is unexplained (<span class="math inline">\(R^2 = 0.48\)</span>).</p>
+<p>There is a marked improvement in forecast skill when including precipitation as a predictor, and the relationship between predicted and observed values falls closer to the 1:1 line (compare the red dashed line to the black dashed line). However, there is still a great deal of variability in biomass that is unexplained (<span class="math inline">\(R^2 = 0.16\)</span>).</p>
 </div>
 <div id="convergent-cross-mapping" class="section level3">
 <h3 class="hasAnchor">
@@ -897,10 +897,10 @@
 <p>These cross map values form a null distribution. We can then estimate a <span class="math inline">\(p\)</span> value for rejecting the null hypothesis that cross map <span class="math inline">\(\rho\)</span> is driven by the mutual seasonality.</p>
 <div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb73-1" data-line-number="1">(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(ccm_rho_matrix[<span class="st">'Thrips_imaginis'</span>, <span class="st">'Rain_mm'</span>] <span class="op">&lt;</span><span class="st"> </span>ccm_rho_surr<span class="op">$</span>Rain) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>) <span class="op">/</span></a>
 <a class="sourceLine" id="cb73-2" data-line-number="2"><span class="st">    </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(ccm_rho_surr<span class="op">$</span>Rain) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)</a></code></pre></div>
-<pre><code>## [1] 0.041</code></pre>
+<pre><code>## [1] 0.046</code></pre>
 <div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb75-1" data-line-number="1">(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(ccm_rho_matrix[<span class="st">'Thrips_imaginis'</span>, <span class="st">'maxT_degC'</span>] <span class="op">&lt;</span><span class="st"> </span>ccm_rho_surr<span class="op">$</span>maxT) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>) <span class="op">/</span></a>
 <a class="sourceLine" id="cb75-2" data-line-number="2"><span class="st">    </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(ccm_rho_surr<span class="op">$</span>maxT) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)</a></code></pre></div>
-<pre><code>## [1] 0.18</code></pre>
+<pre><code>## [1] 0.16</code></pre>
 <p>In both cases, the cross map skill that we measure for the real time series is better than the median expectation under the null hypothesis. For rainfall, the effect is significant based on the common threshold of <span class="math inline">\(p &lt; 0.05\)</span>. Howover, cross mapping between Thrips abundance and temperature is non-significant, which could be due to the high correlation between maximum daily temperature and the seasonal cycle. In other words, the actual time series for <code>maxT_degC</code> is already strongly periodic, and it is difficult to detect a causal signal on top of the seasonal cycle. Using higher frequency data or spatially resolved replicates (e.g. local temperature and local population counts) could help to enhance detectability under such circumstances.</p>
 </div>
 </div>
