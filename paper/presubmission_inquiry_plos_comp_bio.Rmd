@@ -1,0 +1,32 @@
+---
+output: pdf_document
+bibliography: refs.bib
+csl: chicago-author-date.csl
+---
+\begin{flushright}
+Hao Ye\\
+Department of Wildlife Ecology and Conservation\\
+University of Florida\\
+haoye@ufl.edu
+\end{flushright}
+
+*`r format(Sys.Date(), "%B %d %Y")`*
+
+Dear Editors,
+
+We are making a presubmission inquiry for our manuscript, "rEDM: An R package for Empirical Dynamic Modeling and Convergent Cross Mapping", to be considered as a Software article for publication in PLOS Computational Biology.
+
+Effective modeling of biological time series can be highly challenging. Not only are there many plausible mathematical representations for the underlying processes, but time series data are also frequently limited in length or only measure some of the possible state variables. These create challenges for fitting the sometimes quite complex mathematical models or selecting between alternative representations. Empirical Dynamic Modeling (EDM) is an emerging approach for modeling time series with minimal assumptions, yet with the capability of deriving insight into the underlying mechanisms; these properties make it eminently well-suited for biological time series data.
+
+In our manuscript, we describe rEDM, an open source R package for empirical dynamic modeling. rEDM is archived on Zenodo - https://doi.org/10.5281/zenodo.596502 and is developed on GitHub - https://github.com/ha0ye/rEDM . The software contains functions for performing many of the common tasks in time series analysis: characterizing the presence of nonlinear dynamics [@Sugihara_1990; @Sugihara_1994], identifying relationships between time series [@Sugihara_2012; @Ye_2015a], forecasting [@Dixon_1999; @Ye_2015; @McGowan_2017; @Deyle_2018], and more.
+
+rEDM is licensed under a University of California Technology Transfer license that supports free copying, modification, and distribution for educational, research, and non-profit purposes. As of time of submission, rEDM has over 12,000 downloads, indicative of its broad applicability and utility, and is well-documented with tutorials available online at https://ha0ye.github.io/rEDM/ and includes multiple example datasets, described at https://ha0ye.github.io/rEDM/reference/index.html#Datasets.
+
+Thank you for considering our work, and we look forward to hearing back from you.
+
+Sincerely,
+
+Hao Ye (on behalf of the authors)
+
+\pagebreak
+## References
