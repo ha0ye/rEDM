@@ -116,9 +116,9 @@
                 <text x="269.275px" y="295.077px" style="font-family:'STIXGeneral-Italic', 'STIXGeneral';font-style:italic;font-size:18px;">2τ</text>
             </g>
             <g transform="matrix(1,0,0,1,-396.916,53.435)">
-                <text x="401.394px" y="168.209px" style="font-family:'STIXGeneral-Italic', 'STIXGeneral';font-style:italic;font-size:24px;fill:rgb(136,0,0);">x</text>
+                <text x="407.394px" y="168.209px" style="font-family:'STIXGeneral-Italic', 'STIXGeneral';font-style:italic;font-size:24px;fill:rgb(187,0,0);">x</text>
                 <g transform="matrix(1.25,0,0,1.25,-103.012,-43.1757)">
-                    <text x="412.05px" y="172.703px" style="font-family:'STIXGeneral-Italic', 'STIXGeneral';font-style:italic;font-size:13.992px;fill:rgb(136,0,0);">t-2τ</text>
+                    <text x="418.05px" y="172.703px" style="font-family:'STIXGeneral-Italic', 'STIXGeneral';font-style:italic;font-size:13.992px;fill:rgb(187,0,0);">t-τ</text>
                 </g>
             </g>
             <g transform="matrix(1,0,0,1,30.9987,-3.43693)">
