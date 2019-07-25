@@ -499,7 +499,7 @@ void ForecastMachine::simplex_prediction(const size_t start, const size_t end)
             temp_lib = which_lib;
             adjust_lib(curr_pred);
             nearest_neighbors = find_nearest_neighbors(distances[curr_pred]);
-            which_lib = temp_lib;
+            which_lib.swap(temp_lib);
         }
         else
         {
@@ -607,7 +607,7 @@ void ForecastMachine::smap_prediction(const size_t start, const size_t end)
             temp_lib = which_lib;
             adjust_lib(curr_pred);
             nearest_neighbors = find_nearest_neighbors(distances[curr_pred]);
-            which_lib = temp_lib;
+            which_lib.swap(temp_lib);
         }
         else
         {
