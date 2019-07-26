@@ -304,7 +304,7 @@ void Xmap::run()
             }
         }
     }
-    which_lib = full_lib;
+    which_lib.swap(full_lib);
     return;
 }
 
