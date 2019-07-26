@@ -43,6 +43,10 @@ OR from github with:
 remotes::install_github("ha0ye/rEDM")
 ```
 
+If you are on Windows, you may need to install
+[Rtools](https://cran.r-project.org/bin/windows/Rtools/) first, so that
+you have access to a C++ compiler.
+
 ## Example
 
 We begin by looking at annual time series of sunspots:
