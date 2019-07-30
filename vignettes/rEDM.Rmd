@@ -400,7 +400,7 @@ multiview_output <- multiview(block, lib = lib, pred = pred,
 str(multiview_output, max.level = 1)
 ```
 
-Note that the output has information about 3 models, since we specified 3 different values for `k`. Here, `lagged_block` gives the block that includes lags constructed for multiview embedding, and `embeddings` gives the list of the embeddings that were averaged together for each model.
+Note that the output has information about 4 models, since we specified 4 different values for `k`. Here, `lagged_block` gives the block that includes lags constructed for multiview embedding, and `embeddings` gives the list of the embeddings that were averaged together for each model.
 
 Again, we can compare the observed and predicted values using the data.frame from the `model_output` column:
 
