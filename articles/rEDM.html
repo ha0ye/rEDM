@@ -89,7 +89,7 @@
                         <h4 class="author">Ethan Deyle</h4>
                         <h4 class="author">George Sugihara</h4>
             
-            <h4 class="date">2019-07-29</h4>
+            <h4 class="date">2019-07-30</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ha0ye/rEDM/blob/master/vignettes/rEDM.Rmd"><code>vignettes/rEDM.Rmd</code></a></small>
       <div class="hidden name"><code>rEDM.Rmd</code></div>
@@ -439,7 +439,7 @@
 ##  $ lagged_block:List of 4
 ##   ..- attr(*, "class")= chr "AsIs"
 ##  $ embeddings  :List of 4</code></pre>
-<p>Note that the output has information about 3 models, since we specified 3 different values for <code>k</code>. Here, <code>lagged_block</code> gives the block that includes lags constructed for multiview embedding, and <code>embeddings</code> gives the list of the embeddings that were averaged together for each model.</p>
+<p>Note that the output has information about 4 models, since we specified 4 different values for <code>k</code>. Here, <code>lagged_block</code> gives the block that includes lags constructed for multiview embedding, and <code>embeddings</code> gives the list of the embeddings that were averaged together for each model.</p>
 <p>Again, we can compare the observed and predicted values using the data.frame from the <code>model_output</code> column:</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>) {</a>
 <a class="sourceLine" id="cb32-2" data-line-number="2">    predictions &lt;-<span class="st"> </span>multiview_output<span class="op">$</span>model_output[[i]]</a>
@@ -487,9 +487,9 @@
 ##  $ target_column: Factor w/ 1 level "np_sst": 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ lib_size     : num  10 10 10 10 10 10 10 10 10 10 ...
 ##  $ num_pred     : num  76 76 76 76 76 76 76 76 76 76 ...
-##  $ rho          : num  -0.1269 -0.0896 0.1973 0.1714 0.0848 ...
-##  $ mae          : num  1.188 0.961 0.875 0.98 1.01 ...
-##  $ rmse         : num  1.46 1.23 1.07 1.23 1.25 ...</code></pre>
+##  $ rho          : num  -0.1041 0.0212 0.1744 0.2723 0.2482 ...
+##  $ mae          : num  0.881 0.836 0.837 0.794 0.818 ...
+##  $ rmse         : num  1.084 1.063 1.05 0.985 1.027 ...</code></pre>
 <p>The output is a data.frame with statistics for each model run (in this case, 100 models at each of 8 library sizes). To interpret the results, we aggregate the cross map performance at each library size using the <code><a href="../reference/ccm_means.html">ccm_means()</a></code> function, which computes a mean value at each unique <code>lib_size</code>. Because average cross map skill less than 0 means there is no prediction skill, (predictions should not be anticorrelated with observations), we set negative values to 0 when plotting.</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1">a_xmap_t_means &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ccm_means.html">ccm_means</a></span>(anchovy_xmap_sst)</a>
 <a class="sourceLine" id="cb35-2" data-line-number="2">t_xmap_a_means &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ccm_means.html">ccm_means</a></span>(sst_xmap_anchovy)</a>
