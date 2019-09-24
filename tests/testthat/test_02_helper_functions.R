@@ -6,6 +6,12 @@ test_that("rEDM_warning filters warnings", {
     expect_warning(rEDM_warning("test ABC123", silent = TRUE), NA)
 })
 
+test_that("compute_stats has acceptable accuracy on degenerate input", {
+    x <- rep(c(-0.2, 0.36, -0.47, 0.30), 75)
+    out <- simplex(x, silent = TRUE)
+    expect_identical(out$rho, rep(1, 10))
+})
+
 test_that("check_params_against_lib produces desired output", {
     lib <- matrix(c(1, 5), ncol = 2)
     expect_true(check_params_against_lib(3, 1, 1, lib))

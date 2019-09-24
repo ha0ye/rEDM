@@ -23,7 +23,7 @@
 test_nonlinearity <- function(ts, method = "ebisuzaki", num_surr = 200, 
                               T_period = 1, E = 1, ...)
 {
-    compute_stats <- function(ts, ...)
+    compute_test_stat <- function(ts, ...)
     {
         results <- s_map(ts, stats_only = TRUE, silent = TRUE, ...)
         delta_rho <- max(results$rho) - results$rho[results$theta == 0]
@@ -31,7 +31,7 @@ test_nonlinearity <- function(ts, method = "ebisuzaki", num_surr = 200,
         return(c(delta_rho = delta_rho, delta_mae = delta_mae))
     }
     
-    actual_stats <- compute_stats(ts, ...)
+    actual_stats <- compute_test_stat(ts, ...)
     delta_rho <- actual_stats["delta_rho"]
     delta_mae <- actual_stats["delta_mae"]
     names(delta_rho) <- NULL

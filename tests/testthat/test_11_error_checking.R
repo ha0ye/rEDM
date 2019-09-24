@@ -16,6 +16,10 @@ test_that("beginning of range checking works", {
     expect_match(w, "start_of_range = 201, but num_vectors = 200", all = FALSE)
     expect_match(w, "start of time_range was greater than the number of vectors; skipping", all = FALSE)
     expect_match(w, "no nearest neighbors found; using NA for forecast", all = FALSE)
+    simplex_out$rho <- NaN
+    simplex_out$p_val <- NaN
+    simplex_out$const_pred_rho <- NaN
+    simplex_out$const_p_val <- NaN
     expect_known_hash(round(simplex_out, 4), "e5b3bb5459")
 })
 
