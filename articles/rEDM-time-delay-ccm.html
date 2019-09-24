@@ -7,8 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Using rEDM to quantify time delays in causation • rEDM</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Using rEDM to quantify time delays in causation">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
@@ -38,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -67,7 +68,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/ha0ye/rEDM">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -80,13 +81,14 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Using rEDM to quantify time delays in causation</h1>
                         <h4 class="author">Hao Ye</h4>
             
-            <h4 class="date">2019-07-30</h4>
+            <h4 class="date">2019-09-24</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ha0ye/rEDM/blob/master/vignettes/rEDM-time-delay-ccm.Rmd"><code>vignettes/rEDM-time-delay-ccm.Rmd</code></a></small>
       <div class="hidden name"><code>rEDM-time-delay-ccm.Rmd</code></div>
@@ -109,13 +111,13 @@
 <a href="#method" class="anchor"></a>Method</h1>
 <p>We can determine the optimal values of <code>tp</code> by testing different values within the <code>ccm</code> function. Conventionally, we do this with as much of the data as possible, to obtain the cleanest signal.</p>
 <p>First, we grab some demo time series from the <code>block_3sp</code> data.frame:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rEDM)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(paramecium_didinium)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(rEDM)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(paramecium_didinium)</a></code></pre></div>
 <p>Setup the cross mapping runs we want to do:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">vars &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/names">names</a></span>(paramecium_didinium)[<span class="dv">2</span><span class="op">:</span><span class="dv">3</span>] <span class="co"># c("paramecium", "didinium")</span></a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">vars &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/names.html">names</a></span>(paramecium_didinium)[<span class="dv">2</span><span class="op">:</span><span class="dv">3</span>] <span class="co"># c("paramecium", "didinium")</span></a>
 <a class="sourceLine" id="cb2-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co"># generate all combinations of lib_column, target_column, tp</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">params &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/expand.grid">expand.grid</a></span>(<span class="dt">lib_column =</span> vars, </a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">params &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/expand.grid.html">expand.grid</a></span>(<span class="dt">lib_column =</span> vars, </a>
 <a class="sourceLine" id="cb2-5" data-line-number="5">                      <span class="dt">target_column =</span> vars, </a>
 <a class="sourceLine" id="cb2-6" data-line-number="6">                      <span class="dt">tp =</span> <span class="dv">-10</span><span class="op">:</span><span class="dv">10</span>)</a>
 <a class="sourceLine" id="cb2-7" data-line-number="7"></a>
@@ -126,9 +128,9 @@
 <a class="sourceLine" id="cb2-12" data-line-number="12"><span class="co"># In other circumstances, we should use the best univariate E for each lib_column</span></a>
 <a class="sourceLine" id="cb2-13" data-line-number="13">E &lt;-<span class="st"> </span><span class="dv">3</span></a></code></pre></div>
 <p>Perform cross mapping runs:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">output &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/do.call">do.call</a></span>(rbind, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">lapply</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq_len</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">NROW</a></span>(params)), <span class="cf">function</span>(i) {</a>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">output &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span>(rbind, <span class="kw"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/nrow.html">NROW</a></span>(params)), <span class="cf">function</span>(i) {</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2">    <span class="kw"><a href="../reference/ccm.html">ccm</a></span>(paramecium_didinium, <span class="dt">E =</span> <span class="dv">3</span>, </a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">        <span class="dt">lib_sizes =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">NROW</a></span>(paramecium_didinium), <span class="dt">random_libs =</span> <span class="ot">FALSE</span>, </a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">        <span class="dt">lib_sizes =</span> <span class="kw"><a href="https://rdrr.io/r/base/nrow.html">NROW</a></span>(paramecium_didinium), <span class="dt">random_libs =</span> <span class="ot">FALSE</span>, </a>
 <a class="sourceLine" id="cb3-4" data-line-number="4">        <span class="dt">lib_column =</span> params<span class="op">$</span>lib_column[i], </a>
 <a class="sourceLine" id="cb3-5" data-line-number="5">        <span class="dt">target_column =</span> params<span class="op">$</span>target_column[i], </a>
 <a class="sourceLine" id="cb3-6" data-line-number="6">        <span class="dt">tp =</span> params<span class="op">$</span>tp[i], <span class="dt">silent =</span> <span class="ot">TRUE</span>)</a>
@@ -138,9 +140,9 @@
 <h1 class="hasAnchor">
 <a href="#results" class="anchor"></a>Results</h1>
 <p>Create an additional column to describe the direction of the cross mapping:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">output<span class="op">$</span>direction &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste</a></span>(output<span class="op">$</span>lib_column, <span class="st">"xmap to"</span>, output<span class="op">$</span>target_column)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">output<span class="op">$</span>direction &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(output<span class="op">$</span>lib_column, <span class="st">"xmap to"</span>, output<span class="op">$</span>target_column)</a></code></pre></div>
 <p>Plot the results (cross map skill vs. tp):</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggplot2)</a>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(ggplot2)</a>
 <a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(output, <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> tp, <span class="dt">y =</span> rho, <span class="dt">color =</span> direction)) <span class="op">+</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb5-3" data-line-number="3"><span class="st">    </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()</a></code></pre></div>
 <p><img src="rEDM-time-delay-ccm_files/figure-html/unnamed-chunk-5-1.png" width="576"></p>
@@ -163,6 +165,7 @@
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
         <div id="tocnav">
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
@@ -177,17 +180,20 @@
 </div>
 
 
+
       <footer><div class="copyright">
   <p>Developed by Hao Ye, Adam Clark, Ethan Deyle, Steve Munch.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

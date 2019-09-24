@@ -8,21 +8,25 @@
 
 <title>(generalized) Block forecasting using Gaussian Processes — block_gp • rEDM</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -30,14 +34,15 @@
 
 
 
-<meta property="og:title" content="(generalized) Block forecasting using Gaussian Processes — block_gp" />
 
+<meta property="og:title" content="(generalized) Block forecasting using Gaussian Processes — block_gp" />
 <meta property="og:description" content="block_gp uses multiple time series given as input to generate an 
 attractor reconstruction, and then applies Gaussian process regression to 
 approximate the dynamics and make forecasts. This method is the 
 generalized version of tde_gp, which constructs the block from 
 lags of a time series to pass into this function." />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -49,6 +54,7 @@ lags of a time series to pass into this function." />
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
 
 
   </head>
@@ -75,7 +81,7 @@ lags of a time series to pass into this function." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -101,11 +107,10 @@ lags of a time series to pass into this function." />
   </ul>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/ha0ye/rEDM">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -116,6 +121,7 @@ lags of a time series to pass into this function." />
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
@@ -127,21 +133,19 @@ lags of a time series to pass into this function." />
     </div>
 
     <div class="ref-description">
-    
     <p><code>block_gp</code> uses multiple time series given as input to generate an 
 attractor reconstruction, and then applies Gaussian process regression to 
 approximate the dynamics and make forecasts. This method is the 
 generalized version of <code><a href='tde_gp.html'>tde_gp</a></code>, which constructs the block from 
 lags of a time series to pass into this function.</p>
-    
     </div>
 
-    <pre class="usage"><span class='fu'>block_gp</span>(<span class='no'>block</span>, <span class='kw'>lib</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>NROW</a></span>(<span class='no'>block</span>)), <span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>lib</span>, <span class='kw'>tp</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+    <pre class="usage"><span class='fu'>block_gp</span>(<span class='no'>block</span>, <span class='kw'>lib</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>NROW</a></span>(<span class='no'>block</span>)), <span class='kw'>pred</span> <span class='kw'>=</span> <span class='no'>lib</span>, <span class='kw'>tp</span> <span class='kw'>=</span> <span class='fl'>1</span>,
   <span class='kw'>phi</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>v_e</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>eta</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>fit_params</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>columns</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>target_column</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>stats_only</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>save_covariance_matrix</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>first_column_time</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>silent</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -215,57 +219,34 @@ block is a time column (and therefore excluded when indexing)</p></td>
       <td><p>other parameters. see 'Details'</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>If stats_only, then a data.frame with components for the parameters 
   and forecast statistics:</p><table class='table'>
-<tr><td></td><td></td></tr>
-<tr><td><code>embedding</code></td><td></td></tr>
-<tr><td>embedding</td><td></td></tr>
-<tr><td></td><td><code>tp</code></td></tr>
-<tr><td></td><td>prediction horizon</td></tr>
-<tr><td></td><td></td></tr>
-<tr><td><code>phi</code></td><td></td></tr>
-<tr><td>length-scale parameter</td><td></td></tr>
-<tr><td></td><td><code>v_e</code></td></tr>
-<tr><td></td><td>noise-variance parameter</td></tr>
-<tr><td></td><td></td></tr>
-<tr><td><code>eta</code></td><td></td></tr>
-<tr><td>signal-variance parameter</td><td></td></tr>
-<tr><td></td><td><code>fit_params</code></td></tr>
-<tr><td></td><td>whether params were fitted or not</td></tr>
-<tr><td></td><td></td></tr>
-<tr><td><code>num_pred</code></td><td></td></tr>
-<tr><td>number of predictions</td><td></td></tr>
-<tr><td></td><td><code>rho</code></td></tr>
-<tr><td></td><td>correlation coefficient between observations and</td></tr>
-<tr><td>predictions</td><td></td></tr>
-<tr><td></td><td><code>mae</code></td></tr>
-<tr><td></td><td>mean absolute error</td></tr>
-<tr><td></td><td></td></tr>
-<tr><td><code>rmse</code></td><td></td></tr>
-<tr><td>root mean square error</td><td></td></tr>
-<tr><td></td><td><code>perc</code></td></tr>
-<tr><td></td><td>percent correct sign</td></tr>
-<tr><td></td><td></td></tr>
-<tr><td><code>p_val</code></td><td></td></tr>
-<tr><td>p-value that rho is significantly greater than 0 using</td><td>Fisher's z-transformation</td></tr>
-<tr><td></td><td></td></tr>
-<tr><td><code>model_output</code></td><td></td></tr>
-<tr><td>data.frame with columns for the time index,</td><td>observations, mean-value for predictions, and independent variance for</td></tr>
-<tr><td>predictions (if</td><td><code>stats_only == FALSE</code></td></tr>
-<tr><td>or</td><td></td></tr>
-<tr><td><code>save_covariance_matrix == TRUE</code></td><td>)</td></tr>
-<tr><td></td><td></td></tr>
-<tr><td><code>covariance_matrix</code></td><td></td></tr>
-<tr><td>the full covariance matrix for predictions</td><td>(if</td></tr>
-<tr><td><code>save_covariance_matrix == TRUE</code></td><td>)</td></tr>
-<tr><td></td><td></td></tr>
+<tr><td><code>embedding</code></td><td>embedding</td></tr>
+<tr><td><code>tp</code></td><td>prediction horizon</td></tr>
+<tr><td><code>phi</code></td><td>length-scale parameter</td></tr>
+<tr><td><code>v_e</code></td><td>noise-variance parameter</td></tr>
+<tr><td><code>eta</code></td><td>signal-variance parameter</td></tr>
+<tr><td><code>fit_params</code></td><td>whether params were fitted or not</td></tr>
+<tr><td><code>num_pred</code></td><td>number of predictions</td></tr>
+<tr><td><code>rho</code></td><td>correlation coefficient between observations and 
+    predictions</td></tr>
+<tr><td><code>mae</code></td><td>mean absolute error</td></tr>
+<tr><td><code>rmse</code></td><td>root mean square error</td></tr>
+<tr><td><code>perc</code></td><td>percent correct sign</td></tr>
+<tr><td><code>p_val</code></td><td>p-value that rho is significantly greater than 0 using 
+    Fisher's z-transformation</td></tr>
+<tr><td><code>model_output</code></td><td>data.frame with columns for the time index, 
+    observations, mean-value for predictions, and independent variance for 
+    predictions (if <code>stats_only == FALSE</code> or 
+    <code>save_covariance_matrix == TRUE</code>)</td></tr>
+<tr><td><code>covariance_matrix</code></td><td>the full covariance matrix for predictions 
+    (if <code>save_covariance_matrix == TRUE</code>)</td></tr>
 </table>
 
 
-    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The default parameters are set so that passing a vector as the only 
@@ -330,12 +311,11 @@ the mean and variance for y evaluated at a new value of x are
   $$
 where the vector \(C(x, x_d)\) is obtained by evaluating C at x and each 
 of the observed inputs while holding eta, phi, and v_e at the MAP estimates.</p>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='st'>"two_species_model"</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"two_species_model"</span>)
 <span class='no'>block</span> <span class='kw'>&lt;-</span> <span class='no'>two_species_model</span>[<span class='fl'>1</span>:<span class='fl'>200</span>,]
-<span class='fu'>block_gp</span>(<span class='no'>block</span>, <span class='kw'>columns</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"x"</span>, <span class='st'>"y"</span>), <span class='kw'>first_column_time</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt;   embedding tp       phi       v_e      eta fit_params num_pred       rho
+<span class='fu'>block_gp</span>(<span class='no'>block</span>, <span class='kw'>columns</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"x"</span>, <span class='st'>"y"</span>), <span class='kw'>first_column_time</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt;   embedding tp       phi       v_e      eta fit_params num_pred       rho
 #&gt; 1      1, 2  1 0.5302931 -170.4109 6.904724       TRUE      199 0.9999775
 #&gt;           mae        rmse perc p_val
 #&gt; 1 0.001004117 0.001284706    1     0</div><div class='input'>
@@ -345,16 +325,14 @@ of the observed inputs while holding eta, phi, and v_e at the MAP estimates.</p>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
       <li><a href="#value">Value</a></li>
-
       <li><a href="#details">Details</a></li>
-      
       <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -362,13 +340,16 @@ of the observed inputs while holding eta, phi, and v_e at the MAP estimates.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 
