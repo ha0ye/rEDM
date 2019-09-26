@@ -759,7 +759,7 @@ PredStats compute_stats_internal(const vec& obs, const vec& pred)
     Rcpp::Environment base("package:stats"); 
     
     // Make function callable from C++
-    Rcpp::Function cor_r = base["cor"];    
+    Rcpp::Function cor_r = base["cor"];
     
     
     size_t num_pred = 0;
@@ -785,7 +785,7 @@ PredStats compute_stats_internal(const vec& obs, const vec& pred)
     
     PredStats output;
     output.num_pred = num_pred;
-    Rcpp::NumericVector cor_output =  cor_r(obs, pred, "pairwise");
+    Rcpp::NumericVector cor_output = cor_r(obs, pred, "pairwise");
     output.rho = cor_output[0];
     output.mae = sum_errors / double(num_pred);
     output.rmse = sqrt(sum_squared_errors / double(num_pred));

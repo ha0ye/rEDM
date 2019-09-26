@@ -135,7 +135,13 @@ ccm <- function(block, lib = c(1, NROW(block)), pred = lib,
     
     model$run()
     
-    stats <- model$get_stats()
+    if (silent)
+    {
+        suppressWarnings( stats <- model$get_stats() )
+    } else {
+        stats <- model$get_stats() 
+    }
+    
     out <- cbind(params, stats, row.names = NULL)
     
     if (!stats_only)

@@ -195,11 +195,14 @@ block_lnlp <- function(block, lib = c(1, NROW(block)), pred = lib,
             model$set_params(params$tp[i], params$nn[i])
             model$set_theta(params$theta[i])
             model$run()
-            if (stats_only)
+            if (silent)
             {
-                df <- model$get_stats()
+                suppressWarnings( df <- model$get_stats() )
             } else {
-                df <- model$get_stats()
+                df <- model$get_stats() 
+            }
+            if (!stats_only)
+            {
                 df$model_output <- I(list(model$get_output()))
                 if (save_smap_coefficients)
                 {
@@ -237,11 +240,14 @@ block_lnlp <- function(block, lib = c(1, NROW(block)), pred = lib,
             model$set_embedding(columns[[params$embedding[i]]])
             model$set_params(params$tp[i], params$nn[i])
             model$run()
-            if (stats_only)
+            if (silent)
             {
-                df <- model$get_stats()
+                suppressWarnings( df <- model$get_stats() )
             } else {
-                df <- model$get_stats()
+                df <- model$get_stats() 
+            }
+            if (!stats_only)
+            {
                 df$model_output <- I(list(model$get_output()))
             }
             return(df)

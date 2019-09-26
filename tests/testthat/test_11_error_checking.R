@@ -3,6 +3,11 @@ context("Check various warning messages and input checking")
 data("two_species_model")
 ts <- two_species_model$x[1:200]
 
+test_that("silent = TRUE works", {
+    expect_error(w <- capture_warnings(simplex(rep(1, 100), silent = TRUE)), NA)
+    expect_identical(w, character(0))
+})
+
 test_that("end of range checking works", {
     expect_error(w <- capture_warnings(simplex_out <- simplex(ts, lib = c(1, 201), E = 1)), NA)
     expect_match(w, "end_of_range = 201, but num_vectors = 200", all = FALSE)

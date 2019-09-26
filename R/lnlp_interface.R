@@ -129,11 +129,14 @@ simplex <- function(time_series, lib = c(1, NROW(time_series)), pred = lib,
     output <- lapply(seq(NROW(params)), function(i) {
         model$set_params(params$E[i], params$tau[i], params$tp[i], params$nn[i])
         model$run()
-        if (stats_only)
+        if (silent)
         {
-            df <- model$get_stats()
+            suppressWarnings( df <- model$get_stats() )
         } else {
-            df <- model$get_stats()
+            df <- model$get_stats() 
+        }
+        if (!stats_only)
+        {
             df$model_output <- I(list(model$get_output()))
         }
         return(df)
@@ -227,11 +230,14 @@ s_map <- function(time_series, lib = c(1, NROW(time_series)), pred = lib,
         model$set_params(params$E[i], params$tau[i], params$tp[i], params$nn[i])
         model$set_theta(params$theta[i])
         model$run()
-        if (stats_only)
+        if (silent)
         {
-            df <- model$get_stats()
+            suppressWarnings( df <- model$get_stats() )
         } else {
-            df <- model$get_stats()
+            df <- model$get_stats() 
+        }
+        if (!stats_only)
+        {
             df$model_output <- I(list(model$get_output()))
             if (save_smap_coefficients)
             {
