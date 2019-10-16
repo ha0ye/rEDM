@@ -462,11 +462,11 @@ compute_gp <- function(x_lib, y_lib,
         lib_idx <- seq_len(NROW(x_lib))
         pred_idx <- NROW(x_lib) + seq_len(NROW(x_pred))
         
-        squared_dist_lib_lib <- dist_xy[lib_idx, lib_idx] ^ 2
+        squared_dist_lib_lib <- dist_xy[lib_idx, lib_idx, drop = FALSE] ^ 2
         K_pred_pred <- eta_scaled * 
-            exp(-phi ^ 2 * dist_xy[pred_idx, pred_idx] ^ 2)
+            exp(-phi ^ 2 * dist_xy[pred_idx, pred_idx, drop = FALSE] ^ 2)
         K_pred_lib <- eta_scaled * 
-            exp(-phi ^ 2 * dist_xy[pred_idx, lib_idx] ^ 2)
+            exp(-phi ^ 2 * dist_xy[pred_idx, lib_idx, drop = FALSE] ^ 2)
     } else { # compute distance matrix using just lib
         squared_dist_lib_lib <- (as.matrix(dist(x_lib))) ^ 2
     }
