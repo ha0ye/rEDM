@@ -55,3 +55,17 @@ test_that("tde_gp works on time series", {
     attributes(output) <- attributes(output)[sort(names(attributes(output)))]
     expect_equal(digest::digest(output), "5c59eef4c687a6bd589f72a64d35c5f8")
 })
+
+
+test_that("Error checking works", {
+    ts_1 <- rep.int(0, 30)
+    ts_2 <- sample(c(0, 1), 30, replace = TRUE)
+    ts_3 <- rep.int(1, 30)
+    
+    expect_error(out_1 <- tde_gp(ts_1, E = 1:3), 
+                 "Distance matrix is not positive-definite; Is the input data degenerate?")
+    expect_error(out_2 <- tde_gp(ts_2, E = 1:3), 
+                 NA)
+    expect_error(out_3 <- tde_gp(ts_3, E = 1:3), 
+                 "Distance matrix is not positive-definite; Is the input data degenerate?")
+})

@@ -235,8 +235,14 @@ block_gp <- function(block, lib = c(1, NROW(block)), pred = lib,
                              x_pred = x_pred, ...)
         
         # compute stats for mean predictions
-        stats <- compute_stats(y_pred, out_gp$mean_pred)
-        
+        if (silent)
+        {
+            suppressWarnings(stats <- compute_stats(y_pred, out_gp$mean_pred)
+            )
+        } else {
+            stats <- compute_stats(y_pred, out_gp$mean_pred)
+        }
+
         # prepare output (default is param settings and stats)
         out_df <- data.frame(embedding = paste(embedding, sep = "", 
                                                collapse = ", "), 
@@ -472,6 +478,12 @@ compute_gp <- function(x_lib, y_lib,
     }
     K_lib_lib <- eta_scaled * exp(-phi ^ 2 * squared_dist_lib_lib)
     Sigma <- K_lib_lib + v_e_scaled * diag(NROW(x_lib))
+    
+    # error checking on Sigma
+    if (any(!is.finite(Sigma)) || !all(Sigma > 0))
+    {
+        stop("Distance matrix is not positive-definite; Is the input data degenerate?")
+    }
     
     # cholesky algorithm from Rasmussen & Williams (2006, algorithm 2.1)
     R <- chol(Sigma)
