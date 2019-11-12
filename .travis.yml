@@ -23,6 +23,7 @@ matrix:
   - r: release
     after_success:
     - R CMD INSTALL .
+    - Rscript -e 'remotes::install_github("rstudio/rmarkdown", upgrade = "never")'
     - Rscript -e 'pkgdown::build_site()'
     - Rscript -e 'covr::codecov()'
     deploy:
