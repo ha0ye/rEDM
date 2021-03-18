@@ -1,6 +1,8 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+## *This version of rEDM is no longer being maintained (as of October 2019) - please see <https://github.com/SugiharaLab/rEDM/> for the latest version of the package*
+
 # rEDM
 
 [![Build
@@ -14,8 +16,7 @@ Status](https://travis-ci.org/ha0ye/rEDM.svg?branch=master)](https://travis-ci.o
 ## Binder Demo
 
 Try out the package without installation (after loading, try clicking on
-`README.Rmd` in the `Files`
-tab).
+`README.Rmd` in the `Files` tab).
 
 [![Binder](http://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/ha0ye/rEDM/master?urlpath=rstudio)
 

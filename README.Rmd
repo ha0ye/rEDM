@@ -12,6 +12,8 @@ knitr::opts_chunk$set(
 )
 ```
 
+## *This version of rEDM is no longer being maintained (as of October 2019) - please see https://github.com/SugiharaLab/rEDM/ for the latest version of the package* 
+
 # rEDM
 [![Build
 Status](https://travis-ci.org/ha0ye/rEDM.svg?branch=master)](https://travis-ci.org/ha0ye/rEDM)
